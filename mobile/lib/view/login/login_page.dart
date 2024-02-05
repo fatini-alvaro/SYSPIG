@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/components/login/custom_login_button_component.dart';
 import 'package:mobile/controller/login/login_controller.dart';
 import 'package:mobile/controller/post/posts_controller.dart';
+import 'package:mobile/widgets/custom_text_field_widget.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -49,47 +51,20 @@ class _LoginPageState extends State<LoginPage> {
                     padding: const EdgeInsets.only(left: 12, right: 12, top: 20, bottom: 12),
                     child: Column(
                       children: [
-                        TextField(
-                          onChanged: _loginController.setEmail,
-                          keyboardType: TextInputType.emailAddress,
-                          decoration: InputDecoration(
-                            labelText: 'Insira o email',
-                            border: OutlineInputBorder()
-                          ),
+                        CustomTextFieldWidget(
+                          label: 'Insira o email', 
+                          onChanged: _loginController.setEmail, 
+                          keyboardType: TextInputType.emailAddress
                         ),
                         SizedBox(height: 25),
-                        TextField(
+                        CustomTextFieldWidget(
+                          label: 'Insira a senha', 
                           onChanged: _loginController.setSenha,
                           obscureText: true,
-                          decoration: InputDecoration(
-                            labelText: 'Insira a senha',
-                            border: OutlineInputBorder()
-                          ),
                         ),
                         SizedBox(height: 25),
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.orange, // Change the background color
-                            foregroundColor: Colors.white,
-                            minimumSize: Size(MediaQuery.of(context).size.width, 50), // Change the text color
-                          ),
-                          onPressed: () {
-                            _loginController.auth(context).then(
-                              (result) {
-                              if(result) {
-                                print('success');
-                              } else {
-                                print('erro');
-                              }                                
-                            });
-                          }, 
-                          child: Container(
-                            width: MediaQuery.of(context).size.width,
-                            child: Text(
-                              'Entrar',
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
+                        CustomLoginButtonComponent(
+                          loginController: _loginController,
                         ),
                         SizedBox(height: 10),
                         ElevatedButton(

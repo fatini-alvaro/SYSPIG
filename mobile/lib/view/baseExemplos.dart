@@ -75,7 +75,7 @@ class _LoginPageState extends State<LoginPage> {
                                 foregroundColor: Colors.white, // Change the text color
                               ),
                               onPressed: () {
-                                _loginController.auth();
+                               // _loginController.auth();
                               }, 
                               child: Container(
                                 width: double.infinity,
