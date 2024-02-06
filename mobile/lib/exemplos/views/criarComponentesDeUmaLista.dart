@@ -42,7 +42,7 @@ class HomePageState extends State<HomePage> {
       ),      
       body: ValueListenableBuilder<List<PostModel>>(
         valueListenable: _homeController.posts, 
-        builder: (_, list, __){
+        builder: (_, list, __){//aqui da pra passar um widget 
           return ListView.builder(
             itemCount: list.length,
             itemBuilder: (_, idx) => ListTile(

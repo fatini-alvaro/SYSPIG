@@ -11,6 +11,8 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
 
+  final PostsController _postController = PostsController();
+
   final LoginController _loginController = LoginController();
 
   Widget _body(){
@@ -29,6 +31,17 @@ class _LoginPageState extends State<LoginPage> {
                   width: 200,
                   height: 200,
                   child: Image.asset('assets/images/logo.png'),
+                ),
+                AnimatedBuilder(
+                  animation: Listenable.merge([_postController.posts, _postController.inLoader]),
+                  builder: (_, __) => _postController.inLoader.value ? CircularProgressIndicator() : ListView.builder(
+                    physics: NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    itemCount: _postController.posts.value.length,
+                    itemBuilder: (_, idx) => ListTile(
+                      title: Text(_postController.posts.value[idx].title),
+                    ),
+                  ),
                 ),
                 Container(height: 20),            
                 Card(
@@ -61,7 +74,7 @@ class _LoginPageState extends State<LoginPage> {
                             minimumSize: Size(MediaQuery.of(context).size.width, 50),
                           ),
                           onPressed: () {
-                            //
+                            _postController.callAPI();
                           }, 
                           child: Container(
                             width: MediaQuery.of(context).size.width,
@@ -88,7 +101,7 @@ class _LoginPageState extends State<LoginPage> {
                             minimumSize: Size(MediaQuery.of(context).size.width, 50),
                           ),
                           onPressed: () {
-                            //
+                            _postController.callAPI();
                           }, 
                           child: Container(
                             width: MediaQuery.of(context).size.width,
