@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/controller/app_controller.dart';
 import 'package:mobile/themes/themes.dart';
+import 'package:mobile/view/details_page.dart/details_page.dart';
 import 'package:mobile/view/login/login_page.dart';
 import 'package:mobile/view/splash/splash_page.dart';
 
@@ -21,6 +22,7 @@ class AppWidget extends StatelessWidget {
           '/splash': (context) => const SplashPage(),
           '/login': (context) => LoginPage(),
           '/home': (context) => HomePage(),
+          '/details': (context) => const DetailsPage(),
         },
       );  
     });
