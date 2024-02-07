@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile/controller/app_controller.dart';
 import 'package:mobile/controller/home/home_controller.dart';
 import 'package:mobile/model/post_model.dart';
-import 'package:mobile/repositories/home_repository.dart';
-import 'package:mobile/repositories/home_repository_mock.dart';
+import 'package:mobile/repositories/home_repository_imp.dart';
 import 'package:mobile/widgets/custom_drawer_widget.dart';
 
 class HomePage extends StatefulWidget{
@@ -15,7 +14,7 @@ class HomePage extends StatefulWidget{
 
 class HomePageState extends State<HomePage> {
 
-  final HomeController _homeController = HomeController(HomeRepositoryMock());
+  final HomeController _homeController = HomeController(HomeRepositoryImp());
 
   @override
   void initState() {
@@ -43,11 +42,19 @@ class HomePageState extends State<HomePage> {
       body: ValueListenableBuilder<List<PostModel>>(
         valueListenable: _homeController.posts, 
         builder: (_, list, __){
-          return ListView.builder(
+          return ListView.separated(
+            shrinkWrap: true,
             itemCount: list.length,
             itemBuilder: (_, idx) => ListTile(
+              leading: Text(list[idx].id.toString()),
+              trailing: Icon(Icons.arrow_forward),
               title: Text(list[idx].title),
-            )
+              onTap: () => Navigator.of(context).pushNamed(
+                '/details', 
+                arguments: list[idx],
+              ),
+            ),
+            separatorBuilder: (_, __) => Divider(),
           );
         }
       ),
