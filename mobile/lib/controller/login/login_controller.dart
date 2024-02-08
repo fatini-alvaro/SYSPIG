@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/services/prefs_service.dart';
 import 'package:mobile/utils/dialogs.dart';
 
 class LoginController {
@@ -17,7 +18,10 @@ class LoginController {
 
     Dialogs.hideLoading(context);
 
-    return _email == 'teste@' && _senha == '1';
+    if(_email == 't' && _senha == '1') {
+      PrefsService.save(_email!);
+      return true;
+    } return false;
   }
   
 }

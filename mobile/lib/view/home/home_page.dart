@@ -3,6 +3,7 @@ import 'package:mobile/controller/app_controller.dart';
 import 'package:mobile/controller/home/home_controller.dart';
 import 'package:mobile/model/post_model.dart';
 import 'package:mobile/repositories/home_repository_imp.dart';
+import 'package:mobile/services/prefs_service.dart';
 import 'package:mobile/widgets/custom_drawer_widget.dart';
 
 class HomePage extends StatefulWidget{
@@ -32,7 +33,8 @@ class HomePageState extends State<HomePage> {
           print('Home tapped');
         },
         onLogoutTap: () {
-          Navigator.of(context).pushReplacementNamed('/login');
+          PrefsService.logout();
+          Navigator.of(context).pushNamedAndRemoveUntil('/login', (_) => true);
         },
       ),
       appBar: AppBar(
