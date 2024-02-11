@@ -1,19 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/components/criar_conta/custom_criar_conta_button_component.dart';
-import 'package:mobile/components/login/custom_login_button_component.dart';
-import 'package:mobile/controller/login/login_controller.dart';
+import 'package:mobile/components/criar_conta/custom_possuo_conta_button_componente.dart';
+import 'package:mobile/components/criar_conta/custom_salvar_nova_conta_button_component.dart';
+import 'package:mobile/controller/criar_conta/criar_conta_controller.dart';
 import 'package:mobile/widgets/custom_text_field_widget.dart';
 
-class LoginPage extends StatefulWidget {
+class CriarContaPage extends StatefulWidget {
   @override
-  _LoginPageState createState() => _LoginPageState();
+  _CriarContaPageState createState() => _CriarContaPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _CriarContaPageState extends State<CriarContaPage> {
 
-  final LoginController _loginController = LoginController();
+  final CriarContaController _criarContaController = CriarContaController();
 
   Widget _body(){
+    
      return SingleChildScrollView(
       child: SizedBox( 
         width: MediaQuery.of(context).size.width,
@@ -29,8 +30,7 @@ class _LoginPageState extends State<LoginPage> {
                   width: 200,
                   height: 200,
                   child: Image.asset('assets/images/logo.png'),
-                ),
-                Container(height: 20),            
+                ),          
                 Card(
                   elevation: 0,
                   color: Colors.transparent,
@@ -40,47 +40,44 @@ class _LoginPageState extends State<LoginPage> {
                       children: [
                         CustomTextFieldWidget(
                           label: 'Insira o email', 
-                          onChanged: _loginController.setEmail, 
-                          keyboardType: TextInputType.emailAddress
+                          onChanged: _criarContaController.setEmail, 
+                          keyboardType: TextInputType.emailAddress,
+                          errorText: _criarContaController.emailError
+                        ),
+                        SizedBox(height: 25),
+                        CustomTextFieldWidget(
+                          label: 'Insira o nome', 
+                          onChanged: _criarContaController.setNome,
+                          obscureText: true,
+                          errorText: _criarContaController.nomeError,
+                        ),
+                        SizedBox(height: 25),
+                        CustomTextFieldWidget(
+                          label: 'Insira o telefone', 
+                          onChanged: _criarContaController.setTelefone,
+                          obscureText: true,
                         ),
                         SizedBox(height: 25),
                         CustomTextFieldWidget(
                           label: 'Insira a senha', 
-                          onChanged: _loginController.setSenha,
+                          onChanged: _criarContaController.setSenha,
                           obscureText: true,
+                          errorText: _criarContaController.senhaError,
                         ),
                         SizedBox(height: 25),
-                        CustomLoginButtonComponent(
-                          loginController: _loginController,
+                        CustomSalvarNovaContaButtonComponent(
+                          criarContaController: _criarContaController,
                         ),
-                        SizedBox(height: 10),
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.blue,
-                            foregroundColor: Colors.white,
-                            minimumSize: Size(MediaQuery.of(context).size.width, 50),
-                          ),
-                          onPressed: () {
-                            //
-                          }, 
-                          child: Container(
-                            width: MediaQuery.of(context).size.width,
-                            child: Text(
-                              'Esqueci a senha',
-                              textAlign: TextAlign.center
-                            ),
-                          )
-                        ),
-                        SizedBox(height: 70),
+                        SizedBox(height: 30),
                         Divider(
                           color: Colors.grey,
                           thickness: 1,
-                          height: 10,
+                          height: 5,
                           indent: 20,
                           endIndent: 20,
                         ),
-                        SizedBox(height: 50),
-                        CustomCriarContaButtonComponent(),
+                        SizedBox(height: 25),
+                        CustomPossuoContaButtonComponent()
                       ]
                     ),
                   ),
@@ -101,4 +98,3 @@ class _LoginPageState extends State<LoginPage> {
     );  
   }
 }
-

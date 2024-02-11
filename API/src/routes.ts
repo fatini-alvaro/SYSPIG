@@ -17,5 +17,6 @@ routes.post('/tipousuarios', new TipoUsuarioController().create);
 
 //usuarioFazenda rotas
 routes.post('/usuariofazendas', new UsuarioFazendaController().create);
+routes.get('/usuariofazendas/:usuario_id', new UsuarioFazendaController().list);
 
 export default routes

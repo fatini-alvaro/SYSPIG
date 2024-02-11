@@ -14,11 +14,11 @@ class LoginController {
 
     Dialogs.showLoading(context, message:'Aguarde, validando credenciais');
 
-    await Future.delayed(Duration(seconds: 2));
+    await Future.delayed(Duration(seconds: 1));
 
     Dialogs.hideLoading(context);
 
-    if(_email == 't' && _senha == '1') {
+    if(_email == 't') {
       PrefsService.save(_email!);
       return true;
     } return false;

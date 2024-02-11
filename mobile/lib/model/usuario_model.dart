@@ -1,16 +1,30 @@
 class UsuarioModel {
   final int id;
+  final String nome;
   final String email;
-  final String body;
+  final int tipoUsuarioId;
+  final String senha;
 
-  PostModel(this.userId, this.id, this.title, this.body);
+  UsuarioModel({
+    required this.id,
+    required this.nome,
+    required this.email,
+    required this.tipoUsuarioId,
+    required this.senha,
+  });
 
-  factory PostModel.fromJson(Map json) {
-    return PostModel(json['userId'],json['id'],json['title'],json['body']);
+  factory UsuarioModel.fromJson(Map<String, dynamic> json) {
+    return UsuarioModel(
+      id: json['id'],
+      nome: json['nome'],
+      email: json['email'],
+      tipoUsuarioId: json['tipo_usuario_id'],
+      senha: json['senha'],
+    );
   }
 
   @override
   String toString() {
-    return 'id: $id';
+    return 'id: $id, nome: $nome, email: $email, tipo_usuario_id: $tipoUsuarioId';
   }
 }

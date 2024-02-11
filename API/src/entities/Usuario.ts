@@ -1,7 +1,7 @@
 import { Column, Entity, JoinColumn, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { TipoUsuario } from "./TipoUsuario";
-import { UsuarioFazenda } from "./UsuarioFazenda";
 import { Fazenda } from "./Fazenda";
+import { UsuarioFazenda } from "./UsuarioFazenda";
 
 
 @Entity('usuario')

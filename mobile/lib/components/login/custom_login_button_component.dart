@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile/controller/login/login_controller.dart';
 
 class CustomLoginButtonComponent extends StatelessWidget {
+  
   final LoginController loginController;
   const CustomLoginButtonComponent({Key? key, required this.loginController,}) : super(key: key,);
 
@@ -17,7 +18,7 @@ class CustomLoginButtonComponent extends StatelessWidget {
         loginController.auth(context).then(
           (result) {
           if(result) {
-            Navigator.of(context).pushReplacementNamed('/home');
+            Navigator.of(context).pushNamed('/selecionarFazenda');
           } else {
             print('erro');
           }                                

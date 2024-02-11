@@ -45,4 +45,29 @@ export class UsuarioFazendaController {
     }
   }
 
+  async list(req: Request, res: Response){
+    try {      
+      const { usuario_id } = req.params;
+
+      // Encontre as instâncias de UsuarioFazenda associadas ao usuário_id
+      const usuarioFazendas = await usuarioFazendaRepository.find({ 
+        where: { 
+          usuario: { 
+            id: Number(usuario_id) 
+          } 
+        }, 
+        relations: ['fazenda'] 
+      });
+
+      // Extraia as fazendas das instâncias de UsuarioFazenda
+      const fazendas = usuarioFazendas.map(usuarioFazenda => usuarioFazenda.fazenda);
+
+      return res.status(200).json(fazendas);
+      
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({ message: ''});
+    }
+  }
+
 }

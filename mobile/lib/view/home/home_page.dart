@@ -40,6 +40,7 @@ class HomePageState extends State<HomePage> {
       appBar: AppBar(
         backgroundColor: Colors.orange,
         title: Text('SYSPIG'),
+        centerTitle: true,
       ),      
       body: ValueListenableBuilder<List<PostModel>>(
         valueListenable: _homeController.posts, 
