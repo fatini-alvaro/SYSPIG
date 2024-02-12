@@ -36,7 +36,7 @@ class SelecionarFazendaPageState extends State<SelecionarFazendaPage> {
           SizedBox(height: 20),
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 16.0), // Ajuste a quantidade de espaço desejada
-            child: CustomAbrirTelaAdicionarNovoButtonComponent(buttonText: 'Cadastrar Nova Fazenda'),
+            child: CustomAbrirTelaAdicionarNovoButtonComponent(buttonText: 'Cadastrar Nova Fazenda', caminhoTelaCadastro: 'abrirTelaCadastroFazenda',),
           ),
           SizedBox(height: 15),
           Expanded(
@@ -46,7 +46,7 @@ class SelecionarFazendaPageState extends State<SelecionarFazendaPage> {
                 return ListView.builder(
                   itemCount: list.length,
                   itemBuilder: (_, idx) => CustomFazendaRegistroCard(
-                    fazendaNome: list[idx].nome,
+                    fazenda: list[idx],
                     onEditarPressed: () {
                       // Lógica para abrir a tela de edição
                     },

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class CustomAbrirTelaAdicionarNovoButtonComponent extends StatelessWidget {
+class CustomSalvarCadastroButtonComponent extends StatelessWidget {
   final String buttonText;
   final String caminhoTelaCadastro;
 

@@ -11,4 +11,9 @@ class FazendaController {
   fetch() async {
     fazendas.value = await _fazendaRepository.getList();
   }
+
+  Future<bool> create (BuildContext context) async {
+
+    return true;
+  }
 }

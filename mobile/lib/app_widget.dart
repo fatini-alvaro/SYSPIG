@@ -3,6 +3,7 @@ import 'package:mobile/controller/app_controller.dart';
 import 'package:mobile/themes/themes.dart';
 import 'package:mobile/view/criar_conta/criar_conta_page.dart';
 import 'package:mobile/view/details_page/details_page.dart';
+import 'package:mobile/view/fazenda/cadastrar_fazenda_page.dart';
 import 'package:mobile/view/login/login_page.dart';
 import 'package:mobile/view/selecionar_fazenda/selecionar_fazenda_page.dart';
 import 'package:mobile/view/splash/splash_page.dart';
@@ -27,6 +28,7 @@ class AppWidget extends StatelessWidget {
           '/details': (context) => const DetailsPage(),
           '/criarConta': (context) => CriarContaPage(),
           '/selecionarFazenda': (context) => SelecionarFazendaPage(),
+          '/abrirTelaCadastroFazenda': (context) => CadastrarFazendaPage(),
         },
       );  
     });

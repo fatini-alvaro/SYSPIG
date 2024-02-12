@@ -56,7 +56,7 @@ export class UsuarioFazendaController {
             id: Number(usuario_id) 
           } 
         }, 
-        relations: ['fazenda'] 
+        relations: ['fazenda', 'fazenda.cidade', 'fazenda.cidade.uf']
       });
 
       // Extraia as fazendas das instâncias de UsuarioFazenda
