@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/components/buttons/custom_salvar_cadastro_button_component.dart';
-import 'package:mobile/controller/cadastrar_fazenda/cadastrar_fazenda_controller.dart';
+import 'package:mobile/controller/cadastrar_granja/cadastrar_granja_controller.dart';
 import 'package:mobile/themes/themes.dart';
 import 'package:mobile/widgets/custom_text_field_widget.dart';
 
-class CadastrarFazendaPage extends StatefulWidget {
+class CadastrarGranjaPage extends StatefulWidget {
   @override
-  State<CadastrarFazendaPage> createState() {
-    return CadastrarFazendaPageState();
+  State<CadastrarGranjaPage> createState() {
+    return CadastrarGranjaPageState();
   }
 }
 
-class CadastrarFazendaPageState extends State<CadastrarFazendaPage> {
-  final CadastrarFazendaController _cadastrarFazendaController =
-      CadastrarFazendaController();
+class CadastrarGranjaPageState extends State<CadastrarGranjaPage> {
+  final CadastrarGranjaontroller _cadastrarGranjaController =
+      CadastrarGranjaontroller();
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +21,7 @@ class CadastrarFazendaPageState extends State<CadastrarFazendaPage> {
       appBar: AppBar(
         backgroundColor: AppThemes.lightTheme.primaryColor,
         foregroundColor: Colors.white,
-        title: Text('Cadastrar Fazenda'),
+        title: Text('Cadastrar Granja'),
         centerTitle: true,
       ),
       body: Padding(
@@ -30,14 +30,14 @@ class CadastrarFazendaPageState extends State<CadastrarFazendaPage> {
           children: [
             SizedBox(height: 20),
             CustomTextFieldWidget(
-              label: 'Nome da Fazenda',
-              onChanged: _cadastrarFazendaController.setNome,
+              label: 'Nome da Granja',
+              onChanged: _cadastrarGranjaController.setDescricao,
               obscureText: true,
             ),
             SizedBox(height: 20),
             CustomTextFieldWidget(
-              label: 'Cidade',
-              onChanged: _cadastrarFazendaController.setCidade,
+              label: 'Tipo Da Granja',
+              onChanged: _cadastrarGranjaController.setTipoGranja,
               obscureText: true,
             ),
             SizedBox(height: 20),
@@ -48,7 +48,7 @@ class CadastrarFazendaPageState extends State<CadastrarFazendaPage> {
                 ],
               ),
             ),
-            CustomSalvarCadastroButtonComponent(buttonText: 'Salvar Fazenda', rotaTelaAposSalvar:'selecionarFazenda'),
+            CustomSalvarCadastroButtonComponent(buttonText: 'Salvar Granja', rotaTelaAposSalvar:'selecionarGranja'),
           ],
         ),
       ),

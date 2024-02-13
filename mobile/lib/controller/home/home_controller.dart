@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/model/post_model.dart';
-import 'package:mobile/repositories/home_repository.dart';
+import 'package:mobile/repositories/home/home_repository.dart';
 
 class HomeController {
   final HomeRepository _homeRepository;

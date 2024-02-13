@@ -1,55 +1,43 @@
 
 import 'package:flutter/material.dart';
-import 'package:mobile/controller/login/login_controller.dart';
+import 'package:mobile/controller/fazenda/fazenda_controller.dart';
+import 'package:mobile/repositories/fazenda/fazenda_repository_imp.dart';
 import 'package:mobile/utils/dialogs.dart';
 
 
-class CriarContaController with ChangeNotifier {
+class CadastrarFazendaController with ChangeNotifier {
 
-  final LoginController _loginController = LoginController();
-
-  String _email = '';
-  setEmail(String value) => _email = value;
+  final FazendaController _fazendaController = FazendaController(FazendaRepositoryImp());
 
   String? _nome;
   setNome(String value) => _nome = value;
 
-  String? _senha;
-  setSenha(String value) => _senha = value;
+  String? _cidade;
+  setCidade(String value) => _cidade = value;
 
-  String? _telefone;
-  setTelefone(String value) => _telefone = value;
-
-  String? emailError;
   String? nomeError;
-  String? senhaError;
+  String? cidadeError;
 
   // Função para validar os campos
   bool validateFields() {
     bool isValid = true;
+    const textObrigatorio = 'Campo obrigatório';
 
     // Validar e definir mensagens de erro para cada campo
-    if (_email == null || _email!.isEmpty) {
-      emailError = 'Campo obrigatório';
-      isValid = false;
-    } else {
-      emailError = null;
-    }
-
     if (_nome == null || _nome!.isEmpty) {
-      nomeError = 'Campo obrigatório';
+      nomeError = textObrigatorio;
       isValid = false;
     } else {
       nomeError = '';
     }
 
-    if (_senha == null || _senha!.isEmpty) {
-      senhaError = 'Campo obrigatório';
+    if (_cidade == null || _cidade!.isEmpty) {
+      cidadeError = textObrigatorio;
       isValid = false;
     } else {
-      senhaError = '';
+      cidadeError = '';
     }
-
+    
     notifyListeners();
 
     return isValid;
@@ -64,10 +52,9 @@ class CriarContaController with ChangeNotifier {
 
     Dialogs.showLoading(context, message:'Aguarde, Criando Nova Conta');
     await Future.delayed(Duration(seconds: 2));
-    //To-do Criar novo usuario na api
+    //To-do chama o create do fazendacontroller
 
     Dialogs.hideLoading(context);
-    //TO-DO Chama o auth passando as credenciais do novo usuario    
 
     return true;
   }

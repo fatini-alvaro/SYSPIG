@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 
 class CustomSalvarCadastroButtonComponent extends StatelessWidget {
   final String buttonText;
-  final String caminhoTelaCadastro;
+  final String rotaTelaAposSalvar;
 
-  CustomAbrirTelaAdicionarNovoButtonComponent({required this.buttonText, required this.caminhoTelaCadastro});
+  CustomSalvarCadastroButtonComponent({required this.buttonText, required this.rotaTelaAposSalvar});
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +18,7 @@ class CustomSalvarCadastroButtonComponent extends StatelessWidget {
         ),
       ),
       onPressed: () {
-        Navigator.of(context).pushNamed('/${caminhoTelaCadastro}');               
+        Navigator.of(context).pushReplacementNamed('/${rotaTelaAposSalvar}');              
       }, 
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,

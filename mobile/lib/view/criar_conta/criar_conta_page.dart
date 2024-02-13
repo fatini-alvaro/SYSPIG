@@ -40,7 +40,9 @@ class _CriarContaPageState extends State<CriarContaPage> {
                       children: [
                         CustomTextFieldWidget(
                           label: 'Insira o email', 
-                          onChanged: _criarContaController.setEmail, 
+                          onChanged: (value) {
+                            _criarContaController.setEmail(value);
+                          },
                           keyboardType: TextInputType.emailAddress,
                           errorText: _criarContaController.emailError
                         ),

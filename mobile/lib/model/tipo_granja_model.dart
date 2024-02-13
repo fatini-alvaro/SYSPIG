@@ -1,0 +1,22 @@
+class TipoGranjaModel {
+  final int id;
+  final String descricao;
+
+
+  TipoGranjaModel({
+    required this.id,
+    required this.descricao,
+  });
+
+  factory TipoGranjaModel.fromJson(Map<String, dynamic> json) {
+    return TipoGranjaModel(
+      id: json['id'],
+      descricao: json['descricao'],
+    );
+  }
+
+  @override
+  String toString() {
+    return 'id: $id, descricao: $descricao';
+  }
+}

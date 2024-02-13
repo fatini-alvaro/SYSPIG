@@ -1,26 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/components/buttons/custom_abrir_tela_adicionar_novo_button_component.dart';
-import 'package:mobile/components/cards/custom_fazenda_registro_card.dart';
-import 'package:mobile/controller/fazenda/fazenda_controller.dart';
-import 'package:mobile/model/fazenda_model.dart';
-import 'package:mobile/repositories/fazenda/fazenda_repository_imp.dart';
+import 'package:mobile/components/cards/custom_granja_registro_card.dart';
+import 'package:mobile/controller/granja/granja_controller.dart';
+import 'package:mobile/model/granja_model.dart';
+import 'package:mobile/repositories/granja/granja_repository_imp.dart';
 import 'package:mobile/themes/themes.dart';
 
-class SelecionarFazendaPage extends StatefulWidget {
+class SelecionarGranjaPage extends StatefulWidget {
   @override
-  State<SelecionarFazendaPage> createState() {
-    return SelecionarFazendaPageState();
+  State<SelecionarGranjaPage> createState() {
+    return SelecionarGranjaPageState();
   }
 }
 
-class SelecionarFazendaPageState extends State<SelecionarFazendaPage> {
+class SelecionarGranjaPageState extends State<SelecionarGranjaPage> {
   
-  final FazendaController _fazendaController = FazendaController(FazendaRepositoryImp());
-  
+  final GranjaController _granjaController = GranjaController(GranjaRepositoryImp());
+   
   @override
   void initState() {
     super.initState();
-    _fazendaController.fetch();
+    _granjaController.fetch();
   }
 
   @override
@@ -29,7 +29,7 @@ class SelecionarFazendaPageState extends State<SelecionarFazendaPage> {
       appBar: AppBar(
         backgroundColor: AppThemes.lightTheme.primaryColor,
         foregroundColor: Colors.white,
-        title: Text('Selecione a fazenda'),
+        title: Text('Selecione a granja'),
         centerTitle: true,
       ),
       body: Column(
@@ -38,24 +38,24 @@ class SelecionarFazendaPageState extends State<SelecionarFazendaPage> {
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 16.0), // Ajuste a quantidade de espaço desejada
             child: CustomAbrirTelaAdicionarNovoButtonComponent(
-              buttonText: 'Cadastrar Nova Fazenda', 
-              caminhoTelaCadastro: 'abrirTelaCadastroFazenda',
+              buttonText: 'Cadastrar Nova Granja', 
+              caminhoTelaCadastro: 'abrirTelaCadastroGranja',
             ),
           ),
           SizedBox(height: 15),
           Expanded(
-            child: ValueListenableBuilder<List<FazendaModel>>(
-              valueListenable: _fazendaController.fazendas,
+            child: ValueListenableBuilder<List<GranjaModel>>(
+              valueListenable: _granjaController.granjas,
               builder: (_, list, __) {
                 return ListView.builder(
                   itemCount: list.length,
-                  itemBuilder: (_, idx) => CustomFazendaRegistroCard(
-                    fazenda: list[idx],
+                  itemBuilder: (_, idx) => CustomGranjaRegistroCard(
+                    granja: list[idx],
                     onEditarPressed: () {
                       // Lógica para abrir a tela de edição
                     },
                     onExcluirPressed: () {
-                      // Lógica para excluir a fazenda
+                      // Lógica para excluir
                     },
                     caminhoTelaAoClicar: 'home'
                   ),

@@ -1,5 +1,5 @@
 import 'package:mobile/model/fazenda_model.dart';
-import 'package:mobile/repositories/fazenda_repository.dart';
+import 'package:mobile/repositories/fazenda/fazenda_repository.dart';
 import 'package:dio/dio.dart';
 
 class FazendaRepositoryImp implements FazendaRepository {   
@@ -7,7 +7,7 @@ class FazendaRepositoryImp implements FazendaRepository {
   Future<List<FazendaModel>> getList() async {
     try {
       var response = 
-          await Dio().get('http://192.168.0.108:3000/usuariofazendas/1');
+          await Dio().get('http://192.168.2.204:3000/usuariofazendas/1');
         return (response.data as List).map((e) => FazendaModel.fromJson(e)).toList();
     } catch (e) {
       print(e);

@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/model/fazenda_model.dart';
+import 'package:mobile/model/granja_model.dart';
 
-class CustomFazendaRegistroCard extends StatelessWidget {
-  final FazendaModel fazenda;
+class CustomGranjaRegistroCard extends StatelessWidget {
+  final GranjaModel granja;
   final VoidCallback onEditarPressed;
   final VoidCallback onExcluirPressed;
   final String caminhoTelaAoClicar;
 
-  const CustomFazendaRegistroCard({
+  const CustomGranjaRegistroCard({
     Key? key,
-    required this.fazenda,
+    required this.granja,
     required this.onEditarPressed,
     required this.onExcluirPressed,
     required this.caminhoTelaAoClicar,
@@ -45,7 +45,7 @@ class CustomFazendaRegistroCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        fazenda.nome,
+                        granja.descricao,
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 20,
@@ -55,12 +55,12 @@ class CustomFazendaRegistroCard extends StatelessWidget {
                       Row(
                         children: [
                           Icon(
-                            Icons.location_on, // Ícone de localização (substitua pelo ícone desejado)
+                            Icons.landscape, // Ícone de localização (substitua pelo ícone desejado)
                             color: Colors.red, // Cor do ícone (ajuste conforme necessário)
                           ),
                           SizedBox(width: 8), // Espaçamento entre o ícone e o texto
                           Text(
-                            '${fazenda.cidade.nome} - ${fazenda.cidade.uf.sigla}',
+                            'Fazenda - ${granja.fazenda.nome}',
                             style: TextStyle(
                               fontWeight: FontWeight.normal,
                               fontSize: 15,
