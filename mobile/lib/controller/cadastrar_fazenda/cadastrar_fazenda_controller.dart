@@ -50,7 +50,7 @@ class CadastrarFazendaController with ChangeNotifier {
       return false;
     }
 
-    Dialogs.showLoading(context, message:'Aguarde, Criando Nova Conta');
+    Dialogs.showLoading(context, message:'Aguarde, Criando Nova Fazenda');
     await Future.delayed(Duration(seconds: 2));
     //To-do chama o create do fazendacontroller
 

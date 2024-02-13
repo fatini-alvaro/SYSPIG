@@ -5,7 +5,7 @@ import 'package:mobile/repositories/granja/granja_repository_imp.dart';
 import 'package:mobile/utils/dialogs.dart';
 
 
-class CadastrarGranjaontroller with ChangeNotifier {
+class CadastrarGranjaController with ChangeNotifier {
 
   final GranjaController _granjaController = GranjaController(GranjaRepositoryImp());
 
@@ -50,7 +50,7 @@ class CadastrarGranjaontroller with ChangeNotifier {
       return false;
     }
 
-    Dialogs.showLoading(context, message:'Aguarde, Criando Nova Conta');
+    Dialogs.showLoading(context, message:'Aguarde, Criando Nova Granja');
     await Future.delayed(Duration(seconds: 2));
     //To-do chama o create do fazendacontroller
 

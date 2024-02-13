@@ -79,7 +79,7 @@ class HomePageState extends State<HomePage> {
                   descricao: 'Animais',
                   icone: Icons.pets,
                   onTapCallback: () {
-                    // 
+                    Navigator.of(context).pushNamed('/selecionarAnimal');
                   },
                 ),
               ]
@@ -98,7 +98,7 @@ class HomePageState extends State<HomePage> {
                   descricao: 'Anotações',
                   icone: Icons.note_alt_outlined,
                   onTapCallback: () {
-                    // 
+                    Navigator.of(context).pushNamed('/selecionarAnotacao');
                   },
                 ),
               ]

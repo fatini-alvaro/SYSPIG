@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/components/buttons/custom_salvar_cadastro_button_component.dart';
-import 'package:mobile/controller/cadastrar_granja/cadastrar_granja_controller.dart';
+import 'package:mobile/controller/cadastrar_anotacao/cadastrar_anotacao_controller.dart';
 import 'package:mobile/themes/themes.dart';
 import 'package:mobile/widgets/custom_text_field_widget.dart';
 
-class CadastrarGranjaPage extends StatefulWidget {
+class CadastrarAnotacaoPage extends StatefulWidget {
   @override
-  State<CadastrarGranjaPage> createState() {
-    return CadastrarGranjaPageState();
+  State<CadastrarAnotacaoPage> createState() {
+    return CadastrarAnotacaoPageState();
   }
 }
 
-class CadastrarGranjaPageState extends State<CadastrarGranjaPage> {
-  final CadastrarGranjaController _cadastrarGranjaController =
-      CadastrarGranjaController();
+class CadastrarAnotacaoPageState extends State<CadastrarAnotacaoPage> {
+  final CadastrarAnotacaoController _cadastrarAnotacaoController =
+      CadastrarAnotacaoController();
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +21,7 @@ class CadastrarGranjaPageState extends State<CadastrarGranjaPage> {
       appBar: AppBar(
         backgroundColor: AppThemes.lightTheme.primaryColor,
         foregroundColor: Colors.white,
-        title: Text('Cadastrar Granja'),
+        title: Text('Cadastrar Anotação'),
         centerTitle: true,
       ),
       body: Padding(
@@ -30,14 +30,20 @@ class CadastrarGranjaPageState extends State<CadastrarGranjaPage> {
           children: [
             SizedBox(height: 20),
             CustomTextFieldWidget(
-              label: 'Nome da Granja',
-              onChanged: _cadastrarGranjaController.setDescricao,
+              label: 'Selecionar Baia',
+              onChanged: _cadastrarAnotacaoController.setBaia,
               obscureText: true,
             ),
             SizedBox(height: 20),
             CustomTextFieldWidget(
-              label: 'Tipo Da Granja',
-              onChanged: _cadastrarGranjaController.setTipoGranja,
+              label: 'Selecionar Animal',
+              onChanged: _cadastrarAnotacaoController.setAnimal,
+              obscureText: true,
+            ),
+            SizedBox(height: 20),
+            CustomTextFieldWidget(
+              label: 'Descrever Anotação',
+              onChanged: _cadastrarAnotacaoController.setDescricao,
               obscureText: true,
             ),
             SizedBox(height: 20),
@@ -48,7 +54,7 @@ class CadastrarGranjaPageState extends State<CadastrarGranjaPage> {
                 ],
               ),
             ),
-            CustomSalvarCadastroButtonComponent(buttonText: 'Salvar Granja', rotaTelaAposSalvar:'selecionarGranja'),
+            CustomSalvarCadastroButtonComponent(buttonText: 'Salvar Anotação', rotaTelaAposSalvar:'selecionarAnotacao'),
           ],
         ),
       ),
