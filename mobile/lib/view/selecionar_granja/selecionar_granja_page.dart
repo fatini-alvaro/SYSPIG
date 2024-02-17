@@ -57,7 +57,7 @@ class SelecionarGranjaPageState extends State<SelecionarGranjaPage> {
                     onExcluirPressed: () {
                       // Lógica para excluir
                     },
-                    caminhoTelaAoClicar: 'home'
+                    caminhoTelaAoClicar: 'selecionarBaia'
                   ),
                 );
               },
