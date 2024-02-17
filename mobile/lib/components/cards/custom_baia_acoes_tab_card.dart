@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/components/cards/custom_baia_acao_card.dart';
 import 'package:mobile/widgets/custom_add_anotacao_widget.dart';
+import 'package:mobile/widgets/custom_movimentar_animal_widget.dart';
 
 class CustomBaiaAcoesTabCard extends StatefulWidget {
   @override
@@ -9,13 +10,14 @@ class CustomBaiaAcoesTabCard extends StatefulWidget {
 
 class _CustomBaiaAcoesTabCardState extends State<CustomBaiaAcoesTabCard> with SingleTickerProviderStateMixin {
   bool isAddingAnotacao = false;
+  bool isMakeMovimentation = false;
 
   @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
         Visibility(
-          visible: !isAddingAnotacao,
+          visible: !isAddingAnotacao && !isMakeMovimentation,
           child: SingleChildScrollView(
             child: Column(
               children: [
@@ -28,6 +30,7 @@ class _CustomBaiaAcoesTabCardState extends State<CustomBaiaAcoesTabCard> with Si
                       onTapCallback: () {
                         setState(() {
                           isAddingAnotacao = true;
+                          isMakeMovimentation = false;
                         });
                       },
                     ),
@@ -36,7 +39,10 @@ class _CustomBaiaAcoesTabCardState extends State<CustomBaiaAcoesTabCard> with Si
                       descricao: 'Movimentar',
                       icone: Icons.compare_arrows,
                       onTapCallback: () {
-                        // Handle Movimentar
+                        setState(() {
+                          isMakeMovimentation = true;
+                          isAddingAnotacao = false;
+                        });
                       },
                     ),
                   ],
@@ -52,6 +58,21 @@ class _CustomBaiaAcoesTabCardState extends State<CustomBaiaAcoesTabCard> with Si
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      IconButton(
+                        icon: Icon(Icons.arrow_back),
+                        onPressed: () {
+                          setState(() {
+                            isAddingAnotacao = false;
+                          });
+                        },
+                      ),
+                      // Add other icons or widgets as needed
+                    ],
+                  ),
+                  SizedBox(height: 10),
                   CustomAddAnotacaoWidget(
                     onClose: () {
                       setState(() {
@@ -59,7 +80,40 @@ class _CustomBaiaAcoesTabCardState extends State<CustomBaiaAcoesTabCard> with Si
                       });
                     },
                   ),
-                ] 
+                ],
+              ),
+            ),
+          ),
+        ),
+        Visibility(
+          visible: isMakeMovimentation,
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      IconButton(
+                        icon: Icon(Icons.arrow_back),
+                        onPressed: () {
+                          setState(() {
+                            isMakeMovimentation = false;
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 10),
+                  CustomMovimentarAnimalWidget(
+                    onClose: () {
+                      setState(() {
+                        isMakeMovimentation = false;
+                      });
+                    },
+                  ),
+                ],
               ),
             ),
           ),
