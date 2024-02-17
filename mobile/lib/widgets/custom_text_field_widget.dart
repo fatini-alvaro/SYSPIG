@@ -13,7 +13,7 @@ class CustomTextFieldWidget extends StatelessWidget {
     required this.label,
     this.keyboardType = TextInputType.text,
     this.obscureText = false,
-    this.errorText,
+    this.errorText
   }) : super(key: key);
 
   @override

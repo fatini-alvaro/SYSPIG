@@ -23,5 +23,24 @@ class LoginController {
       return true;
     } return false;
   }
-  
+Future<bool> autenticarUsuario() async {
+    // Lógica de autenticação aqui
+    // Por exemplo, fazer uma requisição para o servidor
+    // Verificar se o usuário e senha são válidos
+    // Retorna true se a autenticação for bem-sucedida, false caso contrário
+    try {
+      // Implemente aqui a lógica de autenticação
+      // Por exemplo, fazer uma requisição HTTP para um servidor
+      // Se a autenticação for bem-sucedida, retorne true
+      if (_email == 'adrieli6055@gmail.com' && _senha == '123456') {
+        PrefsService.save(_email!);
+        return true;
+      }
+      return false;
+    } catch (e) {
+      // Em caso de erro, imprima o erro e retorne false
+      print('Erro na autenticação: $e');
+      return false;
+    }
+  }
 }

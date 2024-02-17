@@ -7,7 +7,7 @@ import 'package:mobile/services/prefs_service.dart';
 import 'package:mobile/widgets/custom_appbar_widget.dart';
 import 'package:mobile/widgets/custom_drawer_widget.dart';
 
-class HomePage extends StatefulWidget{
+class HomePage extends StatefulWidget {
   @override
   State<HomePage> createState() {
     return HomePageState();
@@ -15,7 +15,6 @@ class HomePage extends StatefulWidget{
 }
 
 class HomePageState extends State<HomePage> {
-
   final HomeController _homeController = HomeController(HomeRepositoryImp());
 
   @override
@@ -34,77 +33,70 @@ class HomePageState extends State<HomePage> {
           print('Home tapped');
         },
         onSelecionarFazendaTap: () {
-          Navigator.of(context).pushNamedAndRemoveUntil('/selecionarFazenda', (_) => true);
+          Navigator.of(context)
+              .pushNamedAndRemoveUntil('/selecionarFazenda', (_) => true);
         },
         onLogoutTap: () {
           PrefsService.logout();
           Navigator.of(context).pushNamedAndRemoveUntil('/login', (_) => true);
         },
       ),
-      appBar: CustomAppBarWidget(titulo: Text('Fazenda Alvaro')),      
+      appBar: CustomAppBarWidget(titulo: Text('Fazenda Alvaro')),
       body: SingleChildScrollView(
-        child: Column(
-          children: [
+        child: Column(children: [
+          SizedBox(height: 20),
+          Row(children: [
+            CustomHomeCard(
+              descricao: 'Gestação',
+              icone: Icons.child_friendly,
+              onTapCallback: () {
+                //
+              },
+            ),
             SizedBox(height: 20),
-            Row(
-              children: [
-                CustomHomeCard(
-                  descricao: 'Gestação',
-                  icone: Icons.child_friendly,
-                  onTapCallback: () {
-                    // 
-                  },
-                ),
-                SizedBox(height: 20),
-                CustomHomeCard(
-                  descricao: 'Movimentação',
-                  icone: Icons.compare_arrows,
-                  onTapCallback: () {
-                    // 
-                  },
-                ),
-              ]
+            CustomHomeCard(
+              descricao: 'Movimentação',
+              icone: Icons.compare_arrows,
+              onTapCallback: () {
+                Navigator.of(context).pushNamed('/selecionarMovimentacao');
+              },
             ),
-            Row(
-              children: [
-                CustomHomeCard(
-                  descricao: 'Granjas',
-                  icone: Icons.house_siding,
-                  onTapCallback: () {
-                    Navigator.of(context).pushNamed('/selecionarGranja');
-                  },
-                ),
-                SizedBox(height: 20),
-                CustomHomeCard(
-                  descricao: 'Animais',
-                  icone: Icons.pets,
-                  onTapCallback: () {
-                    Navigator.of(context).pushNamed('/selecionarAnimal');
-                  },
-                ),
-              ]
+          ]),
+          Row(children: [
+            CustomHomeCard(
+              descricao: 'Granjas',
+              icone: Icons.house_siding,
+              onTapCallback: () {
+                Navigator.of(context).pushNamed('/selecionarGranja');
+              },
             ),
-            Row(
-              children: [
-                CustomHomeCard(
-                  descricao: 'lotes',
-                  icone: Icons.abc,
-                  onTapCallback: () {
-                    // 
-                  },
-                ),
-                SizedBox(height: 20),
-                CustomHomeCard(
-                  descricao: 'Anotações',
-                  icone: Icons.note_alt_outlined,
-                  onTapCallback: () {
-                    Navigator.of(context).pushNamed('/selecionarAnotacao');
-                  },
-                ),
-              ]
+            SizedBox(height: 20),
+            CustomHomeCard(
+              descricao: 'Animais',
+              icone: Icons.pets,
+              onTapCallback: () {
+                Navigator.of(context).pushNamed('/selecionarAnimal');
+              },
             ),
-          ]
-        ),
+          ]),
+          Row(children: [
+            CustomHomeCard(
+              descricao: 'lotes',
+              icone: Icons.abc,
+              onTapCallback: () {
+                //
+              },
+            ),
+            SizedBox(height: 20),
+            CustomHomeCard(
+              descricao: 'Anotações',
+              icone: Icons.note_alt_outlined,
+              onTapCallback: () {
+                Navigator.of(context).pushNamed('/selecionarAnotacao');
+              },
+            ),
+          ]),
+        ]),
       ),
     );
   }
