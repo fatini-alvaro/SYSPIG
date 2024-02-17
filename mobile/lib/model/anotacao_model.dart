@@ -20,9 +20,9 @@ class AnotacaoModel {
   factory AnotacaoModel.fromJson(Map<String, dynamic> json) {
     return AnotacaoModel(
       id: json['id'],
-      fazenda: json['fazenda'],
+      fazenda: FazendaModel.fromJson(json['fazenda']),
       descricao: json['descricao'],
-      animal: AnimalModel.fromJson(json['animal'])
+      animal: AnimalModel.fromJson(json['animal']),
     );
   }
 

@@ -11,7 +11,8 @@ class CustomAbrirTelaAdicionarNovoButtonComponent extends StatelessWidget {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
         backgroundColor: Colors.green,
-        foregroundColor: Colors.white,        
+        foregroundColor: Colors.white,    
+        elevation: 5,    
         minimumSize: Size(MediaQuery.of(context).size.width, 50),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(5), // Ajuste o valor conforme necessário
