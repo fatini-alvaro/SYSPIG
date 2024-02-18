@@ -56,6 +56,9 @@ class AppWidget extends StatelessWidget {
           '/selecionarBaia': (context) => SelecionarBaiaPage(),
           '/abrirTelaCadastroBaia': (context) => CadastrarBaiaPage(),
           '/baia': (context) => BaiaPage(),
+          //Movimentação
+          '/selecionarMovimentacao': (context) => SelecionarMovimentacaoPage(),
+          '/abrirTelaCadastroMovimentacao': (context) => CadastrarMovimentacaoPage(),
         },
       );  
     });
