@@ -60,7 +60,7 @@ class HomePageState extends State<HomePage> {
                   descricao: 'Movimentação',
                   icone: Icons.compare_arrows,
                   onTapCallback: () {
-                    // 
+                    Navigator.of(context).pushNamed('/selecionarMovimentacao');
                   },
                 ),
               ]
