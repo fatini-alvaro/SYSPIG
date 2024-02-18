@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/components/buttons/custom_salvar_cadastro_button_component.dart';
-import 'package:mobile/controller/cadastrar_granja/cadastrar_granja_controller.dart';
+import 'package:mobile/controller/cadastrar_lote/cadastrar_lote_controller.dart';
 import 'package:mobile/themes/themes.dart';
 import 'package:mobile/widgets/custom_text_field_widget.dart';
 
-class CadastrarGranjaPage extends StatefulWidget {
+class CadastrarLotePage extends StatefulWidget {
   @override
-  State<CadastrarGranjaPage> createState() {
-    return CadastrarGranjaPageState();
+  State<CadastrarLotePage> createState() {
+    return CadastrarLotePageState();
   }
 }
 
-class CadastrarGranjaPageState extends State<CadastrarGranjaPage> {
-  final CadastrarGranjaController _cadastrarGranjaController =
-      CadastrarGranjaController();
+class CadastrarLotePageState extends State<CadastrarLotePage> {
+  final CadastrarLoteController _cadastrarLoteController =
+      CadastrarLoteController();
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +21,7 @@ class CadastrarGranjaPageState extends State<CadastrarGranjaPage> {
       appBar: AppBar(
         backgroundColor: AppThemes.lightTheme.primaryColor,
         foregroundColor: Colors.white,
-        title: Text('Cadastrar Granja'),
+        title: Text('Cadastrar Lote'),
         centerTitle: true,
       ),
       body: Padding(
@@ -30,23 +30,22 @@ class CadastrarGranjaPageState extends State<CadastrarGranjaPage> {
           children: [
             SizedBox(height: 20),
             CustomTextFieldWidget(
-              label: 'Nome da Granja',
-              onChanged: _cadastrarGranjaController.setDescricao,
+              label: 'Numero Lote',
+              onChanged: _cadastrarLoteController.setNumero
             ),
             SizedBox(height: 20),
             CustomTextFieldWidget(
-              label: 'Tipo Da Granja',
-              onChanged: _cadastrarGranjaController.setTipoGranja,
+              label: 'Selecionar Animal',
+              onChanged: _cadastrarLoteController.setAnimal
             ),
-            SizedBox(height: 20),
             Expanded(
               child: ListView(
                 children: [
-                  // Adicione outros widgets aqui se necessário
+                  // 
                 ],
               ),
             ),
-            CustomSalvarCadastroButtonComponent(buttonText: 'Salvar Granja', rotaTelaAposSalvar:'selecionarGranja'),
+            CustomSalvarCadastroButtonComponent(buttonText: 'Salvar Lote', rotaTelaAposSalvar:'selecionarLote'),
           ],
         ),
       ),

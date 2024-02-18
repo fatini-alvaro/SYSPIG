@@ -88,9 +88,9 @@ class HomePageState extends State<HomePage> {
               children: [
                 CustomHomeCard(
                   descricao: 'lotes',
-                  icone: Icons.abc,
+                  icone: Icons.note,
                   onTapCallback: () {
-                    // 
+                    Navigator.of(context).pushNamed('/selecionarLote');
                   },
                 ),
                 SizedBox(height: 20),

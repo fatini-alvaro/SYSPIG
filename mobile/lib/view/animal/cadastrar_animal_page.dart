@@ -32,25 +32,21 @@ class CadastrarAnimalPageState extends State<CadastrarAnimalPage> {
             CustomTextFieldWidget(
               label: 'Numero do Brinco',
               onChanged: _cadastrarAnimalController.setNumeroBrinco,
-              obscureText: true,
             ),
             SizedBox(height: 20),
             CustomTextFieldWidget(
               label: 'Sexo',
               onChanged: _cadastrarAnimalController.setSexo,
-              obscureText: true,
             ),
             SizedBox(height: 20),
             CustomTextFieldWidget(
               label: 'Status',
               onChanged: _cadastrarAnimalController.setStatus,
-              obscureText: true,
             ),
             SizedBox(height: 20),
             CustomTextFieldWidget(
               label: 'Data de Nascimento',
               onChanged: _cadastrarAnimalController.setNascimento,
-              obscureText: true,
             ),
             SizedBox(height: 20),
             Expanded(

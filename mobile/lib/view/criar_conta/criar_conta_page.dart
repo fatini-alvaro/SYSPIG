@@ -50,14 +50,12 @@ class _CriarContaPageState extends State<CriarContaPage> {
                         CustomTextFieldWidget(
                           label: 'Insira o nome', 
                           onChanged: _criarContaController.setNome,
-                          obscureText: true,
                           errorText: _criarContaController.nomeError,
                         ),
                         SizedBox(height: 25),
                         CustomTextFieldWidget(
                           label: 'Insira o telefone', 
                           onChanged: _criarContaController.setTelefone,
-                          obscureText: true,
                         ),
                         SizedBox(height: 25),
                         CustomTextFieldWidget(

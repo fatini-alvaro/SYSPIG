@@ -32,13 +32,11 @@ class CadastrarFazendaPageState extends State<CadastrarFazendaPage> {
             CustomTextFieldWidget(
               label: 'Nome da Fazenda',
               onChanged: _cadastrarFazendaController.setNome,
-              obscureText: true,
             ),
             SizedBox(height: 20),
             CustomTextFieldWidget(
               label: 'Cidade',
               onChanged: _cadastrarFazendaController.setCidade,
-              obscureText: true,
             ),
             SizedBox(height: 20),
             Expanded(

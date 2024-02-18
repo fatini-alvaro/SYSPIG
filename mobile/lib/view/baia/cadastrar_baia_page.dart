@@ -31,14 +31,12 @@ class CadastrarBaiaPageState extends State<CadastrarBaiaPage> {
             SizedBox(height: 20),
             CustomTextFieldWidget(
               label: 'Numero da Baia',
-              onChanged: _cadastrarBaiaController.setNumero,
-              obscureText: true,
+              onChanged: _cadastrarBaiaController.setNumero,              
             ),
             SizedBox(height: 20),
             CustomTextFieldWidget(
               label: 'Granja',
               onChanged: _cadastrarBaiaController.setGranja,
-              obscureText: true,
             ),
             SizedBox(height: 20),            
             Expanded(

@@ -32,25 +32,22 @@ class CadastrarAnotacaoPageState extends State<CadastrarAnotacaoPage> {
             CustomTextFieldWidget(
               label: 'Selecionar Baia',
               onChanged: _cadastrarAnotacaoController.setBaia,
-              obscureText: true,
             ),
             SizedBox(height: 20),
             CustomTextFieldWidget(
               label: 'Selecionar Animal',
               onChanged: _cadastrarAnotacaoController.setAnimal,
-              obscureText: true,
             ),
             SizedBox(height: 20),
             CustomTextFieldWidget(
               label: 'Descrever Anotação',
               onChanged: _cadastrarAnotacaoController.setDescricao,
-              obscureText: true,
             ),
             SizedBox(height: 20),
             Expanded(
               child: ListView(
                 children: [
-                  // Adicione outros widgets aqui se necessário
+                  
                 ],
               ),
             ),
