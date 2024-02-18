@@ -5,14 +5,14 @@ import 'package:mobile/controller/baia/baia_controller.dart';
 import 'package:mobile/repositories/baia/baia_repository_imp.dart';
 import 'package:mobile/themes/themes.dart';
 
-class SelecionarBaiaPage extends StatefulWidget {
+class BaiasGestacaoOcupadasPage extends StatefulWidget {
   @override
-  State<SelecionarBaiaPage> createState() {
-    return SelecionarBaiaPageState();
+  State<BaiasGestacaoOcupadasPage> createState() {
+    return BaiasGestacaoOcupadasPageState();
   }
 }
 
-class SelecionarBaiaPageState extends State<SelecionarBaiaPage> {
+class BaiasGestacaoOcupadasPageState extends State<BaiasGestacaoOcupadasPage> {
   
   final BaiaController _baiaController = BaiaController(BaiaRepositoryImp());
    
@@ -28,7 +28,7 @@ class SelecionarBaiaPageState extends State<SelecionarBaiaPage> {
       appBar: AppBar(
         backgroundColor: AppThemes.lightTheme.primaryColor,
         foregroundColor: Colors.white,
-        title: Text('Baias'),
+        title: Text('Porcas em Gestação'),
         centerTitle: true,
       ),
       body: Column(
@@ -54,7 +54,7 @@ class SelecionarBaiaPageState extends State<SelecionarBaiaPage> {
                         numeroBrincoBaia: '4524524',
                         statusBaia: 'O',
                         onTapCallback: () {
-                          Navigator.of(context).pushNamed('/baia');
+                          Navigator.of(context).pushNamed('/baiaGestacao');
                         },
                       ),
                       CustomBaiaCard(

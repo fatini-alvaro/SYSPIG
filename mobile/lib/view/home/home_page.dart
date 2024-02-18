@@ -52,7 +52,7 @@ class HomePageState extends State<HomePage> {
                   descricao: 'Gestação',
                   icone: Icons.child_friendly,
                   onTapCallback: () {
-                    // 
+                    Navigator.of(context).pushNamed('/baiasGestacaoOcupadas');
                   },
                 ),
                 SizedBox(height: 20),

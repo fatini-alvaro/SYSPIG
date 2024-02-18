@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/components/cards/custom_baia_acao_card.dart';
 import 'package:mobile/widgets/custom_add_anotacao_widget.dart';
+import 'package:mobile/widgets/custom_adicionar_nascimento_widget.dart';
 import 'package:mobile/widgets/custom_movimentar_animal_widget.dart';
 
 class CustomBaiaAcoesTabCard extends StatefulWidget {
@@ -11,13 +12,14 @@ class CustomBaiaAcoesTabCard extends StatefulWidget {
 class _CustomBaiaAcoesTabCardState extends State<CustomBaiaAcoesTabCard> with SingleTickerProviderStateMixin {
   bool isAddingAnotacao = false;
   bool isMakeMovimentation = false;
+  bool isAddingBorn = false;
 
   @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
         Visibility(
-          visible: !isAddingAnotacao && !isMakeMovimentation,
+          visible: !isAddingAnotacao && !isMakeMovimentation && !isAddingBorn,
           child: SingleChildScrollView(
             child: Column(
               children: [
@@ -25,12 +27,30 @@ class _CustomBaiaAcoesTabCardState extends State<CustomBaiaAcoesTabCard> with Si
                 Row(
                   children: [
                     CustomBaiaAcaoCard(
+                      descricao: 'Nascimento',
+                      icone: Icons.child_friendly_outlined,
+                      onTapCallback: () {
+                        setState(() {
+                          isAddingBorn = true;
+                          isAddingAnotacao = false;
+                          isMakeMovimentation = false;
+                        });
+                      },
+                    ),
+                    SizedBox(height: 20),
+                  ],
+                ),
+                Row(
+                  children: [
+                    SizedBox(height: 20),
+                    CustomBaiaAcaoCard(
                       descricao: 'Criar Anotação',
                       icone: Icons.note_alt_outlined,
                       onTapCallback: () {
                         setState(() {
                           isAddingAnotacao = true;
                           isMakeMovimentation = false;
+                          isAddingBorn = false;
                         });
                       },
                     ),
@@ -42,6 +62,7 @@ class _CustomBaiaAcoesTabCardState extends State<CustomBaiaAcoesTabCard> with Si
                         setState(() {
                           isMakeMovimentation = true;
                           isAddingAnotacao = false;
+                          isAddingBorn = false;
                         });
                       },
                     ),
@@ -110,6 +131,39 @@ class _CustomBaiaAcoesTabCardState extends State<CustomBaiaAcoesTabCard> with Si
                     onClose: () {
                       setState(() {
                         isMakeMovimentation = false;
+                      });
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        Visibility(
+          visible: isAddingBorn,
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      IconButton(
+                        icon: Icon(Icons.arrow_back),
+                        onPressed: () {
+                          setState(() {
+                            isAddingBorn = false;
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 10),
+                  CustomAdicionarNascimentoWidget(
+                    onClose: () {
+                      setState(() {
+                        isAddingBorn = false;
                       });
                     },
                   ),

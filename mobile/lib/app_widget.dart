@@ -3,8 +3,10 @@ import 'package:mobile/controller/app_controller.dart';
 import 'package:mobile/themes/themes.dart';
 import 'package:mobile/view/animal/cadastrar_animal_page.dart';
 import 'package:mobile/view/anotacao/cadastrar_anotacao_page.dart';
+import 'package:mobile/view/baia/baia_gestacao_page.dart';
 import 'package:mobile/view/baia/baia_page.dart';
 import 'package:mobile/view/baia/cadastrar_baia_page.dart';
+import 'package:mobile/view/baiasGestacaoOcupadas/baias_gestacao_ocupadas_page.dart';
 import 'package:mobile/view/criar_conta/criar_conta_page.dart';
 import 'package:mobile/view/details_page/details_page.dart';
 import 'package:mobile/view/fazenda/cadastrar_fazenda_page.dart';
@@ -54,6 +56,8 @@ class AppWidget extends StatelessWidget {
           '/selecionarBaia': (context) => SelecionarBaiaPage(),
           '/abrirTelaCadastroBaia': (context) => CadastrarBaiaPage(),
           '/baia': (context) => BaiaPage(),
+          '/baiasGestacaoOcupadas': (context) => BaiasGestacaoOcupadasPage(),
+          '/baiaGestacao': (context) => BaiaGestacaoPage(),
         },
       );  
     });
