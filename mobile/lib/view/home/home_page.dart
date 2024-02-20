@@ -103,6 +103,25 @@ class HomePageState extends State<HomePage> {
                 ),
               ]
             ),
+            Row(
+              children: [
+                CustomHomeCard(
+                  descricao: 'Baias',
+                  icone: Icons.panorama_horizontal_select_outlined,
+                  onTapCallback: () {
+                    Navigator.of(context).pushNamed('/selecionarBaia');
+                  },
+                ),
+                SizedBox(height: 20,),
+                CustomHomeCard(
+                  descricao: 'Inseminação',
+                  icone: Icons.clean_hands_rounded,
+                  onTapCallback: () {
+                    Navigator.of(context).pushNamed('/selecionarInseminacao');
+                  },
+                ),
+              ]
+            ),
           ]
         ),
       ),
