@@ -55,7 +55,7 @@ class _CustomBaiaInformacoesTabCardState extends State<CustomBaiaInformacoesTabC
                 ),
               ),
               onPressed: () {
-                Navigator.of(context).pushNamed('/');               
+                Navigator.of(context).pushNamed('/abrirTelaCadastroAnimal');               
               }, 
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
