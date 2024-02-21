@@ -5,12 +5,14 @@ class CustomDrawerWidget extends StatelessWidget {
   final String accountEmail;
   final Function() onHomeTap;
   final Function() onLogoutTap;
+  final Function() onSelecionarFazendaTap;
 
   CustomDrawerWidget({
     required this.accountName,
     required this.accountEmail,
     required this.onHomeTap,
     required this.onLogoutTap,
+    required this.onSelecionarFazendaTap,
   });
 
   @override
@@ -31,6 +33,12 @@ class CustomDrawerWidget extends StatelessWidget {
             title: Text('Inicio'),
             subtitle: Text('Tela de Inicio'),
             onTap: onHomeTap,
+          ),
+          ListTile(
+            leading: Icon(Icons.landscape),
+            title: Text('Trocar Fazenda'),
+            subtitle: Text('Selecionar outra fazenda'),
+            onTap: onSelecionarFazendaTap,
           ),
           ListTile(
             leading: Icon(Icons.exit_to_app),

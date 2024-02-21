@@ -5,6 +5,7 @@ class CustomTextFieldWidget extends StatelessWidget {
   final String label;
   final TextInputType keyboardType;
   final bool obscureText;
+  final String? errorText;
 
   const CustomTextFieldWidget({
     Key? key, 
@@ -12,6 +13,7 @@ class CustomTextFieldWidget extends StatelessWidget {
     required this.label,
     this.keyboardType = TextInputType.text,
     this.obscureText = false,
+    this.errorText,
   }) : super(key: key);
 
   @override
@@ -21,6 +23,7 @@ class CustomTextFieldWidget extends StatelessWidget {
       decoration: InputDecoration(
         labelText: label,
         border: OutlineInputBorder(),
+        errorText: errorText, // Exibe a mensagem de erro
       ),
       onChanged: onChanged,
       obscureText:obscureText
