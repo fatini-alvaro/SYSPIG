@@ -8,8 +8,8 @@ class FazendaController {
 
   ValueNotifier<List<FazendaModel>> fazendas = ValueNotifier<List<FazendaModel>>([]);
 
-  fetch() async {
-    fazendas.value = await _fazendaRepository.getList();
+  fetch(int userId) async {
+    fazendas.value = await _fazendaRepository.getList(userId);
   }
 
   Future<bool> create (BuildContext context) async {

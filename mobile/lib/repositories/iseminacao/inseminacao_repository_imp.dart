@@ -7,7 +7,7 @@ class InseminacaoRepositoryImp implements InseminacaoRepository {
   Future<List<InseminacaoModel>> getList() async {
     try {
       var response = 
-          await Dio().get('http://192.168.2.204:3000/inseminacoes');
+          await Dio().get('http://192.168.2.201:3000/inseminacoes');
         return (response.data as List).map((e) => InseminacaoModel.fromJson(e)).toList();
     } catch (e) {
       print(e);

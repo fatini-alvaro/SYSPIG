@@ -4,10 +4,10 @@ import 'package:dio/dio.dart';
 
 class FazendaRepositoryImp implements FazendaRepository {   
   @override
-  Future<List<FazendaModel>> getList() async {
+  Future<List<FazendaModel>> getList(int userId) async {
     try {
       var response = 
-          await Dio().get('http://192.168.2.204:3000/usuariofazendas/1');
+          await Dio().get('http://192.168.2.201:3000/usuariofazendas/$userId');
         return (response.data as List).map((e) => FazendaModel.fromJson(e)).toList();
     } catch (e) {
       print(e);

@@ -20,13 +20,13 @@ class UsuarioModel {
       id: json['id'],
       nome: json['nome'],
       email: json['email'],
-      tipoUsuario: TipoUsuarioModel.fromJson(json['tipo_usuario_id']),
+      tipoUsuario: TipoUsuarioModel.fromJson(json['tipoUsuario']),
       senha: json['senha'],
     );
   }
 
   @override
   String toString() {
-    return 'id: $id, nome: $nome, email: $email, tipo_usuario_id: $tipoUsuario';
+    return 'id: $id, nome: $nome, email: $email, tipoUsuario: $tipoUsuario';
   }
 }

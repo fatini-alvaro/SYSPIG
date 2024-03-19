@@ -12,6 +12,7 @@ routes.post('/fazendas', new FazendaController().create);
 
 //usuario rotas
 routes.post('/usuarios', new UsuarioController().create);
+routes.post('/auth', new UsuarioController().auth);
 
 //tipoUsuarios rotas
 routes.post('/tipousuarios', new TipoUsuarioController().create);

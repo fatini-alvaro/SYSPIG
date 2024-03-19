@@ -39,4 +39,34 @@ export class UsuarioController {
     }
     
   }
+
+  async auth(req: Request, res: Response){
+    const { 
+      email,
+      senha
+    } = req.body;
+
+    try {
+
+      if (!email || !senha)
+        return res.status(400).json({ message: 'Parametros não informado'}); 
+
+      const usuario = await usuarioRepository.findOne({ 
+        where: {
+          email: email,
+          senha: senha,
+        }, 
+        relations: ['tipoUsuario']
+      });
+
+      if (!usuario)
+        return res.status(400).json({ message: 'Usuário não encontrado'}); 
+    
+      return res.status(201).json(usuario);
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({ message: 'Erro ao criar buscar Usuario'});
+    }
+  }
+
 }

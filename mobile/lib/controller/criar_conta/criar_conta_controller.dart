@@ -1,12 +1,13 @@
 
 import 'package:flutter/material.dart';
 import 'package:mobile/controller/login/login_controller.dart';
+import 'package:mobile/repositories/usuario/usuario_repository_imp.dart';
 import 'package:mobile/utils/dialogs.dart';
 
 
 class CriarContaController with ChangeNotifier {
 
-  final LoginController _loginController = LoginController();
+  final LoginController _loginController = LoginController(UsuarioRepositoryImp());
 
   String _email = '';
   setEmail(String value) => _email = value;
