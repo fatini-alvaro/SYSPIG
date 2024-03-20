@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile/components/buttons/custom_salvar_cadastro_button_component.dart';
 import 'package:mobile/controller/cadastrar_baia/cadastrar_baia_controller.dart';
 import 'package:mobile/themes/themes.dart';
-import 'package:mobile/widgets/custom_text_field_widget.dart';
+import 'package:mobile/widgets/custom_text_form_field_widget.dart';
 
 class CadastrarBaiaPage extends StatefulWidget {
   @override
@@ -29,12 +29,12 @@ class CadastrarBaiaPageState extends State<CadastrarBaiaPage> {
         child: Column(
           children: [
             SizedBox(height: 20),
-            CustomTextFieldWidget(
+            CustomTextFormFieldWidget(
               label: 'Numero da Baia',
               onChanged: _cadastrarBaiaController.setNumero,              
             ),
             SizedBox(height: 20),
-            CustomTextFieldWidget(
+            CustomTextFormFieldWidget(
               label: 'Granja',
               onChanged: _cadastrarBaiaController.setGranja,
             ),

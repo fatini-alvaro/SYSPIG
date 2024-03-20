@@ -98,8 +98,7 @@ class _LoginPageState extends State<LoginPage> {
                                 'Esqueci a senha',
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
-                                  color: Color.fromARGB(255, 243, 163,
-                                      33), // Defina a cor desejada aqui
+                                  color: Color.fromARGB(255, 243, 163,33), // Defina a cor desejada aqui
                                 ),
                               ),
                             ),

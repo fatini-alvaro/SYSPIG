@@ -8,7 +8,7 @@ class BaiaRepositoryImp implements BaiaRepository {
   Future<List<BaiaModel>> getList() async {
     try {
       var response = 
-          await Dio().get('http://192.168.2.201:3000/baias');
+          await Dio().get('http://localhost:3000/baias');
         return (response.data as List).map((e) => BaiaModel.fromJson(e)).toList();
     } catch (e) {
       print(e);

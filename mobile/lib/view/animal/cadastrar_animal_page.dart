@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile/components/buttons/custom_salvar_cadastro_button_component.dart';
 import 'package:mobile/controller/cadastrar_animal/cadastrar_animal_controller.dart';
 import 'package:mobile/themes/themes.dart';
-import 'package:mobile/widgets/custom_text_field_widget.dart';
+import 'package:mobile/widgets/custom_text_form_field_widget.dart';
 
 class CadastrarAnimalPage extends StatefulWidget {
   @override
@@ -29,22 +29,22 @@ class CadastrarAnimalPageState extends State<CadastrarAnimalPage> {
         child: Column(
           children: [
             SizedBox(height: 20),
-            CustomTextFieldWidget(
+            CustomTextFormFieldWidget(
               label: 'Numero do Brinco',
               onChanged: _cadastrarAnimalController.setNumeroBrinco,
             ),
             SizedBox(height: 20),
-            CustomTextFieldWidget(
+            CustomTextFormFieldWidget(
               label: 'Sexo',
               onChanged: _cadastrarAnimalController.setSexo,
             ),
             SizedBox(height: 20),
-            CustomTextFieldWidget(
+            CustomTextFormFieldWidget(
               label: 'Status',
               onChanged: _cadastrarAnimalController.setStatus,
             ),
             SizedBox(height: 20),
-            CustomTextFieldWidget(
+            CustomTextFormFieldWidget(
               label: 'Data de Nascimento',
               onChanged: _cadastrarAnimalController.setNascimento,
             ),

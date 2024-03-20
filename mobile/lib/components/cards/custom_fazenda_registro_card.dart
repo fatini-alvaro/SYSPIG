@@ -60,7 +60,7 @@ class CustomFazendaRegistroCard extends StatelessWidget {
                           ),
                           SizedBox(width: 8), // Espaçamento entre o ícone e o texto
                           Text(
-                            '${fazenda.cidade.nome} - ${fazenda.cidade.uf.sigla}',
+                            '${fazenda.cidade?.nome} - ${fazenda.cidade?.uf.sigla}',
                             style: TextStyle(
                               fontWeight: FontWeight.normal,
                               fontSize: 15,
@@ -68,34 +68,6 @@ class CustomFazendaRegistroCard extends StatelessWidget {
                           ),
                         ],
                       ),
-                      SizedBox(height: 8),
-                      Row(
-                        children: [
-                          ElevatedButton.icon(
-                            onPressed: onEditarPressed,
-                            icon: Icon(Icons.edit, color: Colors.white),
-                            label: Text(
-                              'Editar',
-                              style: TextStyle(color: Colors.white),
-                            ),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.blue,
-                            ),
-                          ),
-                          SizedBox(width: 8), // Espaço entre os botões
-                          ElevatedButton.icon(
-                            onPressed: onExcluirPressed,
-                            icon: Icon(Icons.delete, color: Colors.white),
-                            label: Text(
-                              'Excluir',
-                              style: TextStyle(color: Colors.white),
-                            ),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.red,
-                            ),
-                          ),
-                        ],
-                      )
                     ],
                   ),
                 ),

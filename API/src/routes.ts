@@ -5,6 +5,7 @@ import { TipoUsuarioController } from "./controllers/tipoUsuarioController";
 import { UsuarioFazendaController } from "./controllers/usuarioFazendaController";
 import { GranjaController } from "./controllers/granjaController";
 import { TipoGranjaController } from "./controllers/tipoGranjaController";
+import { cidadeController } from "./controllers/cidadeController";
 const routes = Router();
 
 //fazenda rotas
@@ -28,5 +29,8 @@ routes.post('/tipogranjas', new TipoGranjaController().create);
 //Granja
 routes.post('/granjas', new GranjaController().create);
 routes.get('/granjas/:fazenda_id', new GranjaController().list);
+
+//Cidade
+routes.get('/cidades', new cidadeController().list);
 
 export default routes

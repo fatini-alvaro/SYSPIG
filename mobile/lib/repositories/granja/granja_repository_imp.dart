@@ -7,7 +7,7 @@ class GranjaRepositoryImp implements GranjaRepository {
   Future<List<GranjaModel>> getList() async {
     try {
       var response = 
-          await Dio().get('http://192.168.2.201:3000/granjas/2');
+          await Dio().get('http://localhost:3000/granjas/2');
         return (response.data as List).map((e) => GranjaModel.fromJson(e)).toList();
     } catch (e) {
       print(e);

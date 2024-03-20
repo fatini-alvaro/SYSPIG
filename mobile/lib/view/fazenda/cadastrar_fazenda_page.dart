@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/components/buttons/custom_salvar_cadastro_button_component.dart';
 import 'package:mobile/controller/cadastrar_fazenda/cadastrar_fazenda_controller.dart';
+import 'package:mobile/model/cidade_model.dart';
 import 'package:mobile/themes/themes.dart';
-import 'package:mobile/widgets/custom_text_field_widget.dart';
+import 'package:mobile/widgets/custom_text_form_field_widget.dart';
 
 class CadastrarFazendaPage extends StatefulWidget {
   @override
@@ -14,6 +15,23 @@ class CadastrarFazendaPage extends StatefulWidget {
 class CadastrarFazendaPageState extends State<CadastrarFazendaPage> {
   final CadastrarFazendaController _cadastrarFazendaController =
       CadastrarFazendaController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  List<CidadeModel> cidades = [];
+  TextEditingController _searchController = TextEditingController();
+  String _selectedCity = '';
+  bool _isCitySearchFocused = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _carregarCidades();
+  }
+
+  Future<void> _carregarCidades() async {
+    cidades = await _cadastrarFazendaController.getCidadesFromRepository();
+    setState(() {});
+  }
+  
 
   @override
   Widget build(BuildContext context) {
@@ -26,28 +44,86 @@ class CadastrarFazendaPageState extends State<CadastrarFazendaPage> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            SizedBox(height: 20),
-            CustomTextFieldWidget(
-              label: 'Nome da Fazenda',
-              onChanged: _cadastrarFazendaController.setNome,
-            ),
-            SizedBox(height: 20),
-            CustomTextFieldWidget(
-              label: 'Cidade',
-              onChanged: _cadastrarFazendaController.setCidade,
-            ),
-            SizedBox(height: 20),
-            Expanded(
-              child: ListView(
-                children: [
-                  // Adicione outros widgets aqui se necessário
-                ],
+        child: Form(
+          key: _formKey,
+          child: Column(
+            children: [
+              SizedBox(height: 20),
+              CustomTextFormFieldWidget(
+                label: 'Nome da Fazenda',
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Campo Obrigatório';
+                  }
+                  return null;
+                },
+                onChanged: _cadastrarFazendaController.setNome,
               ),
-            ),
-            CustomSalvarCadastroButtonComponent(buttonText: 'Salvar Fazenda', rotaTelaAposSalvar:'selecionarFazenda'),
-          ],
+              SizedBox(height: 20),
+              TextField(
+                controller: _searchController,
+                decoration: InputDecoration(
+                  labelText: 'Buscar cidade',
+                  suffixIcon: Icon(Icons.search),
+                ),
+                onTap: () {
+                  setState(() {
+                    _isCitySearchFocused = true; // Set the flag to true when the search field is tapped
+                  });
+                },
+                onChanged: (value) {
+                  setState(() {
+                    _selectedCity = value;
+                  });
+                },
+              ),
+              SizedBox(height: 10),
+              if (_isCitySearchFocused) 
+                Expanded(
+                  child: ListView(
+                    children: cidades
+                        .where((cidade) =>
+                            cidade.nome.toLowerCase().contains(_searchController.text.toLowerCase()))
+                        .map((cidade) {
+                      return ListTile(
+                        title: Text('${cidade.nome} - ${cidade.uf.nome}'),
+                        onTap: () {
+                          _cadastrarFazendaController.setCidade(cidade);
+                          setState(() {
+                            _searchController.text = '${cidade.nome} - ${cidade.uf.nome}';
+                            _isCitySearchFocused = false;
+                          });
+                        },
+                      );
+                    }).toList(),
+                  ),
+                ),
+              SizedBox(height: 20),
+              Expanded(
+                child: ListView(
+                  children: [
+                    // 
+                  ],
+                ),
+              ),
+              CustomSalvarCadastroButtonComponent(
+                buttonText: 'Salvar Fazenda', 
+                rotaTelaAposSalvar:'selecionarFazenda',
+                onPressed: () {    
+                  if (_formKey.currentState!.validate()) {
+                    _cadastrarFazendaController
+                        .create(context)
+                        .then((resultado) {
+                          if (resultado) {
+                            Navigator.of(context)
+                                .pushNamed('/selecionarFazenda');
+                          }
+                        });
+                  }                           
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );

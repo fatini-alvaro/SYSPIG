@@ -51,13 +51,13 @@
 //                     padding: const EdgeInsets.only(left: 12, right: 12, top: 20, bottom: 12),
 //                     child: Column(
 //                       children: [
-//                         CustomTextFieldWidget(
+//                         CustomTextFormFieldWidget(
 //                           label: 'Insira o email', 
 //                           onChanged: _loginController.setEmail, 
 //                           keyboardType: TextInputType.emailAddress
 //                         ),
 //                         SizedBox(height: 25),
-//                         CustomTextFieldWidget(
+//                         CustomTextFormFieldWidget(
 //                           label: 'Insira a senha', 
 //                           onChanged: _loginController.setSenha,
 //                           obscureText: true,

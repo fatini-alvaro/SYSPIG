@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile/components/buttons/custom_salvar_cadastro_button_component.dart';
 import 'package:mobile/controller/cadastrar_anotacao/cadastrar_anotacao_controller.dart';
 import 'package:mobile/themes/themes.dart';
-import 'package:mobile/widgets/custom_text_field_widget.dart';
+import 'package:mobile/widgets/custom_text_form_field_widget.dart';
 
 class CadastrarAnotacaoPage extends StatefulWidget {
   @override
@@ -29,17 +29,17 @@ class CadastrarAnotacaoPageState extends State<CadastrarAnotacaoPage> {
         child: Column(
           children: [
             SizedBox(height: 20),
-            CustomTextFieldWidget(
+            CustomTextFormFieldWidget(
               label: 'Selecionar Baia',
               onChanged: _cadastrarAnotacaoController.setBaia,
             ),
             SizedBox(height: 20),
-            CustomTextFieldWidget(
+            CustomTextFormFieldWidget(
               label: 'Selecionar Animal',
               onChanged: _cadastrarAnotacaoController.setAnimal,
             ),
             SizedBox(height: 20),
-            CustomTextFieldWidget(
+            CustomTextFormFieldWidget(
               label: 'Descrever Anotação',
               onChanged: _cadastrarAnotacaoController.setDescricao,
             ),

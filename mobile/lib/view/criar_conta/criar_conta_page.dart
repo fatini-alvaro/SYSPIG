@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile/components/criar_conta/custom_possuo_conta_button_componente.dart';
 import 'package:mobile/components/criar_conta/custom_salvar_nova_conta_button_component.dart';
 import 'package:mobile/controller/criar_conta/criar_conta_controller.dart';
-import 'package:mobile/widgets/custom_text_field_widget.dart';
+import 'package:mobile/widgets/custom_text_form_field_widget.dart';
 
 class CriarContaPage extends StatefulWidget {
   @override
@@ -38,7 +38,7 @@ class _CriarContaPageState extends State<CriarContaPage> {
                     padding: const EdgeInsets.only(left: 12, right: 12, top: 20, bottom: 12),
                     child: Column(
                       children: [
-                        CustomTextFieldWidget(
+                        CustomTextFormFieldWidget(
                           label: 'Insira o email', 
                           onChanged: (value) {
                             _criarContaController.setEmail(value);
@@ -47,18 +47,18 @@ class _CriarContaPageState extends State<CriarContaPage> {
                           errorText: _criarContaController.emailError
                         ),
                         SizedBox(height: 25),
-                        CustomTextFieldWidget(
+                        CustomTextFormFieldWidget(
                           label: 'Insira o nome', 
                           onChanged: _criarContaController.setNome,
                           errorText: _criarContaController.nomeError,
                         ),
                         SizedBox(height: 25),
-                        CustomTextFieldWidget(
+                        CustomTextFormFieldWidget(
                           label: 'Insira o telefone', 
                           onChanged: _criarContaController.setTelefone,
                         ),
                         SizedBox(height: 25),
-                        CustomTextFieldWidget(
+                        CustomTextFormFieldWidget(
                           label: 'Insira a senha', 
                           onChanged: _criarContaController.setSenha,
                           obscureText: true,

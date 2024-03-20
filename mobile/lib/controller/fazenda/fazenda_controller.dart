@@ -12,8 +12,10 @@ class FazendaController {
     fazendas.value = await _fazendaRepository.getList(userId);
   }
 
-  Future<bool> create (BuildContext context) async {
+  Future<FazendaModel> create(BuildContext context, FazendaModel fazendaNova) async {
+    
+    FazendaModel novaFazenda = await  _fazendaRepository.create(fazendaNova);
 
-    return true;
+    return novaFazenda;
   }
 }

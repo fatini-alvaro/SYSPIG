@@ -7,7 +7,7 @@ class MovimentacaoRepositoryImp implements MovimentacaoRepository {
   Future<List<MovimentacaoModel>> getList() async {
     try {
       var response = 
-        await Dio().get('http://192.168.2.201:3000/movimentacoes');
+        await Dio().get('http://localhost:3000/movimentacoes');
       return (response.data as List).map((e) => MovimentacaoModel.fromJson(e)).toList();
     } catch (e) {
       print(e);

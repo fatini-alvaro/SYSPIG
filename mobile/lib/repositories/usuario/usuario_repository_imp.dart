@@ -13,7 +13,7 @@ class UsuarioRepositoryImp implements UsuarioRepository {
       };
 
       var response = await Dio().post(
-        'http://192.168.2.201:3000/auth',
+        'http://localhost:3000/auth',
         data: data,
       );
 

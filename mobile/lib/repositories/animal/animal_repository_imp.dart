@@ -7,7 +7,7 @@ class AnimalRepositoryImp implements AnimalRepository {
   Future<List<AnimalModel>> getList() async {
     try {
       var response = 
-          await Dio().get('http://192.168.2.201:3000/animais');
+          await Dio().get('http://localhost:3000/animais');
         return (response.data as List).map((e) => AnimalModel.fromJson(e)).toList();
     } catch (e) {
       print(e);

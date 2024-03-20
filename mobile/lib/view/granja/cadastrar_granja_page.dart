@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile/components/buttons/custom_salvar_cadastro_button_component.dart';
 import 'package:mobile/controller/cadastrar_granja/cadastrar_granja_controller.dart';
 import 'package:mobile/themes/themes.dart';
-import 'package:mobile/widgets/custom_text_field_widget.dart';
+import 'package:mobile/widgets/custom_text_form_field_widget.dart';
 
 class CadastrarGranjaPage extends StatefulWidget {
   @override
@@ -29,12 +29,12 @@ class CadastrarGranjaPageState extends State<CadastrarGranjaPage> {
         child: Column(
           children: [
             SizedBox(height: 20),
-            CustomTextFieldWidget(
+            CustomTextFormFieldWidget(
               label: 'Nome da Granja',
               onChanged: _cadastrarGranjaController.setDescricao,
             ),
             SizedBox(height: 20),
-            CustomTextFieldWidget(
+            CustomTextFormFieldWidget(
               label: 'Tipo Da Granja',
               onChanged: _cadastrarGranjaController.setTipoGranja,
             ),
