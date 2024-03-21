@@ -1,17 +1,17 @@
 import 'package:mobile/model/tipo_usuario.dart';
 
 class UsuarioModel {
-  final int id;
+  final int? id;
   final String nome;
   final String email;
-  final TipoUsuarioModel tipoUsuario;
+  final TipoUsuarioModel? tipoUsuario;
   final String senha;
 
   UsuarioModel({
-    required this.id,
+    this.id,
     required this.nome,
     required this.email,
-    required this.tipoUsuario,
+    this.tipoUsuario,
     required this.senha,
   });
 
@@ -20,7 +20,7 @@ class UsuarioModel {
       id: json['id'],
       nome: json['nome'],
       email: json['email'],
-      tipoUsuario: TipoUsuarioModel.fromJson(json['tipoUsuario']),
+      tipoUsuario: json['tipoUsuario'] != null ? TipoUsuarioModel.fromJson(json['tipoUsuario']) : null,
       senha: json['senha'],
     );
   }

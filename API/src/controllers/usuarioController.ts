@@ -7,16 +7,19 @@ export class UsuarioController {
     const {
       nome,
       email,
-      senha,
-      tipo_usuario_id
+      senha
     } = req.body;
 
-    if (!nome || !email || !senha || !tipo_usuario_id)
+    const tipo_usuario_dono_id = 1;
+
+    const usuario_id = req.headers['user-id'];
+
+    if (!nome || !email || !senha)
       return res.status(400).json({ message: 'Todos os campos são obrigatórios.' });
     
 
     // Obtém a instância do TipoUsuario com base no ID
-    const tipoUsuarioInstancia = await tipoUsuarioRepository.findOneBy({ id: Number(tipo_usuario_id)});
+    const tipoUsuarioInstancia = await tipoUsuarioRepository.findOneBy({ id: Number(tipo_usuario_dono_id)});
 
     if (!tipoUsuarioInstancia)
       return res.status(404).json({ message: 'Tipo de usuário não encontrado.' });

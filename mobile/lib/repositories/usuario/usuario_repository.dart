@@ -4,4 +4,6 @@ abstract class UsuarioRepository {
 
   Future<UsuarioModel> auth(String username, String password);
 
+  Future<UsuarioModel> create(UsuarioModel usuario);
+
 }

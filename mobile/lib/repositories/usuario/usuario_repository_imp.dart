@@ -1,9 +1,17 @@
 import 'package:dio/dio.dart';
 import 'package:logger/logger.dart';
+import 'package:mobile/api/api_cliente.dart';
 import 'package:mobile/model/usuario_model.dart';
 import 'package:mobile/repositories/usuario/usuario_repository.dart';
 
 class UsuarioRepositoryImp implements UsuarioRepository {
+
+  late final ApiClient _apiClient;
+
+  UsuarioRepositoryImp() {
+    _apiClient = ApiClient();
+  }
+
   @override
   Future<UsuarioModel> auth(String username, String password) async {
     try {
@@ -21,6 +29,24 @@ class UsuarioRepositoryImp implements UsuarioRepository {
     } catch (e) {
       Logger().e('Ocorreu um erro: $e');
       throw Exception('Erro na autenticação');
+    }
+  }
+
+  @override
+  Future<UsuarioModel> create(UsuarioModel usuario) async {
+    try {
+      Map<String, dynamic> usuarioData = {
+        'nome': usuario.nome,
+        'email': usuario.email,
+        'senha': usuario.senha
+      };
+
+      var response = await _apiClient.dio.post('/usuarios', data: usuarioData);
+      return UsuarioModel.fromJson(response.data);
+    } catch (e) {
+      
+      print(e);
+      throw Exception('Erro ao criar usuario');
     }
   }
 }
