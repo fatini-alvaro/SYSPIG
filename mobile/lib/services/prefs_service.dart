@@ -58,4 +58,14 @@ class PrefsService {
     var prefs = await SharedPreferences.getInstance();
     await prefs.remove(_key);
   }
+
+  static setFazenda(int fazendaId) async {
+    var prefs = await SharedPreferences.getInstance();
+    var userDataString = prefs.getString(_key);
+    if (userDataString != null) {
+      Map<String, dynamic> userData = jsonDecode(userDataString);
+      userData['fazendaId'] = fazendaId; // Adiciona o ID da fazenda selecionada
+      prefs.setString(_key, jsonEncode(userData)); // Salva os dados atualizados
+    }
+  }
 }

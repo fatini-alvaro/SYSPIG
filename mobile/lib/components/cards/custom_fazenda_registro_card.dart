@@ -3,16 +3,16 @@ import 'package:mobile/model/fazenda_model.dart';
 
 class CustomFazendaRegistroCard extends StatelessWidget {
   final FazendaModel fazenda;
-  final VoidCallback onEditarPressed;
-  final VoidCallback onExcluirPressed;
-  final String caminhoTelaAoClicar;
+  final VoidCallback ?onEditarPressed;
+  final VoidCallback ?onExcluirPressed;
+  final Function()? onTapCallback;
 
   const CustomFazendaRegistroCard({
     Key? key,
     required this.fazenda,
-    required this.onEditarPressed,
-    required this.onExcluirPressed,
-    required this.caminhoTelaAoClicar,
+    this.onEditarPressed,
+    this.onExcluirPressed,
+    this.onTapCallback,
   }) : super(key: key);
 
   @override
@@ -21,7 +21,9 @@ class CustomFazendaRegistroCard extends StatelessWidget {
       margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: GestureDetector(
         onTap: () {
-          Navigator.of(context).pushReplacementNamed('/${caminhoTelaAoClicar}');               
+          if (onTapCallback != null) {
+            onTapCallback!();            
+          }
         }, 
         child: Card(
           color: Colors.white,

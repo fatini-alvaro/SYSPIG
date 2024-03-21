@@ -62,13 +62,10 @@ class SelecionarFazendaPageState extends State<SelecionarFazendaPage> {
                   itemCount: list.length,
                   itemBuilder: (_, idx) => CustomFazendaRegistroCard(
                     fazenda: list[idx],
-                    onEditarPressed: () {
-                      // Lógica para abrir a tela de edição
+                    onTapCallback: () {
+                      _fazendaController.selecionaFazenda(list[idx].id!);
+                      Navigator.of(context).pushReplacementNamed('/home');
                     },
-                    onExcluirPressed: () {
-                      // Lógica para excluir a fazenda
-                    },
-                    caminhoTelaAoClicar: 'home'
                   ),
                 );
               },

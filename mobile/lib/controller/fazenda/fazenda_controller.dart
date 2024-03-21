@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/model/fazenda_model.dart';
 import 'package:mobile/repositories/fazenda/fazenda_repository.dart';
+import 'package:mobile/services/prefs_service.dart';
 
 class FazendaController {
   final FazendaRepository _fazendaRepository;
@@ -17,5 +18,9 @@ class FazendaController {
     FazendaModel novaFazenda = await  _fazendaRepository.create(fazendaNova);
 
     return novaFazenda;
+  }
+
+  selecionaFazenda(int idFazenda) async {
+    await PrefsService.setFazenda(idFazenda);
   }
 }
