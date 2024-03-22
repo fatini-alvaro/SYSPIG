@@ -49,8 +49,8 @@ class HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       drawer: CustomDrawerWidget(
-        accountName: _user!.nome,
-        accountEmail: _user!.email,
+        accountName: _user != null ? _user!.nome : 'nome',
+        accountEmail: _user != null ? _user!.email : 'email',
         onHomeTap: () {
           print('Home tapped');
         },
@@ -62,12 +62,13 @@ class HomePageState extends State<HomePage> {
           Navigator.of(context).pushNamedAndRemoveUntil('/login', (_) => true);
         },
       ),
-      appBar: CustomAppBarWidget(titulo: Text(_fazenda!.nome)),      
+      appBar: CustomAppBarWidget(titulo: Text(_fazenda != null ? _fazenda!.nome : 'Fazenda')),      
       body: SingleChildScrollView(
         child: Column(
           children: [
             SizedBox(height: 20),
             Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 CustomHomeCard(
                   descricao: 'Gestação',
@@ -87,6 +88,7 @@ class HomePageState extends State<HomePage> {
               ]
             ),
             Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 CustomHomeCard(
                   descricao: 'Granjas',
@@ -106,6 +108,7 @@ class HomePageState extends State<HomePage> {
               ]
             ),
             Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 CustomHomeCard(
                   descricao: 'lotes',
@@ -125,6 +128,7 @@ class HomePageState extends State<HomePage> {
               ]
             ),
             Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 CustomHomeCard(
                   descricao: 'Baias',

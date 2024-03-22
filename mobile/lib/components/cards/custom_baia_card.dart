@@ -28,46 +28,6 @@ class CustomBaiaCard extends StatelessWidget {
             height: 170,
             child: Stack(
               children: [
-                // Positioned(
-                //   top: 10,
-                //   left: 10,
-                //   child: Container(
-                //     width: 150, // Ajuste este valor conforme necessário
-                //     height: 40,
-                //     child: Center(
-                //       child: Text(
-                //         'Baia Numero:',
-                //         style: TextStyle(
-                //           color: Colors.white,
-                //           fontSize: 16,
-                //           fontWeight: FontWeight.bold,
-                //         ),
-                //       ),
-                //     ),
-                //   ),
-                // ),
-                // Positioned(
-                //   top: 10,
-                //   left: 10,
-                //   child: Container(
-                //     width: 150, // Ajuste este valor conforme necessário
-                //     height: 40,
-                //     decoration: BoxDecoration(
-                //       borderRadius: BorderRadius.circular(50),
-                //       color: Colors.white,
-                //     ),
-                //     child: Center(
-                //       child: Text(
-                //         numeroBaia,
-                //         style: TextStyle(
-                //           color: Colors.black,
-                //           fontSize: 16,
-                //           fontWeight: FontWeight.bold,
-                //         ),
-                //       ),
-                //     ),
-                //   ),
-                // ),
                 Positioned(
                   top: 20,
                   left: 10,
