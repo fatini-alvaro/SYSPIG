@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:mobile/components/cards/custom_home_card.dart';
 import 'package:mobile/controller/app_controller.dart';
 import 'package:mobile/controller/home/home_controller.dart';
+import 'package:mobile/model/fazenda_model.dart';
+import 'package:mobile/model/usuario_model.dart';
 import 'package:mobile/repositories/home/home_repository_imp.dart';
 import 'package:mobile/services/prefs_service.dart';
 import 'package:mobile/widgets/custom_appbar_widget.dart';
 import 'package:mobile/widgets/custom_drawer_widget.dart';
+import 'package:mobile/services/prefs_service.dart';
 
 class HomePage extends StatefulWidget{
   @override
@@ -17,19 +20,37 @@ class HomePage extends StatefulWidget{
 class HomePageState extends State<HomePage> {
 
   final HomeController _homeController = HomeController(HomeRepositoryImp());
+  UsuarioModel? _user;
+  FazendaModel? _fazenda;
 
   @override
   void initState() {
     super.initState();
-    _homeController.fetch();
+    _fetchDetails();
+  }
+
+  Future<void> _fetchDetails() async {
+    UsuarioModel? user = await PrefsService.getUser();
+    if (user != null) {
+      setState(() {
+        _user = user;
+      });
+    }
+
+    FazendaModel? fazenda = await PrefsService.getFazenda();
+    if (fazenda != null) {
+      setState(() {
+        _fazenda = fazenda;
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       drawer: CustomDrawerWidget(
-        accountName: 'Alvaro',
-        accountEmail: 'alvarofatini@gmail.com',
+        accountName: _user!.nome,
+        accountEmail: _user!.email,
         onHomeTap: () {
           print('Home tapped');
         },
@@ -41,7 +62,7 @@ class HomePageState extends State<HomePage> {
           Navigator.of(context).pushNamedAndRemoveUntil('/login', (_) => true);
         },
       ),
-      appBar: CustomAppBarWidget(titulo: Text('Fazenda Alvaro')),      
+      appBar: CustomAppBarWidget(titulo: Text(_fazenda!.nome)),      
       body: SingleChildScrollView(
         child: Column(
           children: [

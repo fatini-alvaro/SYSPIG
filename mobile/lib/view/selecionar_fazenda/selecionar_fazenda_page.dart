@@ -63,7 +63,7 @@ class SelecionarFazendaPageState extends State<SelecionarFazendaPage> {
                   itemBuilder: (_, idx) => CustomFazendaRegistroCard(
                     fazenda: list[idx],
                     onTapCallback: () {
-                      _fazendaController.selecionaFazenda(list[idx].id!);
+                      _fazendaController.selecionaFazenda(list[idx]);
                       Navigator.of(context).pushReplacementNamed('/home');
                     },
                   ),

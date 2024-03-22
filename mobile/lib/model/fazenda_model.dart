@@ -23,4 +23,12 @@ class FazendaModel {
   String toString() {
     return 'id: $id, nome: $nome, cidade: $cidade';
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'nome': nome,
+      'cidade': cidade != null ? cidade!.toJson() : null,
+    };
+  }
 }

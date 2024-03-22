@@ -20,7 +20,7 @@ class FazendaController {
     return novaFazenda;
   }
 
-  selecionaFazenda(int idFazenda) async {
-    await PrefsService.setFazenda(idFazenda);
+  selecionaFazenda(FazendaModel fazenda) async {
+    await PrefsService.setFazenda(fazenda);
   }
 }

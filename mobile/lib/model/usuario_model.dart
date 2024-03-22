@@ -27,6 +27,17 @@ class UsuarioModel {
 
   @override
   String toString() {
-    return 'id: $id, nome: $nome, email: $email, tipoUsuario: $tipoUsuario';
+    return 'id: $id, nome: $nome, email: $email, tipoUsuario: $tipoUsuario, senha: $senha';
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'nome': nome,
+      'email': email,
+      'tipoUsuario': tipoUsuario != null ? tipoUsuario!.toJson() : null,
+      'senha': senha
+    };
+  }
+
 }

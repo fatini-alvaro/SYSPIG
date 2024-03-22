@@ -18,4 +18,11 @@ class TipoUsuarioModel {
   String toString() {
     return 'id: $id, descricao: $descricao';
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'descricao': descricao,
+    };
+  }
 }
