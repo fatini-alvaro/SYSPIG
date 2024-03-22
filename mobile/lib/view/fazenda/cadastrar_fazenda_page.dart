@@ -3,6 +3,7 @@ import 'package:mobile/components/buttons/custom_salvar_cadastro_button_componen
 import 'package:mobile/controller/cadastrar_fazenda/cadastrar_fazenda_controller.dart';
 import 'package:mobile/model/cidade_model.dart';
 import 'package:mobile/themes/themes.dart';
+import 'package:mobile/widgets/custom_text_field_widget.dart';
 import 'package:mobile/widgets/custom_text_form_field_widget.dart';
 
 class CadastrarFazendaPage extends StatefulWidget {
@@ -15,7 +16,9 @@ class CadastrarFazendaPage extends StatefulWidget {
 class CadastrarFazendaPageState extends State<CadastrarFazendaPage> {
   final CadastrarFazendaController _cadastrarFazendaController =
       CadastrarFazendaController();
+
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
   List<CidadeModel> cidades = [];
   TextEditingController _searchController = TextEditingController();
   String _selectedCity = '';
@@ -30,8 +33,7 @@ class CadastrarFazendaPageState extends State<CadastrarFazendaPage> {
   Future<void> _carregarCidades() async {
     cidades = await _cadastrarFazendaController.getCidadesFromRepository();
     setState(() {});
-  }
-  
+  }  
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +52,8 @@ class CadastrarFazendaPageState extends State<CadastrarFazendaPage> {
             children: [
               SizedBox(height: 20),
               CustomTextFormFieldWidget(
-                label: 'Nome da Fazenda',
+                label: 'Nome',
+                hintText: 'Digite o Nome da Fazenda',
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Campo Obrigatório';
@@ -60,20 +63,19 @@ class CadastrarFazendaPageState extends State<CadastrarFazendaPage> {
                 onChanged: _cadastrarFazendaController.setNome,
               ),
               SizedBox(height: 20),
-              TextField(
+              CustomTextFieldWidget(
                 controller: _searchController,
-                decoration: InputDecoration(
-                  labelText: 'Buscar cidade',
-                  suffixIcon: Icon(Icons.search),
-                ),
-                onTap: () {
-                  setState(() {
-                    _isCitySearchFocused = true; // Set the flag to true when the search field is tapped
-                  });
-                },
+                label: 'Cidade',
+                hintText: 'Buscar Cidade',
+                suffixIcon: Icon(Icons.search),
                 onChanged: (value) {
                   setState(() {
                     _selectedCity = value;
+                  });
+                },
+                onTap: () {
+                  setState(() {
+                    _isCitySearchFocused = true; // Set the flag to true when the search field is tapped
                   });
                 },
               ),

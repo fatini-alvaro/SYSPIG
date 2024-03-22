@@ -4,6 +4,7 @@ import 'package:mobile/components/cards/custom_granja_registro_card.dart';
 import 'package:mobile/controller/granja/granja_controller.dart';
 import 'package:mobile/model/granja_model.dart';
 import 'package:mobile/repositories/granja/granja_repository_imp.dart';
+import 'package:mobile/services/prefs_service.dart';
 import 'package:mobile/themes/themes.dart';
 
 class SelecionarGranjaPage extends StatefulWidget {
@@ -20,7 +21,17 @@ class SelecionarGranjaPageState extends State<SelecionarGranjaPage> {
   @override
   void initState() {
     super.initState();
-    _granjaController.fetch();
+    _carregarGranjas();
+  }
+
+  Future<void> _carregarGranjas() async {
+    int? fazendaId = await PrefsService.getFazendaId();
+    if (fazendaId != null) {
+      _granjaController.fetch(fazendaId);
+    } else {
+      // Tratar caso em que o ID do usuário não foi encontrado
+      print('ID da fazenda não encontrado');
+    }
   }
 
   @override

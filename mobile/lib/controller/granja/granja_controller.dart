@@ -8,8 +8,8 @@ class GranjaController {
 
   ValueNotifier<List<GranjaModel>> granjas = ValueNotifier<List<GranjaModel>>([]);
 
-  fetch() async {
-    granjas.value = await _granjaRepository.getList();
+  fetch(int fazendaId) async {
+    granjas.value = await _granjaRepository.getList(fazendaId);
   }
 
   Future<bool> create (BuildContext context) async {

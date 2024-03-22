@@ -51,7 +51,6 @@ class CadastrarFazendaController with ChangeNotifier {
     return true;
   }
 
-
   Future<List<CidadeModel>> getCidadesFromRepository() async {
     try {
       return await _cidadeRepository.getList(); 
