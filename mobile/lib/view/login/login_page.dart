@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile/components/criar_conta/custom_criar_conta_button_component.dart';
 import 'package:mobile/components/login/custom_login_button_component.dart';
 import 'package:mobile/controller/login/login_controller.dart';
+import 'package:mobile/repositories/usuario/usuario_repository_imp.dart';
 import 'package:mobile/utils/dialogs.dart';
 
 class LoginPage extends StatefulWidget {
@@ -9,8 +10,9 @@ class LoginPage extends StatefulWidget {
   _LoginPageState createState() => _LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
-  final LoginController _loginController = LoginController();
+class _LoginPageState extends State<LoginPage> {  
+
+  final LoginController _loginController = LoginController(UsuarioRepositoryImp());
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
@@ -85,22 +87,21 @@ class _LoginPageState extends State<LoginPage> {
                             onChanged: _loginController.setSenha,
                           ),
                           SizedBox(height: 10),
-                          GestureDetector(
-                            onTap: () {
-                              // Lógica para "Esqueci a senha"
-                            },
-                            child: Container(
-                              width: MediaQuery.of(context).size.width,
-                              child: Text(
-                                'Esqueci a senha',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  color: Color.fromARGB(255, 243, 163,
-                                      33), // Defina a cor desejada aqui
-                                ),
-                              ),
-                            ),
-                          ),
+                          // GestureDetector(
+                          //   onTap: () {
+                          //     // Lógica para "Esqueci a senha"
+                          //   },
+                          //   child: Container(
+                          //     width: MediaQuery.of(context).size.width,
+                          //     child: Text(
+                          //       'Esqueci a senha',
+                          //       textAlign: TextAlign.center,
+                          //       style: TextStyle(
+                          //         color: Color.fromARGB(255, 243, 163,33), // Defina a cor desejada aqui
+                          //       ),
+                          //     ),
+                          //   ),
+                          // ),
                           SizedBox(height: 25),
                           CustomLoginButtonComponent(
                             loginController: _loginController,

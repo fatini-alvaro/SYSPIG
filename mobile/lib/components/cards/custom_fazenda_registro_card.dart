@@ -3,16 +3,16 @@ import 'package:mobile/model/fazenda_model.dart';
 
 class CustomFazendaRegistroCard extends StatelessWidget {
   final FazendaModel fazenda;
-  final VoidCallback onEditarPressed;
-  final VoidCallback onExcluirPressed;
-  final String caminhoTelaAoClicar;
+  final VoidCallback ?onEditarPressed;
+  final VoidCallback ?onExcluirPressed;
+  final Function()? onTapCallback;
 
   const CustomFazendaRegistroCard({
     Key? key,
     required this.fazenda,
-    required this.onEditarPressed,
-    required this.onExcluirPressed,
-    required this.caminhoTelaAoClicar,
+    this.onEditarPressed,
+    this.onExcluirPressed,
+    this.onTapCallback,
   }) : super(key: key);
 
   @override
@@ -21,7 +21,9 @@ class CustomFazendaRegistroCard extends StatelessWidget {
       margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: GestureDetector(
         onTap: () {
-          Navigator.of(context).pushReplacementNamed('/${caminhoTelaAoClicar}');               
+          if (onTapCallback != null) {
+            onTapCallback!();            
+          }
         }, 
         child: Card(
           color: Colors.white,
@@ -60,7 +62,7 @@ class CustomFazendaRegistroCard extends StatelessWidget {
                           ),
                           SizedBox(width: 8), // Espaçamento entre o ícone e o texto
                           Text(
-                            '${fazenda.cidade.nome} - ${fazenda.cidade.uf.sigla}',
+                            '${fazenda.cidade?.nome} - ${fazenda.cidade?.uf.sigla}',
                             style: TextStyle(
                               fontWeight: FontWeight.normal,
                               fontSize: 15,
@@ -68,34 +70,6 @@ class CustomFazendaRegistroCard extends StatelessWidget {
                           ),
                         ],
                       ),
-                      SizedBox(height: 8),
-                      Row(
-                        children: [
-                          ElevatedButton.icon(
-                            onPressed: onEditarPressed,
-                            icon: Icon(Icons.edit, color: Colors.white),
-                            label: Text(
-                              'Editar',
-                              style: TextStyle(color: Colors.white),
-                            ),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.blue,
-                            ),
-                          ),
-                          SizedBox(width: 8), // Espaço entre os botões
-                          ElevatedButton.icon(
-                            onPressed: onExcluirPressed,
-                            icon: Icon(Icons.delete, color: Colors.white),
-                            label: Text(
-                              'Excluir',
-                              style: TextStyle(color: Colors.white),
-                            ),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.red,
-                            ),
-                          ),
-                        ],
-                      )
                     ],
                   ),
                 ),

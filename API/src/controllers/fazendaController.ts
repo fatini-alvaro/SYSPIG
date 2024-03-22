@@ -9,44 +9,57 @@ export class FazendaController {
   async create(req: Request, res: Response){
     const { 
       nome,
-      usuario_id,
-      tipo_usuario_id,
       cidade_id
     } = req.body;
+    
+    const usuario_id = req.headers['user-id'];
 
-    if (!nome || !usuario_id || !tipo_usuario_id || !cidade_id)
-      return res.status(400).json({ message: 'Parametros não informado'});    
+    if (!nome || !usuario_id)
+      return res.status(400).json({ message: 'Parametros não informado'});   
 
-    const usuarioInstancia = await usuarioRepository.findOneBy({ id: Number(usuario_id)});
-    const tipoUsuarioInstancia = await tipoUsuarioRepository.findOneBy({ id: Number(tipo_usuario_id)});
-    const cidadeInstancia = await cidadeRepository.findOneBy({ id: Number(cidade_id)});
+    const usuarioInstancia = await usuarioRepository.findOne({
+      where: { id: Number(usuario_id) },
+      relations: ['tipoUsuario'],
+    });
 
     if (!usuarioInstancia)
       return res.status(404).json({ message: 'Usuário não encontrado.' });
 
+    const tipoUsuarioInstancia = await tipoUsuarioRepository.findOneBy({ id: Number(usuarioInstancia.tipoUsuario.id)});    
+
     if (!tipoUsuarioInstancia)
-      return res.status(404).json({ message: 'Tipo Usuário não encontrado.' });
-  
-    if (!cidadeInstancia)
-      return res.status(404).json({ message: 'Cidade não encontrada.' });
+      return res.status(404).json({ message: 'Tipo Usuário não encontrado.' });  
 
     try {
 
-      const newFazenda = fazendaRepository.create({
+      let newFazendaData = fazendaRepository.create({
         nome: nome,
-        usuario: usuarioInstancia,
-        cidade: cidadeInstancia
+        usuario: usuarioInstancia
       });
-      await fazendaRepository.save(newFazenda);
+
+      if (cidade_id) {
+        const cidadeInstancia = await cidadeRepository.findOne({ 
+          where: { id: Number(cidade_id) },
+          relations: ['uf']
+        });
+        
+        if (!cidadeInstancia) {
+          return res.status(404).json({ message: 'Cidade não encontrada.' });
+        }
+        newFazendaData.cidade = cidadeInstancia;
+      }
+
+      await fazendaRepository.save(newFazendaData);
 
       const newUsuarioFazenda = usuarioFazendaRepository.create({
         tipoUsuario: tipoUsuarioInstancia,
         usuario: usuarioInstancia,
-        fazenda: newFazenda
+        fazenda: newFazendaData
       });
+
       await usuarioFazendaRepository.save(newUsuarioFazenda);
 
-      return res.status(201).json(newFazenda);
+      return res.status(201).json(newFazendaData);
     } catch (error) {
       console.log(error);
       return res.status(500).json({ message: 'Erro ao criar fazenda'});

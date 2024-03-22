@@ -7,7 +7,7 @@ class LoteRepositoryImp implements LoteRepository {
   Future<List<LoteModel>> getList() async {
     try {
       var response = 
-          await Dio().get('http://192.168.2.204:3000/lotes');
+          await Dio().get('http://localhost:3000/lotes');
         return (response.data as List).map((e) => LoteModel.fromJson(e)).toList();
     } catch (e) {
       print(e);

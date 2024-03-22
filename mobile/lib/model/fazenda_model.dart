@@ -1,26 +1,34 @@
 import 'package:mobile/model/cidade_model.dart';
 
 class FazendaModel {
-  final int id;
+  final int? id;
   final String nome;
-  final CidadeModel cidade;
+  final CidadeModel? cidade;
 
   FazendaModel({
-    required this.id,
+    this.id,
     required this.nome,
-    required this.cidade,
+    this.cidade,
   });
 
   factory FazendaModel.fromJson(Map<String, dynamic> json) {
     return FazendaModel(
       id: json['id'],
       nome: json['nome'],
-      cidade: CidadeModel.fromJson(json['cidade']),
+      cidade: json['cidade'] != null ? CidadeModel.fromJson(json['cidade']) : null,
     );
   }
-
+  
   @override
   String toString() {
     return 'id: $id, nome: $nome, cidade: $cidade';
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'nome': nome,
+      'cidade': cidade != null ? cidade!.toJson() : null,
+    };
   }
 }

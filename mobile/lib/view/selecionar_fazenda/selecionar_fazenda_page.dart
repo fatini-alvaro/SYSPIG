@@ -4,6 +4,7 @@ import 'package:mobile/components/cards/custom_fazenda_registro_card.dart';
 import 'package:mobile/controller/fazenda/fazenda_controller.dart';
 import 'package:mobile/model/fazenda_model.dart';
 import 'package:mobile/repositories/fazenda/fazenda_repository_imp.dart';
+import 'package:mobile/services/prefs_service.dart';
 import 'package:mobile/themes/themes.dart';
 
 class SelecionarFazendaPage extends StatefulWidget {
@@ -20,7 +21,17 @@ class SelecionarFazendaPageState extends State<SelecionarFazendaPage> {
   @override
   void initState() {
     super.initState();
-    _fazendaController.fetch();
+    _carregarFazendas();
+  }
+
+  Future<void> _carregarFazendas() async {
+    int? userId = await PrefsService.getUserId();
+    if (userId != null) {
+      _fazendaController.fetch(userId);
+    } else {
+      // Tratar caso em que o ID do usuário não foi encontrado
+      print('ID do usuário não encontrado');
+    }
   }
 
   @override
@@ -51,13 +62,10 @@ class SelecionarFazendaPageState extends State<SelecionarFazendaPage> {
                   itemCount: list.length,
                   itemBuilder: (_, idx) => CustomFazendaRegistroCard(
                     fazenda: list[idx],
-                    onEditarPressed: () {
-                      // Lógica para abrir a tela de edição
+                    onTapCallback: () {
+                      _fazendaController.selecionaFazenda(list[idx]);
+                      Navigator.of(context).pushReplacementNamed('/home');
                     },
-                    onExcluirPressed: () {
-                      // Lógica para excluir a fazenda
-                    },
-                    caminhoTelaAoClicar: 'home'
                   ),
                 );
               },

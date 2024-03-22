@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/model/fazenda_model.dart';
 import 'package:mobile/repositories/fazenda/fazenda_repository.dart';
+import 'package:mobile/services/prefs_service.dart';
 
 class FazendaController {
   final FazendaRepository _fazendaRepository;
@@ -8,12 +9,18 @@ class FazendaController {
 
   ValueNotifier<List<FazendaModel>> fazendas = ValueNotifier<List<FazendaModel>>([]);
 
-  fetch() async {
-    fazendas.value = await _fazendaRepository.getList();
+  fetch(int userId) async {
+    fazendas.value = await _fazendaRepository.getList(userId);
   }
 
-  Future<bool> create (BuildContext context) async {
+  Future<FazendaModel> create(BuildContext context, FazendaModel fazendaNova) async {
+    
+    FazendaModel novaFazenda = await  _fazendaRepository.create(fazendaNova);
 
-    return true;
+    return novaFazenda;
+  }
+
+  selecionaFazenda(FazendaModel fazenda) async {
+    await PrefsService.setFazenda(fazenda);
   }
 }

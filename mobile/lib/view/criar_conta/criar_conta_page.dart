@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:mobile/components/criar_conta/custom_possuo_conta_button_componente.dart';
 import 'package:mobile/components/criar_conta/custom_salvar_nova_conta_button_component.dart';
 import 'package:mobile/controller/criar_conta/criar_conta_controller.dart';
-import 'package:mobile/widgets/custom_text_field_widget.dart';
+import 'package:mobile/utils/dialogs.dart';
+import 'package:mobile/widgets/custom_text_form_field_widget.dart';
 
 class CriarContaPage extends StatefulWidget {
   @override
@@ -12,6 +13,7 @@ class CriarContaPage extends StatefulWidget {
 class _CriarContaPageState extends State<CriarContaPage> {
 
   final CriarContaController _criarContaController = CriarContaController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   Widget _body(){
     
@@ -35,50 +37,99 @@ class _CriarContaPageState extends State<CriarContaPage> {
                   elevation: 0,
                   color: Colors.transparent,
                   child: Padding(
-                    padding: const EdgeInsets.only(left: 12, right: 12, top: 20, bottom: 12),
-                    child: Column(
-                      children: [
-                        CustomTextFieldWidget(
-                          label: 'Insira o email', 
-                          onChanged: (value) {
-                            _criarContaController.setEmail(value);
-                          },
-                          keyboardType: TextInputType.emailAddress,
-                          errorText: _criarContaController.emailError
-                        ),
-                        SizedBox(height: 25),
-                        CustomTextFieldWidget(
-                          label: 'Insira o nome', 
-                          onChanged: _criarContaController.setNome,
-                          errorText: _criarContaController.nomeError,
-                        ),
-                        SizedBox(height: 25),
-                        CustomTextFieldWidget(
-                          label: 'Insira o telefone', 
-                          onChanged: _criarContaController.setTelefone,
-                        ),
-                        SizedBox(height: 25),
-                        CustomTextFieldWidget(
-                          label: 'Insira a senha', 
-                          onChanged: _criarContaController.setSenha,
-                          obscureText: true,
-                          errorText: _criarContaController.senhaError,
-                        ),
-                        SizedBox(height: 25),
-                        CustomSalvarNovaContaButtonComponent(
-                          criarContaController: _criarContaController,
-                        ),
-                        SizedBox(height: 30),
-                        Divider(
-                          color: Colors.grey,
-                          thickness: 1,
-                          height: 5,
-                          indent: 20,
-                          endIndent: 20,
-                        ),
-                        SizedBox(height: 25),
-                        CustomPossuoContaButtonComponent()
-                      ]
+                    padding: const EdgeInsets.only(left: 12, right: 12, top: 0, bottom: 12),
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        children: [
+                          CustomTextFormFieldWidget(
+                            validator: (value) {
+                              // add email validation
+                              if (value == null || value.isEmpty) {
+                                return 'Email obrigatório';
+                              }
+
+                              bool emailValid = RegExp(
+                                      r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+                                  .hasMatch(value);
+                              if (!emailValid) {
+                                return 'Email inválido';
+                              }
+
+                              return null;
+                            },
+                            decoration: InputDecoration(
+                              labelText: 'Insira o email',
+                              border: OutlineInputBorder(),
+                            ),
+                            onChanged: _criarContaController.setEmail,
+                            keyboardType: TextInputType.emailAddress,
+                          ),
+                          SizedBox(height: 25),
+                          CustomTextFormFieldWidget(
+                            validator: (value) {
+                              // add email validation
+                              if (value == null || value.isEmpty) {
+                                return 'Nome obrigatório';
+                              }
+                              return null;
+                            },
+                            decoration: InputDecoration(
+                              labelText: 'Insira o nome',
+                              border: OutlineInputBorder(),
+                            ),
+                            onChanged: _criarContaController.setNome,
+                          ),
+                          SizedBox(height: 25),
+                          CustomTextFormFieldWidget(
+                            validator: (value) {
+                              // add email validation
+                              if (value == null || value.isEmpty) {
+                                return 'Senha obrigatória';
+                              }
+                              if (value.length < 6) {
+                                return 'A senha deve ter pelo menos 6 caracteres';
+                              }
+                              return null;
+                            },
+                            obscureText: true,
+                            decoration: InputDecoration(
+                              labelText: 'Insira a senha',
+                              border: OutlineInputBorder(),
+                            ),
+                            onChanged: _criarContaController.setSenha,
+                          ),
+                          SizedBox(height: 25),
+                          CustomSalvarNovaContaButtonComponent(
+                            onPressed: () {
+                              if (_formKey.currentState!.validate()) {
+                                _criarContaController
+                                    .create(context)
+                                    .then((resultado) {
+                                    if (resultado) {
+                                      Navigator.of(context)
+                                          .pushNamed('/login');
+                                    } else {
+                                      Dialogs.errorToast(context,
+                                          "Não foi possível criar o usuário.");
+                                    }
+                                });
+                              }
+                            },
+                            criarContaController: _criarContaController,
+                          ),
+                          SizedBox(height: 10),
+                          Divider(
+                            color: Colors.grey,
+                            thickness: 1,
+                            height: 5,
+                            indent: 20,
+                            endIndent: 20,
+                          ),
+                          SizedBox(height: 10),
+                          CustomPossuoContaButtonComponent()
+                        ]
+                      ),
                     ),
                   ),
                 ),              

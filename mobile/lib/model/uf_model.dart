@@ -1,12 +1,12 @@
 class UfModel {
-  final int id;
-  final String sigla;
-  final String nome;
+  final int? id;
+  final String? sigla;
+  final String? nome;
 
   UfModel({
-    required this.id,
-    required this.sigla,
-    required this.nome,
+    this.id,
+    this.sigla,
+    this.nome,
   });
 
   factory UfModel.fromJson(Map<String, dynamic> json) {
@@ -20,5 +20,13 @@ class UfModel {
   @override
   String toString() {
     return 'id: $id, sigla: $sigla, nome: $nome';
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'sigla': sigla,
+      'nome': nome,
+    };
   }
 }

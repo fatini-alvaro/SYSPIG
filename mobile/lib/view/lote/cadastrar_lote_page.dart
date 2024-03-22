@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile/components/buttons/custom_salvar_cadastro_button_component.dart';
 import 'package:mobile/controller/cadastrar_lote/cadastrar_lote_controller.dart';
 import 'package:mobile/themes/themes.dart';
-import 'package:mobile/widgets/custom_text_field_widget.dart';
+import 'package:mobile/widgets/custom_text_form_field_widget.dart';
 
 class CadastrarLotePage extends StatefulWidget {
   @override
@@ -29,12 +29,12 @@ class CadastrarLotePageState extends State<CadastrarLotePage> {
         child: Column(
           children: [
             SizedBox(height: 20),
-            CustomTextFieldWidget(
+            CustomTextFormFieldWidget(
               label: 'Numero Lote',
               onChanged: _cadastrarLoteController.setNumero
             ),
             SizedBox(height: 20),
-            CustomTextFieldWidget(
+            CustomTextFormFieldWidget(
               label: 'Selecionar Animal',
               onChanged: _cadastrarLoteController.setAnimal
             ),

@@ -23,4 +23,12 @@ class CidadeModel {
   String toString() {
     return 'id: $id, nome: $nome, uf: $uf';
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'nome': nome,
+      'uf': uf != null ? uf!.toJson() : null,
+    };
+  }
 }
