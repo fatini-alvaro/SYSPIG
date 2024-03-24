@@ -18,6 +18,7 @@ class ApiClient {
 
   Future<void> setupApiClient() async {
     int? userId = await PrefsService.getUserId();
+    int? fazendaId = await PrefsService.getFazendaId();
 
     _dio.interceptors.add(InterceptorsWrapper(
       onRequest: (options, handler) async {
@@ -25,7 +26,11 @@ class ApiClient {
         // options.headers['Authorization'] = 'Bearer $token';
 
         if (userId != null) {
-          options.headers['User-Id'] = userId.toString();
+          options.headers['user-Id'] = userId.toString();
+        }
+
+        if (fazendaId != null) {
+          options.headers['fazenda-Id'] = fazendaId.toString();
         }
 
         return handler.next(options);

@@ -12,8 +12,10 @@ class GranjaController {
     granjas.value = await _granjaRepository.getList(fazendaId);
   }
 
-  Future<bool> create (BuildContext context) async {
+  Future<GranjaModel> create(BuildContext context, GranjaModel fazendaNova) async {
+    
+    GranjaModel novaGranja = await  _granjaRepository.create(fazendaNova);
 
-    return true;
+    return novaGranja;
   }
 }

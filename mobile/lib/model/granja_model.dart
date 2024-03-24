@@ -2,18 +2,18 @@ import 'package:mobile/model/fazenda_model.dart';
 import 'package:mobile/model/tipo_granja_model.dart';
 
 class GranjaModel {
-  final int id;
+  final int? id;
   final String descricao;
-  final int codigo;
-  final FazendaModel fazenda;
+  final int? codigo;
+  final FazendaModel? fazenda;
   final TipoGranjaModel tipoGranja;
 
 
   GranjaModel({
-    required this.id,
+    this.id,
     required this.descricao,
-    required this.codigo,
-    required this.fazenda,
+    this.codigo,
+    this.fazenda,
     required this.tipoGranja,
   });
 

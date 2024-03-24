@@ -3,6 +3,7 @@ import 'package:mobile/components/buttons/custom_salvar_cadastro_button_componen
 import 'package:mobile/controller/cadastrar_granja/cadastrar_granja_controller.dart';
 import 'package:mobile/model/tipo_granja_model.dart';
 import 'package:mobile/themes/themes.dart';
+import 'package:mobile/widgets/custom_dropdown_button_form_field_widget.dart';
 import 'package:mobile/widgets/custom_text_form_field_widget.dart';
 
 class CadastrarGranjaPage extends StatefulWidget {
@@ -19,17 +20,15 @@ class CadastrarGranjaPageState extends State<CadastrarGranjaPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   List<TipoGranjaModel> tipoGranjas = [];
-  TextEditingController _searchController = TextEditingController();
-  String _selectedTipoGranja = '';
-  bool _isTipoGranjaSearchFocused = false;
+  TipoGranjaModel? _tipoGranjaSelecionado;
 
   @override
   void initState() {
     super.initState();
-    _carregarCidades();
+    _carregarTipoGranjas();
   }
 
-  Future<void> _carregarCidades() async {
+  Future<void> _carregarTipoGranjas() async {
     tipoGranjas = await _cadastrarGranjaController.getTipoGranjasFromRepository();
     setState(() {});
   }  
@@ -51,7 +50,7 @@ class CadastrarGranjaPageState extends State<CadastrarGranjaPage> {
             children: [
               SizedBox(height: 20),
               CustomTextFormFieldWidget(
-                label: 'Nome ou Número',
+                label: 'Descrição/Nome',
                 hintText: 'Digite uma identificação',
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -62,27 +61,27 @@ class CadastrarGranjaPageState extends State<CadastrarGranjaPage> {
                 onChanged: _cadastrarGranjaController.setDescricao,
               ),
               SizedBox(height: 20),
-              TextField(
-                controller: _searchController,
-                decoration: InputDecoration(
-                  labelText: 'Tipo Da Granja',
-                  suffixIcon: Icon(Icons.search),
-                ),
-                // onTap: () {
-                //   setState(() {
-                //     _isCitySearchFocused = true; // Set the flag to true when the search field is tapped
-                //   });
-                // },
-                // onChanged: (value) {
-                //   setState(() {
-                //     _selectedCity = value;
-                //   });
-                // },
-              ),
-
-              CustomTextFormFieldWidget(
-                label: 'Tipo Da Granja',
-                onChanged: _cadastrarGranjaController.setTipoGranja,
+              CustomDropdownButtonFormFieldWidget(
+                items: tipoGranjas.map((tipoGranja) {
+                  return DropdownMenuItem<TipoGranjaModel>(
+                    value: tipoGranja,
+                    child: Text(tipoGranja.descricao),
+                  );
+                }).toList(),
+                value: _tipoGranjaSelecionado,
+                labelText: 'Selecione o tipo de granja',
+                onChanged: (tipoGranja) {
+                  _cadastrarGranjaController.setTipoGranja(tipoGranja);
+                  setState(() {
+                    _tipoGranjaSelecionado = tipoGranja;
+                  });
+                },
+                validator: (tipoGranja) {
+                  if (tipoGranja == null) {
+                    return 'Selecione o tipo de granja';
+                  }
+                  return null;
+                },
               ),
               SizedBox(height: 20),
               Expanded(
@@ -92,7 +91,22 @@ class CadastrarGranjaPageState extends State<CadastrarGranjaPage> {
                   ],
                 ),
               ),
-              CustomSalvarCadastroButtonComponent(buttonText: 'Salvar Granja', rotaTelaAposSalvar:'selecionarGranja'),
+              CustomSalvarCadastroButtonComponent(
+                buttonText: 'Salvar Fazenda', 
+                rotaTelaAposSalvar:'selecionarFazenda',
+                onPressed: () {    
+                  if (_formKey.currentState!.validate()) {
+                    _cadastrarGranjaController
+                        .create(context)
+                        .then((resultado) {
+                          if (resultado) {
+                            Navigator.of(context)
+                                .pushReplacementNamed('/selecionarGranja');
+                          }
+                        });
+                  }                           
+                },
+              ),
             ],
           ),
         ),

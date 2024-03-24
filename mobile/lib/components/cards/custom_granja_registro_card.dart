@@ -60,7 +60,7 @@ class CustomGranjaRegistroCard extends StatelessWidget {
                           ),
                           SizedBox(width: 8), // Espaçamento entre o ícone e o texto
                           Text(
-                            'Fazenda - ${granja.fazenda.nome}',
+                            'Fazenda - ${granja.fazenda?.nome}',
                             style: TextStyle(
                               fontWeight: FontWeight.normal,
                               fontSize: 15,

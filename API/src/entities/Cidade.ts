@@ -11,7 +11,7 @@ export class Cidade{
   @Column({ type: 'text' })
   nome: string;
 
-  @ManyToOne(() => Uf, uf => uf.cidades)
+  @ManyToOne(() => Uf, { eager: true })
   @JoinColumn({name: 'uf_id', referencedColumnName: 'id'})
   uf: Uf;
 

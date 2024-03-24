@@ -2,34 +2,52 @@ import { Request, Response } from "express";
 import { fazendaRepository } from "../repositories/fazendaRepository";
 import { tipoGranjaRepository } from "../repositories/tipoGranjaRepository";
 import { granjaRepository } from "../repositories/granjaRepository";
+import { AppDataSource } from "../data-source";
+import { Granja } from "../entities/Granja";
+import { Fazenda } from "../entities/Fazenda";
+import { TipoGranja } from "../entities/TipoGranja";
 
 export class GranjaController {
   async create(req: Request, res: Response){
     const { 
-      fazenda_id,
       descricao,
       tipo_granja_id,
     } = req.body;
 
+    const fazenda_id = req.headers['fazenda-id'];
+
     if (!fazenda_id || !descricao || !tipo_granja_id)
       return res.status(400).json({ message: 'Parametros não informado'});    
 
-    const fazendaInstancia = await fazendaRepository.findOneBy({ id: Number(fazenda_id)});
-    const tipoGranjaInstancia = await tipoGranjaRepository.findOneBy({ id: Number(tipo_granja_id)});
-
-    if (!fazendaInstancia)
-      return res.status(404).json({ message: 'Fazenda não encontrado.' });
-
-    if (!tipoGranjaInstancia)
-      return res.status(404).json({ message: 'Tipo Granja não encontrado.' });
-
     try {
-      const newGranja = granjaRepository.create({
-        fazenda: fazendaInstancia,
-        descricao: descricao,
-        tipoGranja: tipoGranjaInstancia
+
+      var newGranja = await AppDataSource.transaction(async (transactionalEntityManager) => {
+
+        const fazendaInstancia = await transactionalEntityManager.findOneBy( Fazenda, { id: Number(fazenda_id)});
+        const tipoGranjaInstancia = await transactionalEntityManager.findOneBy(TipoGranja, { id: Number(tipo_granja_id)});
+  
+        if (!fazendaInstancia)
+          return res.status(404).json({ message: 'Fazenda não encontrado.' });
+  
+        if (!tipoGranjaInstancia)
+          return res.status(404).json({ message: 'Tipo Granja não encontrado.' });
+        
+        const newGranja = granjaRepository.create({
+          fazenda: fazendaInstancia,
+          descricao: descricao,
+          tipoGranja: tipoGranjaInstancia
+        });
+
+        await transactionalEntityManager.save(newGranja);
+
+        const savedGranja = await transactionalEntityManager.findOneBy(
+          Granja, 
+          { id: newGranja.id },
+        );
+  
+        return savedGranja;
       });
-      await granjaRepository.save(newGranja);
+      
       return res.status(201).json(newGranja);
     } catch (error) {
       console.log(error);

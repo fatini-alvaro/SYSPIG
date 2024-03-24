@@ -118,7 +118,7 @@ class CadastrarFazendaPageState extends State<CadastrarFazendaPage> {
                         .then((resultado) {
                           if (resultado) {
                             Navigator.of(context)
-                                .pushNamed('/selecionarFazenda');
+                                .pushReplacementNamed('/selecionarFazenda');
                           }
                         });
                   }                           

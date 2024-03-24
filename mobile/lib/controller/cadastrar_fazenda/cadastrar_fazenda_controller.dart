@@ -21,7 +21,7 @@ class CadastrarFazendaController with ChangeNotifier {
   void setCidade(CidadeModel? value) => _cidade = value;
 
   String getCidadeNome() {
-    return _cidade?.nome ?? ''; // Retorna o nome da cidade ou uma string vazia se não houver cidade selecionada
+    return _cidade?.nome ?? '';
   }
 
   Future<bool> create(BuildContext context) async {

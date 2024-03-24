@@ -1,7 +1,6 @@
-import { BeforeInsert, Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, getRepository } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Fazenda } from "./Fazenda";
 import { TipoGranja } from "./TipoGranja";
-import { granjaRepository } from "../repositories/granjaRepository";
 
 @Entity('granja')
 export class Granja {
@@ -21,5 +20,4 @@ export class Granja {
 
   @Column({ type: 'text' })
   descricao: string;
-
 }
