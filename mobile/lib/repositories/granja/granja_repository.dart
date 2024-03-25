@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:mobile/model/granja_model.dart';
 
 abstract class GranjaRepository {
@@ -7,4 +9,6 @@ abstract class GranjaRepository {
   Future<GranjaModel> create(GranjaModel granja);
 
   Future<GranjaModel> update(GranjaModel granja);
+
+  Future<bool> delete(int granjaId);
 }

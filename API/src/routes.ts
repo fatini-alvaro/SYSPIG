@@ -29,6 +29,7 @@ routes.post('/tipogranjas', new TipoGranjaController().create);
 //Granja
 routes.post('/granjas', new GranjaController().create);
 routes.put('/granjas/:granja_id', new GranjaController().update); 
+routes.delete('/granjas/:granja_id', new GranjaController().delete); 
 routes.get('/granjas/:fazenda_id', new GranjaController().list);
 
 //Cidade

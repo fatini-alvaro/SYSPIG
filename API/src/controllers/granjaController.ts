@@ -118,4 +118,23 @@ export class GranjaController {
     }
   }
 
+  async delete(req: Request, res: Response) {
+    const granja_id = req.params.granja_id;
+
+    if (!granja_id)
+      return res.status(400).json({ message: 'Parâmetros não informados' });
+
+    try {
+      await AppDataSource.transaction(async (transactionalEntityManager) => {
+        await transactionalEntityManager.delete(Granja, granja_id);
+      });
+
+      return res.status(200).json({ message: 'Granja excluída com sucesso' });
+
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({ message: 'Erro ao excluir granja' });
+    }
+  }
+
 }

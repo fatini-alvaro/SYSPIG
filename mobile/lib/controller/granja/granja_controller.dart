@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:mobile/model/granja_model.dart';
 import 'package:mobile/repositories/granja/granja_repository.dart';
@@ -24,5 +26,12 @@ class GranjaController {
     GranjaModel granjaEditada = await  _granjaRepository.update(granjaEdicao);
 
     return granjaEditada;
+  }
+
+  Future<bool> delete(BuildContext context, int granjaExclusaoID) async {
+    
+    bool excluido = await  _granjaRepository.delete(granjaExclusaoID);
+
+    return excluido;
   }
 }

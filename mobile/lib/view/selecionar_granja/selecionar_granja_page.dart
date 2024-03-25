@@ -6,6 +6,7 @@ import 'package:mobile/model/granja_model.dart';
 import 'package:mobile/repositories/granja/granja_repository_imp.dart';
 import 'package:mobile/services/prefs_service.dart';
 import 'package:mobile/themes/themes.dart';
+import 'package:mobile/utils/dialogs.dart';
 import 'package:mobile/view/granja/cadastrar_granja_page.dart';
 
 class SelecionarGranjaPage extends StatefulWidget {
@@ -74,7 +75,32 @@ class SelecionarGranjaPageState extends State<SelecionarGranjaPage> {
                       );
                     },
                     onExcluirPressed: () {
-                      // Lógica para excluir
+                      showDialog(
+                        context: context,
+                        builder: (_) => AlertDialog(
+                          title: Text('Confirmar exclusão'),
+                          content: Text('Tem certeza de que deseja excluir esta granja?'),
+                          actions: [
+                            TextButton(
+                              onPressed: () async {
+                                Navigator.pop(context); // Fechar o diálogo de confirmação
+                                await _granjaController.delete(context, list[idx].id!);
+
+                                 Dialogs.successToast(context, 'Granja excluída com sucesso!');
+
+                                 _carregarGranjas();
+                              },
+                              child: Text('Confirmar'),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                Navigator.pop(context); // Fechar o diálogo de confirmação
+                              },
+                              child: Text('Cancelar'),
+                            ),
+                          ],
+                        ),
+                      );
                     },
                     caminhoTelaAoClicar: 'selecionarBaia'
                   ),
