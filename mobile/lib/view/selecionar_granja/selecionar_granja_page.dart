@@ -31,7 +31,6 @@ class SelecionarGranjaPageState extends State<SelecionarGranjaPage> {
     if (fazendaId != null) {
       _granjaController.fetch(fazendaId);
     } else {
-      // Tratar caso em que o ID do usuário não foi encontrado
       print('ID da fazenda não encontrado');
     }
   }

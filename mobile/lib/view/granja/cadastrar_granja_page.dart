@@ -117,8 +117,8 @@ class CadastrarGranjaPageState extends State<CadastrarGranjaPage> {
                           .create(context)
                           .then((resultado) {
                         if (resultado) {
-                          Navigator.of(context)
-                              .pushReplacementNamed('/selecionarGranja');
+                          Navigator.popUntil(context, (route) => route.isFirst);
+                          Navigator.pushNamed(context, '/selecionarGranja');
                         }
                       });
                     } else {
@@ -126,8 +126,8 @@ class CadastrarGranjaPageState extends State<CadastrarGranjaPage> {
                           .update(context, widget.granjaParaEditar!)
                           .then((resultado) {
                         if (resultado) {
-                          Navigator.of(context)
-                              .pushReplacementNamed('/selecionarGranja');
+                          Navigator.popUntil(context, (route) => route.isFirst);
+                          Navigator.pushNamed(context, '/selecionarGranja');
                         }
                       });
                     }
