@@ -12,10 +12,17 @@ class GranjaController {
     granjas.value = await _granjaRepository.getList(fazendaId);
   }
 
-  Future<GranjaModel> create(BuildContext context, GranjaModel fazendaNova) async {
+  Future<GranjaModel> create(BuildContext context, GranjaModel granjaNova) async {
     
-    GranjaModel novaGranja = await  _granjaRepository.create(fazendaNova);
+    GranjaModel novaGranja = await  _granjaRepository.create(granjaNova);
 
     return novaGranja;
+  }
+  
+  Future<GranjaModel> update(BuildContext context, GranjaModel granjaEdicao) async {
+    
+    GranjaModel granjaEditada = await  _granjaRepository.update(granjaEdicao);
+
+    return granjaEditada;
   }
 }

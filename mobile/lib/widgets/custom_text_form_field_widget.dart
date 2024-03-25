@@ -10,6 +10,7 @@ class CustomTextFormFieldWidget extends StatelessWidget {
   final bool obscureText;
   final String? errorText;
   final String? Function(String?)? validator;
+  final String? initialValue;
 
   const CustomTextFormFieldWidget({
     Key? key, 
@@ -22,6 +23,7 @@ class CustomTextFormFieldWidget extends StatelessWidget {
     this.obscureText = false,
     this.errorText,
     this.validator,
+    this.initialValue
   }) : super(key: key);
 
   @override
@@ -41,6 +43,7 @@ class CustomTextFormFieldWidget extends StatelessWidget {
       onChanged: onChanged,
       obscureText:obscureText,   
       validator: validator,   
+      initialValue: initialValue,
     );
   }
 }

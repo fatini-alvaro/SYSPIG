@@ -6,6 +6,7 @@ import 'package:mobile/model/granja_model.dart';
 import 'package:mobile/repositories/granja/granja_repository_imp.dart';
 import 'package:mobile/services/prefs_service.dart';
 import 'package:mobile/themes/themes.dart';
+import 'package:mobile/view/granja/cadastrar_granja_page.dart';
 
 class SelecionarGranjaPage extends StatefulWidget {
   @override
@@ -63,7 +64,14 @@ class SelecionarGranjaPageState extends State<SelecionarGranjaPage> {
                   itemBuilder: (_, idx) => CustomGranjaRegistroCard(
                     granja: list[idx],
                     onEditarPressed: () {
-                      // Lógica para abrir a tela de edição
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => CadastrarGranjaPage(
+                            granjaParaEditar: list[idx],
+                          ),
+                        ),
+                      );
                     },
                     onExcluirPressed: () {
                       // Lógica para excluir

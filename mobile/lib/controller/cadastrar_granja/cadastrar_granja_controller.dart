@@ -15,33 +15,65 @@ class CadastrarGranjaController with ChangeNotifier {
 
   String? _descricao;
   setDescricao(String value) => _descricao = value;
+  String? get descricao => _descricao;
 
   TipoGranjaModel? _tipoGranja;
   void setTipoGranja(TipoGranjaModel? value) => _tipoGranja = value;
+  TipoGranjaModel? get tipoGranja => _tipoGranja;
 
-  Future<bool> create (BuildContext context) async {
+  Future<bool> create(BuildContext context) async {
+
+    Dialogs.showLoading(context, message:'Aguarde, Editando Granja');
+
+    try {
+      GranjaModel novaGranja = await GranjaModel(
+
+        descricao: _descricao!,
+        tipoGranja: _tipoGranja!,
+      );
+
+      GranjaModel granjaCriada = await _granjaController.create(context, novaGranja);
+
+      Dialogs.hideLoading(context);
+
+      if (granjaCriada != null) {
+        Dialogs.successToast(context, 'Granja criada com sucesso!');
+      } else {
+        Dialogs.errorToast(context, 'Falha ao criar a Granja');
+      }
+    } catch (e) {
+      print(e);
+      Dialogs.hideLoading(context);
+      Dialogs.errorToast(context, 'Falha ao criar a Granja');
+    }
+
+    return true;
+  }
+
+  Future<bool> update(BuildContext context, GranjaModel granja) async {
 
     Dialogs.showLoading(context, message:'Aguarde, Criando Nova Granja');
 
     try {
       GranjaModel novaGranja = await GranjaModel(
+        id: granja.id,
         descricao: _descricao!,
         tipoGranja: _tipoGranja!,
       );
 
-      GranjaModel fazendaCriada = await _granjaController.create(context, novaGranja);
+      GranjaModel granjaEditada = await _granjaController.update(context, novaGranja);
 
       Dialogs.hideLoading(context);
 
-      if (fazendaCriada != null) {
-        Dialogs.successToast(context, 'Fazenda criada com sucesso!');
+      if (granjaEditada != null) {
+        Dialogs.successToast(context, 'Granja editada com sucesso!');
       } else {
-        Dialogs.errorToast(context, 'Falha ao criar a fazenda');
+        Dialogs.errorToast(context, 'Falha ao editada a Granja');
       }
     } catch (e) {
       print(e);
       Dialogs.hideLoading(context);
-      Dialogs.errorToast(context, 'Falha ao criar a fazenda');
+      Dialogs.errorToast(context, 'Falha ao editada a Granja');
     }
 
     return true;
