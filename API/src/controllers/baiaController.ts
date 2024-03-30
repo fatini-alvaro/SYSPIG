@@ -5,6 +5,7 @@ import { Fazenda } from "../entities/Fazenda";
 import { TipoGranja } from "../entities/TipoGranja";
 import { baiaRepository } from "../repositories/baiaRepository";
 import { Baia } from "../entities/Baia";
+import { TabelaConstantesBancos } from "../utils/tabelaConstantesBancos";
 
 export class BaiaController {
   async create(req: Request, res: Response){
@@ -58,13 +59,44 @@ export class BaiaController {
     try {      
       const { granja_id } = req.params;
 
+      const baias = await baiaRepository.find({
+        where: {
+          granja: {
+            id: Number(granja_id),
+          },
+        },
+        relations: ['granja', 'granja.tipoGranja', 'fazenda', 'fazenda.cidade', 'fazenda.cidade.uf', 
+        'ocupacoes.granja', 'ocupacoes.granja.tipoGranja', 'ocupacoes.animal', 'ocupacoes.baia', 'ocupacoes.baia.granja',
+        'ocupacoes.baia.granja.tipoGranja'],
+        order: {
+          numero: 'ASC'
+        }
+      });
+
+      //filtra as ocupações de cada baia para retornar a ocupação ativa apenas, ou entao null
+      const baiasComOcupacaoUnica = baias.map(baia => {
+        const ocupacaoAtiva = baia.ocupacoes.find(ocupacao => ocupacao.status === TabelaConstantesBancos.ocupacao.ABERTA);
+        return { ...baia, ocupacao: ocupacaoAtiva ? ocupacaoAtiva : null };
+      });
+
+      return res.status(200).json(baiasComOcupacaoUnica);      
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({ message: ''});
+    }
+  }
+
+  async listAllOcupacoes(req: Request, res: Response){
+    try {      
+      const { granja_id } = req.params;
+
       const baias = await baiaRepository.find({ 
         where: { 
           granja: { 
             id: Number(granja_id) 
           } 
         }, 
-        relations: ['granja', 'fazenda', 'fazenda.cidade', 'fazenda.cidade.uf']
+        relations: ['granja', 'fazenda', 'fazenda.cidade', 'fazenda.cidade.uf', 'ocupacoes']
       });
 
       return res.status(200).json(baias);      

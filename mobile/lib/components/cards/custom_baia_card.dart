@@ -44,6 +44,21 @@ class CustomBaiaCard extends StatelessWidget {
                     ),                    
                   ),
                 ),
+                Positioned(
+                  top: 60,
+                  left: 10,
+                  child: Container(
+                    width: 150, // Ajuste este valor conforme necessário
+                    height: 40,
+                    child: Text(
+                        'Granja - ${baia.granja.descricao}',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                        ),
+                    ),                    
+                  ),
+                ),
                 if (!this.baia.vazia) 
                   Positioned(
                     bottom: 10,
@@ -52,15 +67,15 @@ class CustomBaiaCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "Brincos:",
+                          "Brinco:",
                           style: TextStyle(
                             color: Colors.white,
-                            fontSize: 20,
+                            fontSize: 22,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                         Text(
-                          "- numeroBrincoBaia",
+                          "- ${baia.ocupacao?.animal!.numeroBrinco}",
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 20,

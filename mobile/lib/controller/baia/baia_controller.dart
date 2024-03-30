@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/model/animal_model.dart';
 import 'package:mobile/model/baia_model.dart';
+import 'package:mobile/model/ocupacao_model.dart';
 import 'package:mobile/repositories/animal/animal_repository_imp.dart';
 import 'package:mobile/repositories/baia/baia_repository.dart';
+import 'package:mobile/repositories/ocupacao/ocupacao_repository_imp.dart';
 import 'package:mobile/services/prefs_service.dart';
 
 class BaiaController {
@@ -10,6 +12,7 @@ class BaiaController {
   BaiaController(this._baiaRepository);
 
   final AnimalRepositoryImp _animalRepository = AnimalRepositoryImp();
+  final OcupacaoRepositoryImp _ocupacaoRepository = OcupacaoRepositoryImp();
 
   ValueNotifier<List<BaiaModel>> baias = ValueNotifier<List<BaiaModel>>([]);
 
@@ -21,7 +24,7 @@ class BaiaController {
     baias.value = await _baiaRepository.getList(granjaId);
   }
 
-  Future<BaiaModel> create (BuildContext context, BaiaModel baiaNova) async {
+  Future<BaiaModel> create(BuildContext context, BaiaModel baiaNova) async {
 
     BaiaModel novaGranja = await  _baiaRepository.create(baiaNova);
 
@@ -43,5 +46,18 @@ class BaiaController {
       print('Erro ao buscar as granjas do repositório: $e');
       throw Exception('Erro ao buscar as granjas');
     }
+  }
+
+  Future<OcupacaoModel> callCriarOcupacao(BaiaModel baia, AnimalModel animal) async {
+
+    OcupacaoModel novaOcupacaoDados = await OcupacaoModel(
+        animal: animal,
+        baia: baia,
+        granja: baia.granja
+      );
+
+    OcupacaoModel novaOcupacao = await  _ocupacaoRepository.create(novaOcupacaoDados);
+
+    return novaOcupacao;
   }
 }

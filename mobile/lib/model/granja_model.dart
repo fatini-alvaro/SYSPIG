@@ -22,7 +22,7 @@ class GranjaModel {
       id: json['id'],
       descricao: json['descricao'],
       codigo: json['codigo'],
-      fazenda: FazendaModel.fromJson(json['fazenda']),
+      fazenda: json['fazenda'] != null ? FazendaModel.fromJson(json['fazenda']) : null,
       tipoGranja: TipoGranjaModel.fromJson(json['tipoGranja']),
     );
   }

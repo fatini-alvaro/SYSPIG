@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { TipoUsuario } from "./TipoUsuario";
 import { Fazenda } from "./Fazenda";
 import { UsuarioFazenda } from "./UsuarioFazenda";
@@ -27,5 +27,11 @@ export class Usuario {
   
   @OneToMany(() => Fazenda, fazenda => fazenda.usuario)
   fazendas: Fazenda[];
+
+  @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  created_at: Date;
+
+  @UpdateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  updated_at: Date;
   
 }

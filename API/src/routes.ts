@@ -8,6 +8,7 @@ import { TipoGranjaController } from "./controllers/tipoGranjaController";
 import { cidadeController } from "./controllers/cidadeController";
 import { BaiaController } from "./controllers/baiaController";
 import { AnimalController } from "./controllers/animalController";
+import { OcupacaoController } from "./controllers/ocupacaoController";
 const routes = Router();
 
 //fazenda rotas
@@ -48,5 +49,8 @@ routes.post('/animais', new AnimalController().create);
 routes.put('/animais/:animal_id', new AnimalController().update); 
 routes.delete('/animais/:animal_id', new AnimalController().delete); 
 routes.get('/animais/:fazenda_id', new AnimalController().list);
+
+//Ocupacao
+routes.post('/ocupacoes', new OcupacaoController().create);
 
 export default routes

@@ -7,6 +7,7 @@ import 'package:mobile/model/baia_model.dart';
 import 'package:mobile/model/granja_model.dart';
 import 'package:mobile/repositories/baia/baia_repository_imp.dart';
 import 'package:mobile/themes/themes.dart';
+import 'package:mobile/utils/dialogs.dart';
 import 'package:mobile/view/baia/cadastrar_baia_page.dart';
 import 'package:mobile/widgets/custom_text_form_field_widget.dart';
 
@@ -168,7 +169,13 @@ class SelecionarBaiaPageState extends State<SelecionarBaiaPage> {
                                           ElevatedButton.icon(
                                             onPressed: () {
                                               if (_formKey.currentState!.validate()) {
-                                                
+                                                _baiaController
+                                                    .callCriarOcupacao(list[idx], _baiaController.animal!)
+                                                    .then((ocupacaoCriada) {
+                                                  if (ocupacaoCriada.id != null) {
+                                                    Dialogs.successToast(context, 'Ocupação aberta com sucesso');
+                                                  }
+                                                });
                                               }
                                             },
                                             icon: Icon(Icons.open_in_browser),

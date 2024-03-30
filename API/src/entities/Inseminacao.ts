@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { UsuarioFazenda } from "./UsuarioFazenda";
 import { Usuario } from "./Usuario";
 import { Cidade } from "./Cidade";
@@ -28,4 +28,18 @@ export class Inseminacao {
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   data: Date;
+
+  @ManyToOne(() => Usuario, { eager: true, nullable: true })
+  @JoinColumn({ name: 'created_by', referencedColumnName: 'id' }) 
+  createdBy: Usuario;
+
+  @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  created_at: Date;
+
+  @ManyToOne(() => Usuario, { eager: true, nullable: true })
+  @JoinColumn({ name: 'updated_by', referencedColumnName: 'id' }) 
+  updatedBy: Usuario;
+
+  @UpdateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  updated_at: Date;
 }

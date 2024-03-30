@@ -1,6 +1,7 @@
-import { Column, Entity, JoinColumn, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Fazenda } from "./Fazenda";
 import { Animal } from "./Animal";
+import { Usuario } from "./Usuario";
 
 @Entity('anotacao')
 export class Anotacao{
@@ -20,4 +21,18 @@ export class Anotacao{
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   data: Date;
+
+  @ManyToOne(() => Usuario, { eager: true, nullable: true })
+  @JoinColumn({ name: 'created_by', referencedColumnName: 'id' }) 
+  createdBy: Usuario;
+
+  @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  created_at: Date;
+
+  @ManyToOne(() => Usuario, { eager: true, nullable: true })
+  @JoinColumn({ name: 'updated_by', referencedColumnName: 'id' }) 
+  updatedBy: Usuario;
+
+  @UpdateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  updated_at: Date;
 }

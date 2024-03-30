@@ -26,11 +26,11 @@ class ApiClient {
         // options.headers['Authorization'] = 'Bearer $token';
 
         if (userId != null) {
-          options.headers['user-Id'] = userId.toString();
+          options.headers['user-id'] = userId.toString();
         }
 
         if (fazendaId != null) {
-          options.headers['fazenda-Id'] = fazendaId.toString();
+          options.headers['fazenda-id'] = fazendaId.toString();
         }
 
         return handler.next(options);

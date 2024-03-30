@@ -1,10 +1,12 @@
 import 'package:mobile/model/fazenda_model.dart';
 import 'package:mobile/model/granja_model.dart';
+import 'package:mobile/model/ocupacao_model.dart';
 
 class BaiaModel {
   final int? id;
   final FazendaModel? fazenda;
   final GranjaModel granja;
+  final OcupacaoModel? ocupacao;
   final String numero;
   final int? capacidade;
   final bool vazia;
@@ -13,6 +15,7 @@ class BaiaModel {
     this.id,
     this.fazenda,
     required this.granja,
+    this.ocupacao,
     required this.numero,
     this.capacidade,
     required this.vazia,
@@ -23,6 +26,7 @@ class BaiaModel {
       id: json['id'],
       fazenda: FazendaModel.fromJson(json['fazenda']),
       granja: GranjaModel.fromJson(json['granja']),
+      ocupacao: json['ocupacao'] != null ? OcupacaoModel.fromJson(json['ocupacao']) : null,
       numero: json['numero'],
       capacidade: json['capacidade'],
       vazia: json['vazia'],
@@ -31,6 +35,6 @@ class BaiaModel {
 
   @override
   String toString() {
-    return 'id: $id, fazenda: $fazenda, granja: $granja, numero: $numero, capacidade: $capacidade, vazia: $vazia';
+    return 'id: $id, fazenda: $fazenda, granja: $granja, ocupacao: $ocupacao, numero: $numero, capacidade: $capacidade, vazia: $vazia';
   }
 }
