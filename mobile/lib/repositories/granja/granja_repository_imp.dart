@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:logger/logger.dart';
 import 'package:mobile/api/api_cliente.dart';
 import 'package:mobile/model/granja_model.dart';
@@ -13,9 +11,9 @@ class GranjaRepositoryImp implements GranjaRepository {
     _apiClient = ApiClient();
   }  
 
-  Future<List<GranjaModel>> getList(int granjaId) async {
+  Future<List<GranjaModel>> getList(int fazendaId) async {
     try {
-      var response = await _apiClient.dio.get('/granjas/$granjaId');
+      var response = await _apiClient.dio.get('/granjas/$fazendaId');
       return (response.data as List).map((e) => GranjaModel.fromJson(e)).toList();
     } catch (e) {
       Logger().e('Erro ao obter lista de granjas (lista - Granjas): $e');
@@ -59,17 +57,17 @@ class GranjaRepositoryImp implements GranjaRepository {
 
   @override
   Future<bool> delete(int granjaId) async {
-  try {
-    var response = await _apiClient.dio.delete('/granjas/$granjaId');
-    
-    if (response.statusCode == 200) {
-      return true; // Exclusão bem-sucedida
-    } else {
-      return false; // Exclusão falhou
+    try {
+      var response = await _apiClient.dio.delete('/granjas/$granjaId');
+      
+      if (response.statusCode == 200) {
+        return true; // Exclusão bem-sucedida
+      } else {
+        return false; // Exclusão falhou
+      }
+    } catch (e) {
+      Logger().e('Erro ao excluir granja (delete - Granjas): $e');
+      throw Exception('Erro ao excluir granja');
     }
-  } catch (e) {
-    Logger().e('Erro ao excluir granja (delete - Granjas): $e');
-    throw Exception('Erro ao excluir granja');
   }
-}
 }

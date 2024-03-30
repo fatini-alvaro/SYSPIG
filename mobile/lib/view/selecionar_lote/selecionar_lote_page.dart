@@ -38,7 +38,9 @@ class SelecionarLotePageState extends State<SelecionarLotePage> {
             padding: EdgeInsets.symmetric(horizontal: 16.0), // Ajuste a quantidade de espaço desejada
             child: CustomAbrirTelaAdicionarNovoButtonComponent(
               buttonText: 'Cadastrar Novo Lote', 
-              caminhoTelaCadastro: 'abrirTelaCadastroLote',
+              onPressed: () {
+                Navigator.of(context).pushNamed('/abrirTelaCadastroLote');     
+              },
             ),
           ),
           SizedBox(height: 15),
@@ -48,7 +50,7 @@ class SelecionarLotePageState extends State<SelecionarLotePage> {
           //     builder: (_, list, __) {
           //       return ListView.builder(
           //         itemCount: list.length,
-          //         itemBuilder: (_, idx) => CustomGranjaRegistroCard(
+          //         itemBuilder: (_, idx) => CustomRegistroCard(
           //           granja: list[idx],
           //           onEditarPressed: () {
           //             // Lógica para abrir a tela de edição

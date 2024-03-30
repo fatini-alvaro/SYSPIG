@@ -2,19 +2,19 @@ import 'package:mobile/model/fazenda_model.dart';
 import 'package:mobile/model/granja_model.dart';
 
 class BaiaModel {
-  final int id;
-  final FazendaModel fazenda;
+  final int? id;
+  final FazendaModel? fazenda;
   final GranjaModel granja;
   final String numero;
-  final int capacidade;
+  final int? capacidade;
   final bool vazia;
 
   BaiaModel({
-    required this.id,
-    required this.fazenda,
+    this.id,
+    this.fazenda,
     required this.granja,
     required this.numero,
-    required this.capacidade,
+    this.capacidade,
     required this.vazia,
   });
 

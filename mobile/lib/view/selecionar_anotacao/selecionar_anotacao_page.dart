@@ -37,7 +37,9 @@ class SelecionarAnotacaoPageState extends State<SelecionarAnotacaoPage> {
             padding: EdgeInsets.symmetric(horizontal: 16.0), // Ajuste a quantidade de espaço desejada
             child: CustomAbrirTelaAdicionarNovoButtonComponent(
               buttonText: 'Cadastrar Nova Anotação', 
-              caminhoTelaCadastro: 'abrirTelaCadastroAnotacao',
+              onPressed: () {
+                Navigator.of(context).pushNamed('/abrirTelaCadastroAnotacao');     
+              },
             ),
           ),
           SizedBox(height: 15),
@@ -47,7 +49,7 @@ class SelecionarAnotacaoPageState extends State<SelecionarAnotacaoPage> {
           //     builder: (_, list, __) {
           //       return ListView.builder(
           //         itemCount: list.length,
-          //         itemBuilder: (_, idx) => CustomGranjaRegistroCard(
+          //         itemBuilder: (_, idx) => CustomRegistroCard(
           //           granja: list[idx],
           //           onEditarPressed: () {
           //             // Lógica para abrir a tela de edição

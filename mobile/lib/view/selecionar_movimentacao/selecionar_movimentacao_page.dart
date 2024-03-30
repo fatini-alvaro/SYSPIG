@@ -88,7 +88,9 @@ class SelecionarMovimentacaoPageState extends State<SelecionarMovimentacaoPage> 
                 horizontal: 16.0), // Ajuste a quantidade de espaço desejada
             child: CustomAbrirTelaAdicionarNovoButtonComponent(
               buttonText: 'Cadastrar Nova Movimentacao',
-              caminhoTelaCadastro: 'abrirTelaCadastroMovimentacao',
+              onPressed: () {
+                Navigator.of(context).pushNamed('/abrirTelaCadastroMovimentacao');     
+              },
             ),
           ),
           SizedBox(height: 15),
@@ -98,7 +100,7 @@ class SelecionarMovimentacaoPageState extends State<SelecionarMovimentacaoPage> 
           //     builder: (_, list, __) {
           //       return ListView.builder(
           //         itemCount: list.length,
-          //         itemBuilder: (_, idx) => CustomGranjaRegistroCard(
+          //         itemBuilder: (_, idx) => CustomRegistroCard(
           //           granja: list[idx],
           //           onEditarPressed: () {
           //             // Lógica para abrir a tela de edição

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/components/buttons/custom_abrir_tela_adicionar_novo_button_component.dart';
-import 'package:mobile/components/cards/custom_granja_registro_card.dart';
+import 'package:mobile/components/cards/custom_registro_card.dart';
 import 'package:mobile/controller/granja/granja_controller.dart';
 import 'package:mobile/model/granja_model.dart';
 import 'package:mobile/repositories/granja/granja_repository_imp.dart';
@@ -8,6 +8,7 @@ import 'package:mobile/services/prefs_service.dart';
 import 'package:mobile/themes/themes.dart';
 import 'package:mobile/utils/dialogs.dart';
 import 'package:mobile/view/granja/cadastrar_granja_page.dart';
+import 'package:mobile/view/selecionar_baia/selecionar_baia_page.dart';
 
 class SelecionarGranjaPage extends StatefulWidget {
   @override
@@ -51,7 +52,9 @@ class SelecionarGranjaPageState extends State<SelecionarGranjaPage> {
             padding: EdgeInsets.symmetric(horizontal: 16.0), // Ajuste a quantidade de espaço desejada
             child: CustomAbrirTelaAdicionarNovoButtonComponent(
               buttonText: 'Cadastrar Nova Granja', 
-              caminhoTelaCadastro: 'abrirTelaCadastroGranja',
+              onPressed: () {
+                Navigator.of(context).pushNamed('/abrirTelaCadastroGranja');     
+              },
             ),
           ),
           SizedBox(height: 15),
@@ -61,8 +64,43 @@ class SelecionarGranjaPageState extends State<SelecionarGranjaPage> {
               builder: (_, list, __) {
                 return ListView.builder(
                   itemCount: list.length,
-                  itemBuilder: (_, idx) => CustomGranjaRegistroCard(
-                    granja: list[idx],
+                  itemBuilder: (_, idx) => CustomRegistroCard(
+                    descricao:Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          list[idx].descricao,
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20,
+                          ),
+                        ),
+                        SizedBox(height: 8),
+                        Text(
+                          'Tipo - ${list[idx].tipoGranja.descricao}',
+                          style: TextStyle(
+                            fontWeight: FontWeight.normal,
+                            fontSize: 15,
+                          ),
+                        ),
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.landscape, // Ícone de localização (substitua pelo ícone desejado)
+                              color: Colors.red, // Cor do ícone (ajuste conforme necessário)
+                            ),
+                            SizedBox(width: 8), // Espaçamento entre o ícone e o texto
+                            Text(
+                              'Fazenda - ${list[idx].fazenda?.nome}',
+                              style: TextStyle(
+                                fontWeight: FontWeight.normal,
+                                fontSize: 15,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                     onEditarPressed: () {
                       Navigator.push(
                         context,
@@ -78,7 +116,7 @@ class SelecionarGranjaPageState extends State<SelecionarGranjaPage> {
                         context: context,
                         builder: (_) => AlertDialog(
                           title: Text('Confirmar exclusão'),
-                          content: Text('Tem certeza de que deseja excluir esta granja?'),
+                          content: Text('Tem certeza de que deseja excluir a granja ${list[idx].descricao}?'),
                           actions: [
                             TextButton(
                               onPressed: () async {
@@ -101,7 +139,14 @@ class SelecionarGranjaPageState extends State<SelecionarGranjaPage> {
                         ),
                       );
                     },
-                    caminhoTelaAoClicar: 'selecionarBaia'
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => SelecionarBaiaPage(granja: list[idx]),
+                        ),
+                      );
+                    },          
                   ),
                 );
               },

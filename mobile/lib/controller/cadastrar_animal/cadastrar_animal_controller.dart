@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:mobile/controller/animal/animal_controller.dart';
+import 'package:mobile/model/animal_model.dart';
 import 'package:mobile/repositories/animal/animal_repository_imp.dart';
 import 'package:mobile/utils/dialogs.dart';
 
@@ -10,77 +11,78 @@ class CadastrarAnimalController with ChangeNotifier {
   final AnimalController _animalController = AnimalController(AnimalRepositoryImp());
 
   String? _numeroBrinco;
-  setNumeroBrinco(String value) => _numeroBrinco = value;
-
-  String? _fazenda;
-  setFazenda(String value) => _fazenda = value;
+  setNumeroBrinco(String? value) => _numeroBrinco = value;
+  String? get numeroBrinco => _numeroBrinco;
 
   String? _sexo;
-  setSexo(String value) => _sexo = value;
+  setSexo(String? value) => _sexo = value;
+  String? get sexo => _sexo;
 
   String? _status;
-  setStatus(String value) => _status = value;
+  setStatus(String? value) => _status = value;
+  String? get status => _status;
 
-  String? _dataNascimento;
-  setNascimento(String value) => _dataNascimento = value;
-
-  String? numeroError;
-  String? sexoError;
-  String? statusError;
-  String? dataNascimentoError;
-
-  // Função para validar os campos
-  bool validateFields() {
-    bool isValid = true;
-    const textObrigatorio = 'Campo obrigatório';
-
-    // Validar e definir mensagens de erro para cada campo
-    if (_numeroBrinco == null || _numeroBrinco!.isEmpty) {
-      numeroError = textObrigatorio;
-      isValid = false;
-    } else {
-      numeroError = '';
-    }
-
-    if (_sexo == null || _sexo!.isEmpty) {
-      sexoError = textObrigatorio;
-      isValid = false;
-    } else {
-      sexoError = '';
-    }
-
-    if (_status == null || _status!.isEmpty) {
-      statusError = textObrigatorio;
-      isValid = false;
-    } else {
-      statusError = '';
-    }
-
-    if (_dataNascimento == null || _dataNascimento!.isEmpty) {
-      dataNascimentoError = textObrigatorio;
-      isValid = false;
-    } else {
-      dataNascimentoError = '';
-    }
-    
-    
-    notifyListeners();
-
-    return isValid;
-  }
+  DateTime? _dataNascimento;
+  setNascimento(DateTime? value) => _dataNascimento = value;
+  DateTime? get dataNascimento => _dataNascimento;
 
   Future<bool> create(BuildContext context) async {
 
-    if (!validateFields()) {
-      // Se houver campos vazios, retornar false sem realizar a ação
-      return false;
+    Dialogs.showLoading(context, message:'Aguarde, Criando Animal');
+
+    try {
+      AnimalModel novoAnimal = await AnimalModel(
+        numeroBrinco: _numeroBrinco!,
+        sexo: _sexo!,
+        dataNascimento: _dataNascimento,
+        status:_status! 
+      );
+
+      AnimalModel animalCriada = await _animalController.create(context, novoAnimal);
+
+      Dialogs.hideLoading(context);
+
+      if (animalCriada != null) {
+        Dialogs.successToast(context, 'Animal criado com sucesso!');
+      } else {
+        Dialogs.errorToast(context, 'Falha ao criar Animal');
+      }
+    } catch (e) {
+      print(e);
+      Dialogs.hideLoading(context);
+      Dialogs.errorToast(context, 'Falha ao criar Animal');
     }
 
-    Dialogs.showLoading(context, message:'Aguarde, Criando Novo Animal');
-    await Future.delayed(Duration(seconds: 2));
-    //To-do chama o create do fazendacontroller
+    return true;
+  }
 
-    Dialogs.hideLoading(context);
+  Future<bool> update(BuildContext context, AnimalModel animal) async {
+
+    Dialogs.showLoading(context, message:'Aguarde, Editando Animal');
+
+    try {
+      AnimalModel animalEditadoData = await AnimalModel(
+        id: animal.id,
+        numeroBrinco: _numeroBrinco!,
+        sexo: _sexo!,
+        dataNascimento: _dataNascimento,
+        status:_status! 
+      );
+
+      AnimalModel animalEditado = await _animalController.update(context, animalEditadoData);
+
+      Dialogs.hideLoading(context);
+
+      if (animalEditado != null) {
+        Dialogs.successToast(context, 'Animal editada com sucesso!');
+      } else {
+        Dialogs.errorToast(context, 'Falha ao editada a Animal');
+      }
+    } catch (e) {
+      print(e);
+      Dialogs.hideLoading(context);
+      Dialogs.errorToast(context, 'Falha ao editar a Animal');
+    }
 
     return true;
   }

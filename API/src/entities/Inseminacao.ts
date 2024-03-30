@@ -15,6 +15,9 @@ export class Inseminacao {
   @JoinColumn({ name: 'fazenda_id', referencedColumnName: 'id' }) 
   fazenda: Fazenda;
 
+  @Column({ type: 'int', nullable: true })
+  codigo: number;
+
   @ManyToOne(() => Animal, { eager: true })
   @JoinColumn({ name: 'porco_doador_id', referencedColumnName: 'id' }) 
   porcoDoador: Animal;

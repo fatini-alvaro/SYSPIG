@@ -1,27 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/model/baia_model.dart';
 
 class CustomBaiaCard extends StatelessWidget {
-  final String numeroBaia;
-  final String numeroBrincoBaia;
-  final String statusBaia;
-  final VoidCallback onTapCallback;
+  final BaiaModel baia;
+  final VoidCallback onTapOcupada;
+  final VoidCallback onTapVazia;
 
   const CustomBaiaCard({
     Key? key,
-    required this.numeroBaia,
-    required this.numeroBrincoBaia,
-    required this.statusBaia,
-    required this.onTapCallback,
+    required this.baia,
+    required this.onTapOcupada,
+    required this.onTapVazia,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 5, vertical: 8),
+      height: 50,
       child: GestureDetector(
-        onTap: onTapCallback,
+        onTap: this.baia.vazia ? onTapVazia : onTapOcupada,
         child: Card(
-          color: Colors.orange,
+          color: this.baia.vazia ? Colors.grey : Colors.orange,
           elevation: 7,
           child: Container(
             width: 170,
@@ -35,7 +35,7 @@ class CustomBaiaCard extends StatelessWidget {
                     width: 150, // Ajuste este valor conforme necessário
                     height: 40,
                     child: Text(
-                        numeroBaia,
+                        'Nº - ${baia.numero}',
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 25,
@@ -44,30 +44,56 @@ class CustomBaiaCard extends StatelessWidget {
                     ),                    
                   ),
                 ),
-                Positioned(
-                  bottom: 10,
-                  left: 10,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Brincos:",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
+                if (!this.baia.vazia) 
+                  Positioned(
+                    bottom: 10,
+                    left: 10,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Brincos:",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
-                      Text(
-                        "- ${numeroBrincoBaia}",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 20,
+                        Text(
+                          "- numeroBrincoBaia",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
+                 if (this.baia.vazia)  
+                  Positioned(
+                    bottom: 50,
+                    left: 10,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Vazia",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 25,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          "Clique para abrir",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),                
               ],
             ),
           ),

@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/model/granja_model.dart';
 
-class CustomGranjaRegistroCard extends StatelessWidget {
-  final GranjaModel granja;
+class CustomRegistroCard extends StatelessWidget {
   final VoidCallback onEditarPressed;
   final VoidCallback onExcluirPressed;
-  final String caminhoTelaAoClicar;
+  final Function()? onTap;
+  final Widget descricao;
 
-  const CustomGranjaRegistroCard({
+  const CustomRegistroCard({
     Key? key,
-    required this.granja,
     required this.onEditarPressed,
     required this.onExcluirPressed,
-    required this.caminhoTelaAoClicar,
+    this.onTap,
+    required this.descricao,
   }) : super(key: key);
 
   @override
@@ -20,9 +19,7 @@ class CustomGranjaRegistroCard extends StatelessWidget {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: GestureDetector(
-        onTap: () {
-          Navigator.of(context).pushReplacementNamed('/${caminhoTelaAoClicar}');               
-        }, 
+        onTap:onTap,
         child: Card(
           color: Colors.white,
           elevation: 5,
@@ -44,30 +41,7 @@ class CustomGranjaRegistroCard extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        granja.descricao,
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20,
-                        ),
-                      ),
-                      SizedBox(height: 8),
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.landscape, // Ícone de localização (substitua pelo ícone desejado)
-                            color: Colors.red, // Cor do ícone (ajuste conforme necessário)
-                          ),
-                          SizedBox(width: 8), // Espaçamento entre o ícone e o texto
-                          Text(
-                            'Fazenda - ${granja.fazenda?.nome}',
-                            style: TextStyle(
-                              fontWeight: FontWeight.normal,
-                              fontSize: 15,
-                            ),
-                          ),
-                        ],
-                      ),
+                      descricao,
                       SizedBox(height: 8),
                       Row(
                         children: [

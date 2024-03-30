@@ -8,12 +8,28 @@ class AnimalController {
 
   ValueNotifier<List<AnimalModel>> animais = ValueNotifier<List<AnimalModel>>([]);
 
-  fetch() async {
-    animais.value = await _animalRepository.getList();
+  fetch(int fazendaId) async {
+    animais.value = await _animalRepository.getList(fazendaId);
   }
 
-  Future<bool> create (BuildContext context) async {
+  Future<AnimalModel> create(BuildContext context, AnimalModel animalNovo) async {
+    
+    AnimalModel novoAnimal = await  _animalRepository.create(animalNovo);
 
-    return true;
+    return novoAnimal;
+  }
+  
+  Future<AnimalModel> update(BuildContext context, AnimalModel animalEdicao) async {
+    
+    AnimalModel animalEditada = await  _animalRepository.update(animalEdicao);
+
+    return animalEditada;
+  }
+
+  Future<bool> delete(BuildContext context, int animalExclusaoID) async {
+    
+    bool excluido = await  _animalRepository.delete(animalExclusaoID);
+
+    return excluido;
   }
 }

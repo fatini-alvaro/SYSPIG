@@ -1,63 +1,98 @@
 
 import 'package:flutter/material.dart';
 import 'package:mobile/controller/baia/baia_controller.dart';
+import 'package:mobile/model/baia_model.dart';
+import 'package:mobile/model/granja_model.dart';
 import 'package:mobile/repositories/baia/baia_repository_imp.dart';
+import 'package:mobile/repositories/granja/granja_repository_imp.dart';
+import 'package:mobile/services/prefs_service.dart';
 import 'package:mobile/utils/dialogs.dart';
 
 
 class CadastrarBaiaController with ChangeNotifier {
 
   final BaiaController _baiaController = BaiaController(BaiaRepositoryImp());
+  final GranjaRepositoryImp _granjaRepository = GranjaRepositoryImp();
 
   String? _numero;
   setNumero(String value) => _numero = value;
+  String? get numero => _numero;
 
-  String? _granja;
-  setGranja(String value) => _granja = value;
+  GranjaModel? _granja;
+  void setGranja(GranjaModel? value) => _granja = value;
+  GranjaModel? get granja => _granja;
 
   String? _capacidade;
   setCapacidade(String value) => _capacidade = value;
 
-  String? numeroError;
-  String? granjaError;
+  Future<bool> create(BuildContext context) async {
 
-  // Função para validar os campos
-  bool validateFields() {
-    bool isValid = true;
-    const textObrigatorio = 'Campo obrigatório';
+    Dialogs.showLoading(context, message:'Aguarde, Criando Baia');
 
-    // Validar e definir mensagens de erro para cada campo
-    if (_numero == null || _numero!.isEmpty) {
-      numeroError = textObrigatorio;
-      isValid = false;
-    } else {
-      numeroError = '';
+    try {
+      BaiaModel novaBaia = await BaiaModel(
+        numero: _numero!,
+        granja: _granja!,
+        vazia: true
+      );
+
+      BaiaModel baiaCriada = await _baiaController.create(context, novaBaia);
+
+      Dialogs.hideLoading(context);
+
+      if (baiaCriada != null) {
+        Dialogs.successToast(context, 'Baia criada com sucesso!');
+      } else {
+        Dialogs.errorToast(context, 'Falha ao criar a Baia');
+      }
+    } catch (e) {
+      print(e);
+      Dialogs.hideLoading(context);
+      Dialogs.errorToast(context, 'Falha ao criar a Baia');
     }
 
-    if (_granja == null || _granja!.isEmpty) {
-      granjaError = textObrigatorio;
-      isValid = false;
-    } else {
-      granjaError = '';
-    }
-    
-    notifyListeners();
-
-    return isValid;
+    return true;
   }
 
-  Future<bool> create (BuildContext context) async {
+  Future<List<GranjaModel>> getGranjasFromRepository() async {
+    try {
 
-    if (!validateFields()) {
-      // Se houver campos vazios, retornar false sem realizar a ação
-      return false;
+      var idFazenda = await PrefsService.getFazendaId();
+
+      return await _granjaRepository.getList(idFazenda!); 
+    } catch (e) {
+      print('Erro ao buscar as granjas do repositório: $e');
+      throw Exception('Erro ao buscar as granjas');
     }
+  }
 
-    Dialogs.showLoading(context, message:'Aguarde, Criando Nova Baia');
-    await Future.delayed(Duration(seconds: 2));
-    //To-do chama o create do fazendacontroller
+  Future<bool> update(BuildContext context, BaiaModel baia) async {
 
-    Dialogs.hideLoading(context);
+    Dialogs.showLoading(context, message:'Aguarde, Criando Nova Granja');
+
+    try {
+      BaiaModel baiaEdicao = await BaiaModel(
+        id: baia.id,
+        numero: _numero!,
+        granja: _granja!,
+        fazenda: baia.fazenda,
+        vazia: true
+      );
+
+      BaiaModel baiaEditada = await _baiaController.update(context, baiaEdicao);
+
+      Dialogs.hideLoading(context);
+
+      if (baiaEditada != null) {
+        Dialogs.successToast(context, 'Baia editada com sucesso!');
+      } else {
+        Dialogs.errorToast(context, 'Falha ao editada a Baia');
+      }
+    } catch (e) {
+      print(e);
+      Dialogs.hideLoading(context);
+      Dialogs.errorToast(context, 'Falha ao editar a Baia');
+    }
 
     return true;
   }

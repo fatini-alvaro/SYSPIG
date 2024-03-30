@@ -1,23 +1,23 @@
 import 'package:mobile/model/fazenda_model.dart';
 
 class AnimalModel {
-  final int id;
+  final int? id;
   final String numeroBrinco;
-  final FazendaModel fazenda;
+  final FazendaModel? fazenda;
   final String sexo;
   final String status;
-  final int dataNascimento;
+  final DateTime? dataNascimento;
   // final FazendaModel baia;
   // final TipoGranjaModel matriz;
   // final TipoGranjaModel pai;
 
   AnimalModel({
-    required this.id,
+    this.id,
     required this.numeroBrinco,
-    required this.fazenda,
+    this.fazenda,
     required this.sexo,
     required this.status,
-    required this.dataNascimento,
+    this.dataNascimento,
   });
 
   factory AnimalModel.fromJson(Map<String, dynamic> json) {

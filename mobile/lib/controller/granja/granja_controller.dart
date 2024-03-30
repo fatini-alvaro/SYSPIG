@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 import 'package:mobile/model/granja_model.dart';
 import 'package:mobile/repositories/granja/granja_repository.dart';

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 class CustomTextFormFieldWidget extends StatelessWidget {
   final Function(String) onChanged;
+  final Function()? onTap;
   final String label;
   final String? hintText;
   final Icon? prefixIcon;
@@ -11,11 +12,13 @@ class CustomTextFormFieldWidget extends StatelessWidget {
   final String? errorText;
   final String? Function(String?)? validator;
   final String? initialValue;
+  final TextEditingController? controller;
 
   const CustomTextFormFieldWidget({
     Key? key, 
     required this.onChanged, 
     required this.label,
+    this.onTap,
     this.hintText,
     this.prefixIcon,
     this.suffixIcon,
@@ -23,13 +26,15 @@ class CustomTextFormFieldWidget extends StatelessWidget {
     this.obscureText = false,
     this.errorText,
     this.validator,
-    this.initialValue
+    this.initialValue,
+    this.controller,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(      
       keyboardType: keyboardType,
+      controller: controller,
       decoration: InputDecoration(
         labelText: label,
         hintText: hintText,
@@ -41,6 +46,7 @@ class CustomTextFormFieldWidget extends StatelessWidget {
         ),
       ),
       onChanged: onChanged,
+      onTap: onTap,
       obscureText:obscureText,   
       validator: validator,   
       initialValue: initialValue,

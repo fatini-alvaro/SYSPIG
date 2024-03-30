@@ -50,7 +50,9 @@ class SelecionarFazendaPageState extends State<SelecionarFazendaPage> {
             padding: EdgeInsets.symmetric(horizontal: 16.0), // Ajuste a quantidade de espaço desejada
             child: CustomAbrirTelaAdicionarNovoButtonComponent(
               buttonText: 'Cadastrar Nova Fazenda', 
-              caminhoTelaCadastro: 'abrirTelaCadastroFazenda',
+              onPressed: () {
+                Navigator.of(context).pushNamed('/abrirTelaCadastroFazenda');     
+              },
             ),
           ),
           SizedBox(height: 15),

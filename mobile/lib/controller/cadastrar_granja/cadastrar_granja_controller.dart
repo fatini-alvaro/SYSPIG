@@ -23,11 +23,10 @@ class CadastrarGranjaController with ChangeNotifier {
 
   Future<bool> create(BuildContext context) async {
 
-    Dialogs.showLoading(context, message:'Aguarde, Editando Granja');
+    Dialogs.showLoading(context, message:'Aguarde, Criando Granja');
 
     try {
       GranjaModel novaGranja = await GranjaModel(
-
         descricao: _descricao!,
         tipoGranja: _tipoGranja!,
       );
@@ -52,7 +51,7 @@ class CadastrarGranjaController with ChangeNotifier {
 
   Future<bool> update(BuildContext context, GranjaModel granja) async {
 
-    Dialogs.showLoading(context, message:'Aguarde, Criando Nova Granja');
+    Dialogs.showLoading(context, message:'Aguarde, Editando Granja');
 
     try {
       GranjaModel novaGranja = await GranjaModel(
@@ -73,7 +72,7 @@ class CadastrarGranjaController with ChangeNotifier {
     } catch (e) {
       print(e);
       Dialogs.hideLoading(context);
-      Dialogs.errorToast(context, 'Falha ao editada a Granja');
+      Dialogs.errorToast(context, 'Falha ao editar a Granja');
     }
 
     return true;
@@ -83,8 +82,8 @@ class CadastrarGranjaController with ChangeNotifier {
     try {
       return await _tipoGranjaRepository.getList(); 
     } catch (e) {
-      print('Erro ao buscar as cidades do repositório: $e');
-      throw Exception('Erro ao buscar as cidades');
+      print('Erro ao buscar os tipos granjas do repositório: $e');
+      throw Exception('Erro ao buscar os tipos granjas');
     }
   }
 

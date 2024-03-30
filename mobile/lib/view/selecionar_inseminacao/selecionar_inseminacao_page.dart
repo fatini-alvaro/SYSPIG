@@ -36,8 +36,10 @@ class SelecionarInseminacaoPageState extends State<SelecionarInseminacaoPage> {
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 16.0), // Ajuste a quantidade de espaço desejada
             child: CustomAbrirTelaAdicionarNovoButtonComponent(
-              buttonText: 'Cadastrar Nova inseminação', 
-              caminhoTelaCadastro: 'abrirTelaCadastroInseminacao',
+              buttonText: 'Cadastrar Nova inseminação',
+              onPressed: () {
+                Navigator.of(context).pushNamed('/abrirTelaCadastroInseminacao');     
+              },
             ),
           ),
           SizedBox(height: 15),
@@ -47,7 +49,7 @@ class SelecionarInseminacaoPageState extends State<SelecionarInseminacaoPage> {
           //     builder: (_, list, __) {
           //       return ListView.builder(
           //         itemCount: list.length,
-          //         itemBuilder: (_, idx) => CustomGranjaRegistroCard(
+          //         itemBuilder: (_, idx) => CustomRegistroCard(
           //           granja: list[idx],
           //           onEditarPressed: () {
           //             // Lógica para abrir a tela de edição

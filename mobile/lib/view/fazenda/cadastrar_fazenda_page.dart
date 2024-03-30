@@ -21,7 +21,6 @@ class CadastrarFazendaPageState extends State<CadastrarFazendaPage> {
 
   List<CidadeModel> cidades = [];
   TextEditingController _searchController = TextEditingController();
-  String _selectedCity = '';
   bool _isCitySearchFocused = false;
 
   @override
@@ -69,9 +68,7 @@ class CadastrarFazendaPageState extends State<CadastrarFazendaPage> {
                 hintText: 'Buscar Cidade',
                 suffixIcon: Icon(Icons.search),
                 onChanged: (value) {
-                  setState(() {
-                    _selectedCity = value;
-                  });
+                  //
                 },
                 onTap: () {
                   setState(() {

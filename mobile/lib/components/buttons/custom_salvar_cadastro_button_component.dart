@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 
 class CustomSalvarCadastroButtonComponent extends StatelessWidget {
   final String buttonText;
-  final String rotaTelaAposSalvar;
+  final String? rotaTelaAposSalvar;
   final VoidCallback? onPressed; // Adicione o parâmetro de função onPressed
 
   CustomSalvarCadastroButtonComponent({
     required this.buttonText,
-    required this.rotaTelaAposSalvar,
+    this.rotaTelaAposSalvar,
     this.onPressed, // Atualize o construtor para incluir onPressed
   });
 

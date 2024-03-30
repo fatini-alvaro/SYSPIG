@@ -8,6 +8,9 @@ export class Baia{
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Column({ type: 'int', nullable: true })
+  codigo: number;
+
   @ManyToOne(() => Fazenda, { eager: true })
   @JoinColumn({ name: 'fazenda_id', referencedColumnName: 'id' }) 
   fazenda: Fazenda;
@@ -19,7 +22,7 @@ export class Baia{
   @Column({ type: 'text' })
   numero: string;
 
-  @Column({ type: 'integer' })
+  @Column({ type: 'integer', nullable: true})
   capacidade: number;
 
   @Column({ type: 'boolean', default: true })

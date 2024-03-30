@@ -10,6 +10,9 @@ export class Animal{
   @JoinColumn({ name: 'fazenda_id', referencedColumnName: 'id' }) 
   fazenda: Fazenda;
 
+  @Column({ type: 'int', nullable: true })
+  codigo: number;
+
   @Column({ type: 'text' })
   numero_brinco: string;
   
@@ -19,6 +22,6 @@ export class Animal{
   @Column({ type: 'text' })
   status: string;
 
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', nullable: true })
   data_nascimento: Date;
 }
