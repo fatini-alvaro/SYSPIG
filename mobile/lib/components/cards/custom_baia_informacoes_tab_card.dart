@@ -1,7 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/components/cards/custom_pre_visualizacao_anotacao_card.dart';
+import 'package:mobile/model/ocupacao_model.dart';
+import 'package:mobile/utils/date_format_util.dart';
+import 'package:mobile/view/animal/cadastrar_animal_page.dart';
 
 class CustomBaiaInformacoesTabCard extends StatefulWidget {
+
+  final OcupacaoModel? ocupacao;
+
+  CustomBaiaInformacoesTabCard({Key? key, this.ocupacao}) : super(key: key);
+
   @override
   _CustomBaiaInformacoesTabCardState createState() => _CustomBaiaInformacoesTabCardState();
 }
@@ -13,13 +21,13 @@ class _CustomBaiaInformacoesTabCardState extends State<CustomBaiaInformacoesTabC
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           Padding(
             padding: EdgeInsets.only(left: 16),
             child: Align(
               alignment: Alignment.centerLeft,
               child: Text(
-                'Aberta em: 16/11/2023',
+                'Aberta em: ${widget.ocupacao?.dataAbertura != null ? DateFormatUtil.defaultFormat.format(widget.ocupacao!.dataAbertura!) : "Data não disponível"}',
                 style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.bold,
@@ -27,13 +35,13 @@ class _CustomBaiaInformacoesTabCardState extends State<CustomBaiaInformacoesTabC
               ),
             ),
           ),
-          SizedBox(height: 7), 
+          const SizedBox(height: 7), 
           Padding(
             padding: EdgeInsets.only(left: 16),
             child: Align(
               alignment: Alignment.centerLeft,
               child: Text(
-                'Aberta por: Walter White',
+                'Aberta por: ${widget.ocupacao?.createdBy != null ? widget.ocupacao!.createdBy!.nome : "Informção não disponivel"}',
                 style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.bold,
@@ -41,7 +49,21 @@ class _CustomBaiaInformacoesTabCardState extends State<CustomBaiaInformacoesTabC
               ),
             ),
           ),
-          SizedBox(height: 22), 
+          const SizedBox(height: 7), 
+          Padding(
+            padding: EdgeInsets.only(left: 16),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                'Animal: ${widget.ocupacao!.animal!.numeroBrinco}',
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 22), 
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 16),
             child: ElevatedButton(
@@ -55,7 +77,14 @@ class _CustomBaiaInformacoesTabCardState extends State<CustomBaiaInformacoesTabC
                 ),
               ),
               onPressed: () {
-                Navigator.of(context).pushNamed('/abrirTelaCadastroAnimal');               
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => CadastrarAnimalPage(
+                      animalParaEditar: widget.ocupacao!.animal!,
+                    ),
+                  )
+                );
               }, 
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,

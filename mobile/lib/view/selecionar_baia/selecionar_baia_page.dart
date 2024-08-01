@@ -8,6 +8,7 @@ import 'package:mobile/model/granja_model.dart';
 import 'package:mobile/repositories/baia/baia_repository_imp.dart';
 import 'package:mobile/themes/themes.dart';
 import 'package:mobile/utils/dialogs.dart';
+import 'package:mobile/view/baia/baia_page.dart';
 import 'package:mobile/view/baia/cadastrar_baia_page.dart';
 import 'package:mobile/widgets/custom_text_form_field_widget.dart';
 
@@ -90,7 +91,14 @@ class SelecionarBaiaPageState extends State<SelecionarBaiaPage> {
                   itemBuilder: (_, idx) => CustomBaiaCard(
                     baia: list[idx],
                     onTapOcupada: () {
-                      Navigator.of(context).pushNamed('/baia');
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => BaiaPage(
+                            ocupacao: list[idx].ocupacao,
+                          ),
+                        ),
+                      );
                     },
                     onTapVazia: () => showModalBottomSheet(
                       context: context,
@@ -174,6 +182,14 @@ class SelecionarBaiaPageState extends State<SelecionarBaiaPage> {
                                                     .then((ocupacaoCriada) {
                                                   if (ocupacaoCriada.id != null) {
                                                     Dialogs.successToast(context, 'Ocupação aberta com sucesso');
+                                                    Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                        builder: (context) => BaiaPage(
+                                                          ocupacao: ocupacaoCriada,
+                                                        ),
+                                                      ),
+                                                    );
                                                   }
                                                 });
                                               }

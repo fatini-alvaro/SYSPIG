@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from "typeorm";
 
-export class geraTriggerCodigoAll216221028032024 implements MigrationInterface {
-    name = 'geraTriggerCodigoAll216221028032024'
+export class geraTriggerCodigoAll216221018042024 implements MigrationInterface {
+    name = 'geraTriggerCodigoAll216221018042024'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         // Criar a função PL/pgSQL para calcular o próximo código sem argumentos
@@ -42,6 +42,11 @@ export class geraTriggerCodigoAll216221028032024 implements MigrationInterface {
             BEFORE INSERT ON inseminacao
             FOR EACH ROW
             EXECUTE FUNCTION calcular_proximo_codigo();
+
+            CREATE OR REPLACE TRIGGER atualizar_codigo_anotacao
+            BEFORE INSERT ON anotacao
+            FOR EACH ROW
+            EXECUTE FUNCTION calcular_proximo_codigo();
         `);
     }
 
@@ -51,6 +56,7 @@ export class geraTriggerCodigoAll216221028032024 implements MigrationInterface {
             DROP TRIGGER atualizar_codigo_animal ON animal;
             DROP TRIGGER atualizar_codigo_anotacao ON anotacao;
             DROP TRIGGER atualizar_codigo_inseminacao ON inseminacao;
+            DROP TRIGGER atualizar_codigo_anotacao ON anotacao;
             DROP FUNCTION calcular_proximo_codigo;
         `);
     }

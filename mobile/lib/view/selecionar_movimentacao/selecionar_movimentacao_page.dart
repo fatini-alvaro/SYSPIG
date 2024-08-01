@@ -12,12 +12,12 @@ class SelecionarMovimentacaoPage extends StatefulWidget {
 }
 
 class SelecionarMovimentacaoPageState extends State<SelecionarMovimentacaoPage> {
-  final MovimentacaoController _anotacaoController = MovimentacaoController(MovimentacaoRepositoryImp());
+  final MovimentacaoController _movimentacaoController = MovimentacaoController(MovimentacaoRepositoryImp());
 
   @override
   void initState() {
     super.initState();
-    _anotacaoController.fetch();
+    _movimentacaoController.fetch();
   }
 
   @override

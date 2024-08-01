@@ -9,6 +9,7 @@ import { cidadeController } from "./controllers/cidadeController";
 import { BaiaController } from "./controllers/baiaController";
 import { AnimalController } from "./controllers/animalController";
 import { OcupacaoController } from "./controllers/ocupacaoController";
+import { AnotacaoController } from "./controllers/anotacaoController";
 const routes = Router();
 
 //fazenda rotas
@@ -40,6 +41,7 @@ routes.post('/baias', new BaiaController().create);
 routes.put('/baias/:baia_id', new BaiaController().update); 
 routes.delete('/baias/:baia_id', new BaiaController().delete); 
 routes.get('/baias/:granja_id', new BaiaController().list);
+routes.get('/baias/byFazenda/:fazenda_id', new BaiaController().listByFazenda);
 
 //Cidade
 routes.get('/cidades', new cidadeController().list);
@@ -49,6 +51,13 @@ routes.post('/animais', new AnimalController().create);
 routes.put('/animais/:animal_id', new AnimalController().update); 
 routes.delete('/animais/:animal_id', new AnimalController().delete); 
 routes.get('/animais/:fazenda_id', new AnimalController().list);
+
+//Anotacao
+routes.post('/anotacoes', new AnotacaoController().create);
+routes.put('/anotacoes/:anotacao_id', new AnotacaoController().update); 
+routes.delete('/anotacoes/:anotacao_id', new AnotacaoController().delete); 
+routes.get('/anotacoes/:fazenda_id', new AnotacaoController().list);
+routes.get('/anotacoes/getbybaia:baia_id', new AnotacaoController().listByBaia);
 
 //Ocupacao
 routes.post('/ocupacoes', new OcupacaoController().create);

@@ -77,7 +77,6 @@ export class AnimalController {
   async update(req: Request, res: Response) {
     const animal_id = req.params.animal_id;
     const { numeroBrinco, sexo,  dataNascimento, status} = req.body;
-    const fazenda_id = req.headers['fazenda-id'];
 
     if (!animal_id || !numeroBrinco || !sexo || !status)
       return res.status(400).json({ message: 'Parâmetros não informados' });
@@ -89,11 +88,6 @@ export class AnimalController {
 
         if (!animalToUpdate)
           return res.status(404).json({ message: 'Animal não encontrada' });
-
-        const fazendaInstancia = await transactionalEntityManager.findOneBy(Fazenda, { id: Number(fazenda_id) });
-
-        if (!fazendaInstancia)
-          return res.status(404).json({ message: 'Fazenda não encontrada' });
 
         animalToUpdate.numero_brinco = numeroBrinco;
         animalToUpdate.sexo = sexo;

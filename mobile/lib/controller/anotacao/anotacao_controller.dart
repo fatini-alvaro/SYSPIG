@@ -8,12 +8,32 @@ class AnotacaoController {
 
   ValueNotifier<List<AnotacaoModel>> anotacoes = ValueNotifier<List<AnotacaoModel>>([]);
 
-  fetch() async {
-    anotacoes.value = await _anotacaoRepository.getList();
+  fetch(int fazendaId) async {
+    anotacoes.value = await _anotacaoRepository.getList(fazendaId);
   }
 
-  Future<bool> create (BuildContext context) async {
+  getAnotacoesByBaia(int baia_id) async {
+    anotacoes.value = await _anotacaoRepository.getAnotacoesByBaia(baia_id);
+  }
 
-    return true;
+  Future<AnotacaoModel> create(BuildContext context, AnotacaoModel baiaNova) async {
+
+    AnotacaoModel novaAnotacao = await  _anotacaoRepository.create(baiaNova);
+
+    return novaAnotacao;
+  }
+
+  Future<AnotacaoModel> update(BuildContext context, AnotacaoModel anotacaoEdicao) async {
+    
+    AnotacaoModel anotacaoEditado = await  _anotacaoRepository.update(anotacaoEdicao);
+
+    return anotacaoEditado;
+  }
+
+  Future<bool> delete(BuildContext context, int anotacaoExclusaoID) async {
+    
+    bool excluido = await  _anotacaoRepository.delete(anotacaoExclusaoID);
+
+    return excluido;
   }
 }

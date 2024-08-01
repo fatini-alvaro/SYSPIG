@@ -51,7 +51,7 @@ export class GranjaController {
       return res.status(201).json(newGranja);
     } catch (error) {
       console.log(error);
-      return res.status(500).json({ message: 'Erro ao criar fazenda'});
+      return res.status(500).json({ message: 'Erro ao criar granja'});
     } 
   }
 
