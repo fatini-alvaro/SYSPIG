@@ -120,8 +120,12 @@ export class AnotacaoController {
         const baiaInstancia = await transactionalEntityManager.findOneBy(Baia, { id: Number(baia_id) });
 
         anotacaoToUpdate.descricao = descricao;
-        anotacaoToUpdate.animal = animalInstancia;
-        anotacaoToUpdate.baia = baiaInstancia;
+        if(animalInstancia){
+          anotacaoToUpdate.animal = animalInstancia;
+        }
+        if(baiaInstancia){
+          anotacaoToUpdate.baia = baiaInstancia;
+        }
 
         await transactionalEntityManager.save(anotacaoToUpdate);
 

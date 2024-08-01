@@ -61,7 +61,7 @@ class AnotacaoRepositoryImp implements AnotacaoRepository {
   @override
   Future<bool> delete(int anotacaoId) async {
     try {
-      var response = await _apiClient.dio.delete('/baias/$anotacaoId');
+      var response = await _apiClient.dio.delete('/anotacoes/$anotacaoId');
       
       if (response.statusCode == 200) {
         return true; // Exclusão bem-sucedida
@@ -69,8 +69,8 @@ class AnotacaoRepositoryImp implements AnotacaoRepository {
         return false; // Exclusão falhou
       }
     } catch (e) {
-      Logger().e('Erro ao excluir baia (delete - baia): $e');
-      throw Exception('Erro ao excluir baia');
+      Logger().e('Erro ao excluir anotação (delete - anotação): $e');
+      throw Exception('Erro ao excluir anotação');
     }
   }
 

@@ -19,11 +19,11 @@ export class Anotacao{
   @Column({ type: 'text' })
   descricao: string;
 
-  @ManyToOne(() => Animal, { eager: true })
+  @ManyToOne(() => Animal, { eager: true, nullable: true })
   @JoinColumn({ name: 'animal_id', referencedColumnName: 'id' }) 
   animal: Animal;
 
-  @ManyToOne(() => Baia, { eager: true })
+  @ManyToOne(() => Baia, { eager: true, nullable: true})
   @JoinColumn({ name: 'baia_id', referencedColumnName: 'id' }) 
   baia: Baia;
 
