@@ -1,12 +1,12 @@
 
 import 'package:flutter/material.dart';
-import 'package:mobile/controller/baia/baia_controller.dart';
-import 'package:mobile/model/baia_model.dart';
-import 'package:mobile/model/granja_model.dart';
-import 'package:mobile/repositories/baia/baia_repository_imp.dart';
-import 'package:mobile/repositories/granja/granja_repository_imp.dart';
-import 'package:mobile/services/prefs_service.dart';
-import 'package:mobile/utils/dialogs.dart';
+import 'package:syspig/controller/baia/baia_controller.dart';
+import 'package:syspig/model/baia_model.dart';
+import 'package:syspig/model/granja_model.dart';
+import 'package:syspig/repositories/baia/baia_repository_imp.dart';
+import 'package:syspig/repositories/granja/granja_repository_imp.dart';
+import 'package:syspig/services/prefs_service.dart';
+import 'package:syspig/utils/dialogs.dart';
 
 
 class CadastrarBaiaController with ChangeNotifier {

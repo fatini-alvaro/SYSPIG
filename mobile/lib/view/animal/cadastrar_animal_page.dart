@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/components/buttons/custom_salvar_cadastro_button_component.dart';
-import 'package:mobile/controller/cadastrar_animal/cadastrar_animal_controller.dart';
-import 'package:mobile/model/animal_model.dart';
-import 'package:mobile/themes/themes.dart';
-import 'package:mobile/widgets/custom_date_time_field_widget.dart';
-import 'package:mobile/widgets/custom_dropdown_button_form_field_widget.dart';
-import 'package:mobile/widgets/custom_text_form_field_widget.dart';
+import 'package:syspig/components/buttons/custom_salvar_cadastro_button_component.dart';
+import 'package:syspig/controller/cadastrar_animal/cadastrar_animal_controller.dart';
+import 'package:syspig/model/animal_model.dart';
+import 'package:syspig/themes/themes.dart';
+import 'package:syspig/widgets/custom_date_time_field_widget.dart';
+import 'package:syspig/widgets/custom_dropdown_button_form_field_widget.dart';
+import 'package:syspig/widgets/custom_text_form_field_widget.dart';
 
 class CadastrarAnimalPage extends StatefulWidget {
 

@@ -1,4 +1,4 @@
-import 'package:mobile/model/ocupacao_model.dart';
+import 'package:syspig/model/ocupacao_model.dart';
 
 abstract class OcupacaoRepository {
 

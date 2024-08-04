@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/model/post_model.dart';
+import 'package:syspig/model/post_model.dart';
 
 class DetailsPage extends StatelessWidget {
   const DetailsPage({Key? key}) : super(key: key);

@@ -1,6 +1,6 @@
-import 'package:mobile/api/api_cliente.dart';
-import 'package:mobile/model/cidade_model.dart';
-import 'package:mobile/repositories/cidade/cidade_repository.dart';
+import 'package:syspig/api/api_cliente.dart';
+import 'package:syspig/model/cidade_model.dart';
+import 'package:syspig/repositories/cidade/cidade_repository.dart';
 
 class CidadeRepositoryImp implements CidadeRepository {   
 

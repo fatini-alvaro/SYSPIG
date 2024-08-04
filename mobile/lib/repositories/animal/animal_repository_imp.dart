@@ -1,8 +1,8 @@
 
 import 'package:logger/logger.dart';
-import 'package:mobile/api/api_cliente.dart';
-import 'package:mobile/model/animal_model.dart';
-import 'package:mobile/repositories/animal/animal_repository.dart';
+import 'package:syspig/api/api_cliente.dart';
+import 'package:syspig/model/animal_model.dart';
+import 'package:syspig/repositories/animal/animal_repository.dart';
 
 class AnimalRepositoryImp implements AnimalRepository {   
 

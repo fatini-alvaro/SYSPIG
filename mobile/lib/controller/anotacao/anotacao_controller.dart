@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/model/anotacao_model.dart';
-import 'package:mobile/repositories/anotacao/anotacao_repository.dart';
+import 'package:syspig/model/anotacao_model.dart';
+import 'package:syspig/repositories/anotacao/anotacao_repository.dart';
 
 class AnotacaoController {
   final AnotacaoRepository _anotacaoRepository;

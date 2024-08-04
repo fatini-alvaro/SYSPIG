@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
-import 'package:mobile/services/prefs_service.dart';// Importe o serviço de preferências do seu aplicativo
+import 'package:syspig/services/prefs_service.dart';
+import 'package:syspig/services/prefs_service.dart';// Importe o serviço de preferências do seu aplicativo
 
 class ApiClient {
   late Dio _dio;

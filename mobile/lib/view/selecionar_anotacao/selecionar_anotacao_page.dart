@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/components/buttons/custom_abrir_tela_adicionar_novo_button_component.dart';
-import 'package:mobile/components/cards/custom_registro_card.dart';
-import 'package:mobile/controller/anotacao/anotacao_controller.dart';
-import 'package:mobile/model/anotacao_model.dart';
-import 'package:mobile/repositories/anotacao/anotacao_repository_imp.dart';
-import 'package:mobile/services/prefs_service.dart';
-import 'package:mobile/themes/themes.dart';
-import 'package:mobile/utils/dialogs.dart';
-import 'package:mobile/view/anotacao/cadastrar_anotacao_page.dart';
+import 'package:syspig/components/buttons/custom_abrir_tela_adicionar_novo_button_component.dart';
+import 'package:syspig/components/cards/custom_registro_card.dart';
+import 'package:syspig/controller/anotacao/anotacao_controller.dart';
+import 'package:syspig/model/anotacao_model.dart';
+import 'package:syspig/repositories/anotacao/anotacao_repository_imp.dart';
+import 'package:syspig/services/prefs_service.dart';
+import 'package:syspig/themes/themes.dart';
+import 'package:syspig/utils/dialogs.dart';
+import 'package:syspig/view/anotacao/cadastrar_anotacao_page.dart';
 
 class SelecionarAnotacaoPage extends StatefulWidget {
   @override

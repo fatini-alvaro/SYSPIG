@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/components/cards/custom_baia_acoes_tab_card.dart';
-import 'package:mobile/components/cards/custom_baia_informacoes_tab_card.dart';
-import 'package:mobile/themes/themes.dart';
+import 'package:syspig/components/cards/custom_baia_acoes_tab_card.dart';
+import 'package:syspig/components/cards/custom_baia_informacoes_tab_card.dart';
+import 'package:syspig/themes/themes.dart';
 
 class BaiaGestacaoPage extends StatefulWidget {
   @override

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/components/criar_conta/custom_possuo_conta_button_componente.dart';
-import 'package:mobile/components/criar_conta/custom_salvar_nova_conta_button_component.dart';
-import 'package:mobile/controller/criar_conta/criar_conta_controller.dart';
-import 'package:mobile/utils/dialogs.dart';
-import 'package:mobile/widgets/custom_text_form_field_widget.dart';
+import 'package:syspig/components/criar_conta/custom_possuo_conta_button_componente.dart';
+import 'package:syspig/components/criar_conta/custom_salvar_nova_conta_button_component.dart';
+import 'package:syspig/controller/criar_conta/criar_conta_controller.dart';
+import 'package:syspig/utils/dialogs.dart';
+import 'package:syspig/widgets/custom_text_form_field_widget.dart';
 
 class CriarContaPage extends StatefulWidget {
   @override

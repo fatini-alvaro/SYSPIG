@@ -1,5 +1,5 @@
-import 'package:mobile/model/fazenda_model.dart';
-import 'package:mobile/model/usuario_model.dart';
+import 'package:syspig/model/fazenda_model.dart';
+import 'package:syspig/model/usuario_model.dart';
 
 class AnimalModel {
   final int? id;

@@ -1,5 +1,5 @@
-import 'package:mobile/model/animal_model.dart';
-import 'package:mobile/model/fazenda_model.dart';
+import 'package:syspig/model/animal_model.dart';
+import 'package:syspig/model/fazenda_model.dart';
 
 class MovimentacaoModel {
   final int id;

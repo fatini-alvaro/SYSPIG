@@ -1,8 +1,8 @@
 
 import 'package:logger/logger.dart';
-import 'package:mobile/api/api_cliente.dart';
-import 'package:mobile/model/ocupacao_model.dart';
-import 'package:mobile/repositories/ocupacao/ocupacao_repository.dart';
+import 'package:syspig/api/api_cliente.dart';
+import 'package:syspig/model/ocupacao_model.dart';
+import 'package:syspig/repositories/ocupacao/ocupacao_repository.dart';
 
 class OcupacaoRepositoryImp implements OcupacaoRepository {   
 

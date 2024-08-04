@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/components/cards/custom_pre_visualizacao_anotacao_card.dart';
-import 'package:mobile/model/ocupacao_model.dart';
-import 'package:mobile/utils/date_format_util.dart';
-import 'package:mobile/view/animal/cadastrar_animal_page.dart';
+import 'package:syspig/components/cards/custom_pre_visualizacao_anotacao_card.dart';
+import 'package:syspig/model/ocupacao_model.dart';
+import 'package:syspig/utils/date_format_util.dart';
+import 'package:syspig/view/animal/cadastrar_animal_page.dart';
 
 class CustomBaiaInformacoesTabCard extends StatefulWidget {
 

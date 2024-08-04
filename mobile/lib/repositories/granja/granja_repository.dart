@@ -1,4 +1,4 @@
-import 'package:mobile/model/granja_model.dart';
+import 'package:syspig/model/granja_model.dart';
 
 abstract class GranjaRepository {
 

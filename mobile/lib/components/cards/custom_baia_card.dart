@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/model/baia_model.dart';
+import 'package:syspig/model/baia_model.dart';
 
 class CustomBaiaCard extends StatelessWidget {
   final BaiaModel baia;

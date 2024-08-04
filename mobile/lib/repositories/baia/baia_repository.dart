@@ -1,4 +1,4 @@
-import 'package:mobile/model/baia_model.dart';
+import 'package:syspig/model/baia_model.dart';
 
 abstract class BaiaRepository {
 

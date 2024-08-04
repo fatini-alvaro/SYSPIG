@@ -1,11 +1,11 @@
 
 import 'package:flutter/material.dart';
-import 'package:mobile/controller/fazenda/fazenda_controller.dart';
-import 'package:mobile/model/cidade_model.dart';
-import 'package:mobile/model/fazenda_model.dart';
-import 'package:mobile/repositories/cidade/cidade_repository_imp.dart';
-import 'package:mobile/repositories/fazenda/fazenda_repository_imp.dart';
-import 'package:mobile/utils/dialogs.dart';
+import 'package:syspig/controller/fazenda/fazenda_controller.dart';
+import 'package:syspig/model/cidade_model.dart';
+import 'package:syspig/model/fazenda_model.dart';
+import 'package:syspig/repositories/cidade/cidade_repository_imp.dart';
+import 'package:syspig/repositories/fazenda/fazenda_repository_imp.dart';
+import 'package:syspig/utils/dialogs.dart';
 
 
 class CadastrarFazendaController with ChangeNotifier {

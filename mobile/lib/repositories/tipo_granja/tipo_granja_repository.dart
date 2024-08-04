@@ -1,4 +1,4 @@
-import 'package:mobile/model/tipo_granja_model.dart';
+import 'package:syspig/model/tipo_granja_model.dart';
 
 abstract class TipoGranjaRepository {
 

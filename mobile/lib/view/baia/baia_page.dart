@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/components/cards/custom_baia_acoes_tab_card.dart';
-import 'package:mobile/components/cards/custom_baia_informacoes_tab_card.dart';
-import 'package:mobile/controller/anotacao/anotacao_controller.dart';
-import 'package:mobile/model/ocupacao_model.dart';
-import 'package:mobile/repositories/anotacao/anotacao_repository_imp.dart';
-import 'package:mobile/themes/themes.dart';
+import 'package:syspig/components/cards/custom_baia_acoes_tab_card.dart';
+import 'package:syspig/components/cards/custom_baia_informacoes_tab_card.dart';
+import 'package:syspig/controller/anotacao/anotacao_controller.dart';
+import 'package:syspig/model/ocupacao_model.dart';
+import 'package:syspig/repositories/anotacao/anotacao_repository_imp.dart';
+import 'package:syspig/themes/themes.dart';
 
 class BaiaPage extends StatefulWidget {
 

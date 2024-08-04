@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/model/lote_model.dart';
-import 'package:mobile/repositories/lote/lote_repository.dart';
+import 'package:syspig/model/lote_model.dart';
+import 'package:syspig/repositories/lote/lote_repository.dart';
 
 class LoteController {
   final LoteRepository _loteRepository;

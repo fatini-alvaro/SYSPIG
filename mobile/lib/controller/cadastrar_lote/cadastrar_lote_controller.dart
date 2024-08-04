@@ -1,13 +1,13 @@
 
 import 'package:flutter/material.dart';
-import 'package:mobile/controller/lote/lote_controller.dart';
-import 'package:mobile/model/animal_model.dart';
-import 'package:mobile/model/lote_animal_model.dart';
-import 'package:mobile/model/lote_model.dart';
-import 'package:mobile/repositories/animal/animal_repository_imp.dart';
-import 'package:mobile/repositories/lote/lote_repository_imp.dart';
-import 'package:mobile/services/prefs_service.dart';
-import 'package:mobile/utils/dialogs.dart';
+import 'package:syspig/controller/lote/lote_controller.dart';
+import 'package:syspig/model/animal_model.dart';
+import 'package:syspig/model/lote_animal_model.dart';
+import 'package:syspig/model/lote_model.dart';
+import 'package:syspig/repositories/animal/animal_repository_imp.dart';
+import 'package:syspig/repositories/lote/lote_repository_imp.dart';
+import 'package:syspig/services/prefs_service.dart';
+import 'package:syspig/utils/dialogs.dart';
 
 
 class CadastrarLoteController with ChangeNotifier {

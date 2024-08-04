@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/model/animal_model.dart';
-import 'package:mobile/repositories/animal/animal_repository.dart';
+import 'package:syspig/model/animal_model.dart';
+import 'package:syspig/repositories/animal/animal_repository.dart';
 
 class AnimalController {
   final AnimalRepository _animalRepository;

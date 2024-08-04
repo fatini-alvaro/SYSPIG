@@ -1,4 +1,4 @@
-import 'package:mobile/model/uf_model.dart';
+import 'package:syspig/model/uf_model.dart';
 
 class CidadeModel {
   final int id;

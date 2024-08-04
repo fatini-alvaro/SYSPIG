@@ -1,4 +1,4 @@
-import 'package:mobile/model/usuario_model.dart';
+import 'package:syspig/model/usuario_model.dart';
 
 abstract class UsuarioRepository {
 

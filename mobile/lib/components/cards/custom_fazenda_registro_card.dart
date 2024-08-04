@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/model/fazenda_model.dart';
+import 'package:syspig/model/fazenda_model.dart';
 
 class CustomFazendaRegistroCard extends StatelessWidget {
   final FazendaModel fazenda;

@@ -1,6 +1,6 @@
-import 'package:mobile/model/animal_model.dart';
-import 'package:mobile/model/baia_model.dart';
-import 'package:mobile/model/fazenda_model.dart';
+import 'package:syspig/model/animal_model.dart';
+import 'package:syspig/model/baia_model.dart';
+import 'package:syspig/model/fazenda_model.dart';
 
 class AnotacaoModel {
   final int? id;

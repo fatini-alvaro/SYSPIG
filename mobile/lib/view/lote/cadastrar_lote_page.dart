@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/components/buttons/custom_salvar_cadastro_button_component.dart';
-import 'package:mobile/controller/cadastrar_lote/cadastrar_lote_controller.dart';
-import 'package:mobile/model/animal_model.dart';
-import 'package:mobile/model/lote_model.dart';
-import 'package:mobile/themes/themes.dart';
-import 'package:mobile/utils/dialogs.dart';
-import 'package:mobile/view/selecionar_lote/selecionar_lote_page.dart';
-import 'package:mobile/widgets/custom_text_form_field_widget.dart';
+import 'package:syspig/components/buttons/custom_salvar_cadastro_button_component.dart';
+import 'package:syspig/controller/cadastrar_lote/cadastrar_lote_controller.dart';
+import 'package:syspig/model/animal_model.dart';
+import 'package:syspig/model/lote_model.dart';
+import 'package:syspig/themes/themes.dart';
+import 'package:syspig/utils/dialogs.dart';
+import 'package:syspig/view/selecionar_lote/selecionar_lote_page.dart';
+import 'package:syspig/widgets/custom_text_form_field_widget.dart';
 
 class CadastrarLotePage extends StatefulWidget {
   final LoteModel? loteParaEditar;

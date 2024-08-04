@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/model/granja_model.dart';
-import 'package:mobile/repositories/granja/granja_repository.dart';
+import 'package:syspig/model/granja_model.dart';
+import 'package:syspig/repositories/granja/granja_repository.dart';
 
 class GranjaController {
   final GranjaRepository _granjaRepository;

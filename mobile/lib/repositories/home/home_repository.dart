@@ -1,4 +1,4 @@
-import 'package:mobile/model/post_model.dart';
+import 'package:syspig/model/post_model.dart';
 
 abstract class HomeRepository {
 

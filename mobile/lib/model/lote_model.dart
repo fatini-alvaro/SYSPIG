@@ -1,5 +1,5 @@
-import 'package:mobile/model/fazenda_model.dart';
-import 'package:mobile/model/lote_animal_model.dart';
+import 'package:syspig/model/fazenda_model.dart';
+import 'package:syspig/model/lote_animal_model.dart';
 
 class LoteModel {
   final int? id;

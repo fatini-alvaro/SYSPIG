@@ -1,9 +1,9 @@
 
 import 'package:flutter/material.dart';
-import 'package:mobile/controller/usuario/usuario_controller.dart';
-import 'package:mobile/model/usuario_model.dart';
-import 'package:mobile/repositories/usuario/usuario_repository_imp.dart';
-import 'package:mobile/utils/dialogs.dart';
+import 'package:syspig/controller/usuario/usuario_controller.dart';
+import 'package:syspig/model/usuario_model.dart';
+import 'package:syspig/repositories/usuario/usuario_repository_imp.dart';
+import 'package:syspig/utils/dialogs.dart';
 
 
 class CriarContaController with ChangeNotifier {

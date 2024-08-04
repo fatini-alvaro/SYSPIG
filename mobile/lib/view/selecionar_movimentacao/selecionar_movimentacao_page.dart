@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/components/buttons/custom_abrir_tela_adicionar_novo_button_component.dart';
-import 'package:mobile/controller/movimentacao/movimentacao_controller.dart';
-import 'package:mobile/repositories/movimentacao/movimentacao_repository_imp.dart';
-import 'package:mobile/themes/themes.dart';
+import 'package:syspig/components/buttons/custom_abrir_tela_adicionar_novo_button_component.dart';
+import 'package:syspig/controller/movimentacao/movimentacao_controller.dart';
+import 'package:syspig/repositories/movimentacao/movimentacao_repository_imp.dart';
+import 'package:syspig/themes/themes.dart';
 
 class SelecionarMovimentacaoPage extends StatefulWidget {
   @override

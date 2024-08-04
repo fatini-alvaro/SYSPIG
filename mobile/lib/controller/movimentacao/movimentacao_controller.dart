@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/model/movimentacao_model.dart';
-import 'package:mobile/repositories/movimentacao/movimentacao_repository.dart';
+import 'package:syspig/model/movimentacao_model.dart';
+import 'package:syspig/repositories/movimentacao/movimentacao_repository.dart';
 
 class MovimentacaoController {
   final MovimentacaoRepository _movimentacaolRepository;

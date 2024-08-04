@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/components/buttons/custom_abrir_tela_adicionar_novo_button_component.dart';
-import 'package:mobile/controller/inseminacao/inseminacao_controller.dart';
-import 'package:mobile/repositories/iseminacao/inseminacao_repository_imp.dart';
-import 'package:mobile/themes/themes.dart';
+import 'package:syspig/components/buttons/custom_abrir_tela_adicionar_novo_button_component.dart';
+import 'package:syspig/controller/inseminacao/inseminacao_controller.dart';
+import 'package:syspig/repositories/iseminacao/inseminacao_repository_imp.dart';
+import 'package:syspig/themes/themes.dart';
 
 class SelecionarInseminacaoPage extends StatefulWidget {
   @override

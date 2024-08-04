@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/components/buttons/custom_salvar_cadastro_button_component.dart';
-import 'package:mobile/controller/cadastrar_movimentacao/cadastrar_movimentacao_controller.dart';
-import 'package:mobile/themes/themes.dart';
+import 'package:syspig/components/buttons/custom_salvar_cadastro_button_component.dart';
+import 'package:syspig/controller/cadastrar_movimentacao/cadastrar_movimentacao_controller.dart';
+import 'package:syspig/themes/themes.dart';
 
 class CadastrarMovimentacaoPage extends StatefulWidget {
   @override

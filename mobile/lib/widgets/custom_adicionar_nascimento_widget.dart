@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/components/data_tables/custom_adicionar_nascimento_data_table.dart';
+import 'package:syspig/components/data_tables/custom_adicionar_nascimento_data_table.dart';
 
 class CustomAdicionarNascimentoWidget extends StatefulWidget {
   final VoidCallback onClose;

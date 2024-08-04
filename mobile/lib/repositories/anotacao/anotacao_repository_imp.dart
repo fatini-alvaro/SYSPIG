@@ -1,6 +1,6 @@
-import 'package:mobile/api/api_cliente.dart';
-import 'package:mobile/model/anotacao_model.dart';
-import 'package:mobile/repositories/anotacao/anotacao_repository.dart';
+import 'package:syspig/api/api_cliente.dart';
+import 'package:syspig/model/anotacao_model.dart';
+import 'package:syspig/repositories/anotacao/anotacao_repository.dart';
 import 'package:logger/logger.dart';
 
 class AnotacaoRepositoryImp implements AnotacaoRepository {   

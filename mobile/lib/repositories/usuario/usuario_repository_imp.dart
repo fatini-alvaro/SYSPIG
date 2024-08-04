@@ -1,8 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:logger/logger.dart';
-import 'package:mobile/api/api_cliente.dart';
-import 'package:mobile/model/usuario_model.dart';
-import 'package:mobile/repositories/usuario/usuario_repository.dart';
+import 'package:syspig/api/api_cliente.dart';
+import 'package:syspig/model/usuario_model.dart';
+import 'package:syspig/repositories/usuario/usuario_repository.dart';
 
 class UsuarioRepositoryImp implements UsuarioRepository {
 

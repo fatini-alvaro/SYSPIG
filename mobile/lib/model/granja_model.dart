@@ -1,5 +1,5 @@
-import 'package:mobile/model/fazenda_model.dart';
-import 'package:mobile/model/tipo_granja_model.dart';
+import 'package:syspig/model/fazenda_model.dart';
+import 'package:syspig/model/tipo_granja_model.dart';
 
 class GranjaModel {
   final int? id;

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/model/animal_model.dart';
-import 'package:mobile/model/baia_model.dart';
-import 'package:mobile/model/ocupacao_model.dart';
-import 'package:mobile/repositories/animal/animal_repository_imp.dart';
-import 'package:mobile/repositories/baia/baia_repository.dart';
-import 'package:mobile/repositories/ocupacao/ocupacao_repository_imp.dart';
-import 'package:mobile/services/prefs_service.dart';
+import 'package:syspig/model/animal_model.dart';
+import 'package:syspig/model/baia_model.dart';
+import 'package:syspig/model/ocupacao_model.dart';
+import 'package:syspig/repositories/animal/animal_repository_imp.dart';
+import 'package:syspig/repositories/baia/baia_repository.dart';
+import 'package:syspig/repositories/ocupacao/ocupacao_repository_imp.dart';
+import 'package:syspig/services/prefs_service.dart';
 
 class BaiaController {
   final BaiaRepository _baiaRepository;

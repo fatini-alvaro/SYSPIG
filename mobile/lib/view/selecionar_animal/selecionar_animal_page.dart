@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/components/buttons/custom_abrir_tela_adicionar_novo_button_component.dart';
-import 'package:mobile/components/cards/custom_registro_card.dart';
-import 'package:mobile/controller/animal/animal_controller.dart';
-import 'package:mobile/model/animal_model.dart';
-import 'package:mobile/repositories/animal/animal_repository_imp.dart';
-import 'package:mobile/services/prefs_service.dart';
-import 'package:mobile/themes/themes.dart';
-import 'package:mobile/utils/dialogs.dart';
-import 'package:mobile/view/animal/cadastrar_animal_page.dart';
+import 'package:syspig/components/buttons/custom_abrir_tela_adicionar_novo_button_component.dart';
+import 'package:syspig/components/cards/custom_registro_card.dart';
+import 'package:syspig/controller/animal/animal_controller.dart';
+import 'package:syspig/model/animal_model.dart';
+import 'package:syspig/repositories/animal/animal_repository_imp.dart';
+import 'package:syspig/services/prefs_service.dart';
+import 'package:syspig/themes/themes.dart';
+import 'package:syspig/utils/dialogs.dart';
+import 'package:syspig/view/animal/cadastrar_animal_page.dart';
 
 class SelecionarAnimalPage extends StatefulWidget {
   @override

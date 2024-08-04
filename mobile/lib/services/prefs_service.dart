@@ -1,6 +1,6 @@
 import 'dart:convert';
-import 'package:mobile/model/fazenda_model.dart';
-import 'package:mobile/model/usuario_model.dart';
+import 'package:syspig/model/fazenda_model.dart';
+import 'package:syspig/model/usuario_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class PrefsService {

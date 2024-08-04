@@ -1,4 +1,4 @@
-import 'package:mobile/model/animal_model.dart';
+import 'package:syspig/model/animal_model.dart';
 
 abstract class AnimalRepository {
 

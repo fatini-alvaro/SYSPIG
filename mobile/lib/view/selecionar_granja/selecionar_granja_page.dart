@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/components/buttons/custom_abrir_tela_adicionar_novo_button_component.dart';
-import 'package:mobile/components/cards/custom_registro_card.dart';
-import 'package:mobile/controller/granja/granja_controller.dart';
-import 'package:mobile/model/granja_model.dart';
-import 'package:mobile/repositories/granja/granja_repository_imp.dart';
-import 'package:mobile/services/prefs_service.dart';
-import 'package:mobile/themes/themes.dart';
-import 'package:mobile/utils/dialogs.dart';
-import 'package:mobile/view/granja/cadastrar_granja_page.dart';
-import 'package:mobile/view/selecionar_baia/selecionar_baia_page.dart';
+import 'package:syspig/components/buttons/custom_abrir_tela_adicionar_novo_button_component.dart';
+import 'package:syspig/components/cards/custom_registro_card.dart';
+import 'package:syspig/controller/granja/granja_controller.dart';
+import 'package:syspig/model/granja_model.dart';
+import 'package:syspig/repositories/granja/granja_repository_imp.dart';
+import 'package:syspig/services/prefs_service.dart';
+import 'package:syspig/themes/themes.dart';
+import 'package:syspig/utils/dialogs.dart';
+import 'package:syspig/view/granja/cadastrar_granja_page.dart';
+import 'package:syspig/view/selecionar_baia/selecionar_baia_page.dart';
 
 class SelecionarGranjaPage extends StatefulWidget {
   @override

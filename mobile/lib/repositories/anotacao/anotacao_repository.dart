@@ -1,4 +1,4 @@
-import 'package:mobile/model/anotacao_model.dart';
+import 'package:syspig/model/anotacao_model.dart';
 
 abstract class AnotacaoRepository {
 

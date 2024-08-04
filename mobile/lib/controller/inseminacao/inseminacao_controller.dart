@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/model/inseminacao_model.dart';
-import 'package:mobile/repositories/iseminacao/inseminacao_repository.dart';
+import 'package:syspig/model/inseminacao_model.dart';
+import 'package:syspig/repositories/iseminacao/inseminacao_repository.dart';
 
 class InseminacaoController {
   final InseminacaoRepository _inseminacaoRepository;

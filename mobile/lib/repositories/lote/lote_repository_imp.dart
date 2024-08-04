@@ -1,6 +1,6 @@
-import 'package:mobile/api/api_cliente.dart';
-import 'package:mobile/model/lote_model.dart';
-import 'package:mobile/repositories/lote/lote_repository.dart';
+import 'package:syspig/api/api_cliente.dart';
+import 'package:syspig/model/lote_model.dart';
+import 'package:syspig/repositories/lote/lote_repository.dart';
 import 'package:logger/logger.dart';
 
 class LoteRepositoryImp implements LoteRepository {   

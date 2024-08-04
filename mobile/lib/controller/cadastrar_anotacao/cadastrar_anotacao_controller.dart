@@ -1,14 +1,14 @@
 
 import 'package:flutter/material.dart';
-import 'package:mobile/controller/anotacao/anotacao_controller.dart';
-import 'package:mobile/model/animal_model.dart';
-import 'package:mobile/model/anotacao_model.dart';
-import 'package:mobile/model/baia_model.dart';
-import 'package:mobile/repositories/animal/animal_repository_imp.dart';
-import 'package:mobile/repositories/anotacao/anotacao_repository_imp.dart';
-import 'package:mobile/repositories/baia/baia_repository_imp.dart';
-import 'package:mobile/services/prefs_service.dart';
-import 'package:mobile/utils/dialogs.dart';
+import 'package:syspig/controller/anotacao/anotacao_controller.dart';
+import 'package:syspig/model/animal_model.dart';
+import 'package:syspig/model/anotacao_model.dart';
+import 'package:syspig/model/baia_model.dart';
+import 'package:syspig/repositories/animal/animal_repository_imp.dart';
+import 'package:syspig/repositories/anotacao/anotacao_repository_imp.dart';
+import 'package:syspig/repositories/baia/baia_repository_imp.dart';
+import 'package:syspig/services/prefs_service.dart';
+import 'package:syspig/utils/dialogs.dart';
 
 
 class CadastrarAnotacaoController with ChangeNotifier {

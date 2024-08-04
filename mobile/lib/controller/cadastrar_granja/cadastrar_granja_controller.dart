@@ -1,11 +1,11 @@
 
 import 'package:flutter/material.dart';
-import 'package:mobile/controller/granja/granja_controller.dart';
-import 'package:mobile/model/granja_model.dart';
-import 'package:mobile/model/tipo_granja_model.dart';
-import 'package:mobile/repositories/granja/granja_repository_imp.dart';
-import 'package:mobile/repositories/tipo_granja/tipo_granja_repository_imp.dart';
-import 'package:mobile/utils/dialogs.dart';
+import 'package:syspig/controller/granja/granja_controller.dart';
+import 'package:syspig/model/granja_model.dart';
+import 'package:syspig/model/tipo_granja_model.dart';
+import 'package:syspig/repositories/granja/granja_repository_imp.dart';
+import 'package:syspig/repositories/tipo_granja/tipo_granja_repository_imp.dart';
+import 'package:syspig/utils/dialogs.dart';
 
 
 class CadastrarGranjaController with ChangeNotifier {

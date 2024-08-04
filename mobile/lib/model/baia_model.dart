@@ -1,6 +1,6 @@
-import 'package:mobile/model/fazenda_model.dart';
-import 'package:mobile/model/granja_model.dart';
-import 'package:mobile/model/ocupacao_model.dart';
+import 'package:syspig/model/fazenda_model.dart';
+import 'package:syspig/model/granja_model.dart';
+import 'package:syspig/model/ocupacao_model.dart';
 
 class BaiaModel {
   final int? id;

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/model/fazenda_model.dart';
-import 'package:mobile/repositories/fazenda/fazenda_repository.dart';
-import 'package:mobile/services/prefs_service.dart';
+import 'package:syspig/model/fazenda_model.dart';
+import 'package:syspig/repositories/fazenda/fazenda_repository.dart';
+import 'package:syspig/services/prefs_service.dart';
 
 class FazendaController {
   final FazendaRepository _fazendaRepository;

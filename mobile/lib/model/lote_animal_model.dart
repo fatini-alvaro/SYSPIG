@@ -1,5 +1,5 @@
-import 'package:mobile/model/animal_model.dart';
-import 'package:mobile/model/lote_model.dart';
+import 'package:syspig/model/animal_model.dart';
+import 'package:syspig/model/lote_model.dart';
 
 class LoteAnimalModel {
   final int? id;

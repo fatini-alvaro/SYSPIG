@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/components/criar_conta/custom_criar_conta_button_component.dart';
-import 'package:mobile/components/login/custom_login_button_component.dart';
-import 'package:mobile/controller/login/login_controller.dart';
-import 'package:mobile/repositories/usuario/usuario_repository_imp.dart';
-import 'package:mobile/utils/dialogs.dart';
-import 'package:mobile/widgets/custom_text_form_field_widget.dart';
+import 'package:syspig/components/criar_conta/custom_criar_conta_button_component.dart';
+import 'package:syspig/components/login/custom_login_button_component.dart';
+import 'package:syspig/controller/login/login_controller.dart';
+import 'package:syspig/repositories/usuario/usuario_repository_imp.dart';
+import 'package:syspig/utils/dialogs.dart';
+import 'package:syspig/widgets/custom_text_form_field_widget.dart';
 
 class LoginPage extends StatefulWidget {
   @override

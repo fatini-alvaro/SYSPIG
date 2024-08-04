@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/components/buttons/custom_abrir_tela_adicionar_novo_button_component.dart';
-import 'package:mobile/components/cards/custom_baia_card.dart';
-import 'package:mobile/controller/baia/baia_controller.dart';
-import 'package:mobile/repositories/baia/baia_repository_imp.dart';
-import 'package:mobile/themes/themes.dart';
+import 'package:syspig/components/buttons/custom_abrir_tela_adicionar_novo_button_component.dart';
+import 'package:syspig/components/cards/custom_baia_card.dart';
+import 'package:syspig/controller/baia/baia_controller.dart';
+import 'package:syspig/repositories/baia/baia_repository_imp.dart';
+import 'package:syspig/themes/themes.dart';
 
 class BaiasGestacaoOcupadasPage extends StatefulWidget {
   @override

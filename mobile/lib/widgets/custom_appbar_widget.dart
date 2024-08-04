@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/themes/themes.dart';
+import 'package:syspig/themes/themes.dart';
 
 class CustomAppBarWidget extends StatelessWidget implements PreferredSizeWidget {
   final Text titulo;
