@@ -16,7 +16,6 @@ export class UsuarioController {
 
     if (!nome || !email || !senha)
       return res.status(400).json({ message: 'Todos os campos são obrigatórios.' });
-    
 
     // Obtém a instância do TipoUsuario com base no ID
     const tipoUsuarioInstancia = await tipoUsuarioRepository.findOneBy({ id: Number(tipo_usuario_dono_id)});

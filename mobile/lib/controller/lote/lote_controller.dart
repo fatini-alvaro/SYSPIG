@@ -8,12 +8,28 @@ class LoteController {
 
   ValueNotifier<List<LoteModel>> lotes = ValueNotifier<List<LoteModel>>([]);
 
-  fetch() async {
-    lotes.value = await _loteRepository.getList();
+  fetch(int fazendaId) async {
+    lotes.value = await _loteRepository.getList(fazendaId);
   }
 
-  Future<bool> create (BuildContext context) async {
+  Future<bool> delete(BuildContext context, int loteExclusaoID) async {
+    
+    bool excluido = await  _loteRepository.delete(loteExclusaoID);
 
-    return true;
+    return excluido;
+  }
+
+  Future<LoteModel> update(BuildContext context, LoteModel loteEdicao) async {
+    
+    LoteModel loteEditado = await  _loteRepository.update(loteEdicao);
+
+    return loteEditado;
+  }
+
+  Future<LoteModel> create(BuildContext context, LoteModel loteNovo) async {
+
+    LoteModel novoLote = await  _loteRepository.create(loteNovo);
+
+    return novoLote;
   }
 }

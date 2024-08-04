@@ -10,6 +10,7 @@ import { BaiaController } from "./controllers/baiaController";
 import { AnimalController } from "./controllers/animalController";
 import { OcupacaoController } from "./controllers/ocupacaoController";
 import { AnotacaoController } from "./controllers/anotacaoController";
+import { LoteController } from "./controllers/loteController";
 const routes = Router();
 
 //fazenda rotas
@@ -58,6 +59,12 @@ routes.put('/anotacoes/:anotacao_id', new AnotacaoController().update);
 routes.delete('/anotacoes/:anotacao_id', new AnotacaoController().delete); 
 routes.get('/anotacoes/:fazenda_id', new AnotacaoController().list);
 routes.get('/anotacoes/getbybaia:baia_id', new AnotacaoController().listByBaia);
+
+//Lote
+routes.post('/lotes', new LoteController().create);
+routes.get('/lotes/:fazenda_id', new LoteController().list);
+routes.delete('/lotes/:lote_id', new LoteController().delete);
+routes.put('/lotes/:lote_id', new LoteController().update); 
 
 //Ocupacao
 routes.post('/ocupacoes', new OcupacaoController().create);

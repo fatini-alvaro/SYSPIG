@@ -34,6 +34,7 @@ class AppWidget extends StatelessWidget {
       animation: AppController.instance,
       builder: (context, child) {
       return MaterialApp(
+        debugShowCheckedModeBanner: false,
         theme: AppThemes.lightTheme,
         darkTheme: AppThemes.darkTheme,
         themeMode: AppController.instance.isDarkTheme ? ThemeMode.dark : ThemeMode.light,

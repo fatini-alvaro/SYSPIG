@@ -32,7 +32,7 @@ class AnimalModel {
       numeroBrinco: json['numero_brinco'],
       sexo: json['sexo'],
       status: json['status'],
-      fazenda: FazendaModel.fromJson(json['fazenda']),
+      fazenda: json['fazenda'] != null ? FazendaModel.fromJson(json['fazenda']) : null,
       dataNascimento: json['data_nascimento'] != null ? DateTime.parse(json['data_nascimento']) : null,
       createdBy: json['createdBy'] != null ? UsuarioModel.fromJson(json['createdBy']) : null,
       createdAt: json['created_at'] != null ? DateTime.parse(json['created_at']) : null,
