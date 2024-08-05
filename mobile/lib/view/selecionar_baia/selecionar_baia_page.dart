@@ -6,6 +6,7 @@ import 'package:syspig/model/animal_model.dart';
 import 'package:syspig/model/baia_model.dart';
 import 'package:syspig/model/granja_model.dart';
 import 'package:syspig/repositories/baia/baia_repository_imp.dart';
+import 'package:syspig/services/prefs_service.dart';
 import 'package:syspig/themes/themes.dart';
 import 'package:syspig/utils/dialogs.dart';
 import 'package:syspig/view/baia/baia_page.dart';
@@ -43,7 +44,10 @@ class SelecionarBaiaPageState extends State<SelecionarBaiaPage> {
 
   Future<void> _carregarBaias() async {
     if (granja != null) {
-      _baiaController.fetch(granja!.id!);
+      _baiaController.fetchByGranja(granja!.id!);
+    } else {
+      int? fazendaId = await PrefsService.getFazendaId();
+      _baiaController.fetch(fazendaId!);
     }
   }
 

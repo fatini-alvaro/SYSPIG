@@ -20,8 +20,12 @@ class BaiaController {
   void setAnimal(AnimalModel? value) => _animal = value;
   AnimalModel? get animal => _animal;
 
-  fetch(int granjaId) async {
+  fetchByGranja(int granjaId) async {
     baias.value = await _baiaRepository.getList(granjaId);
+  }
+
+  fetch(int fazendaId) async {
+    baias.value = await _baiaRepository.getListAll(fazendaId);
   }
 
   Future<BaiaModel> create(BuildContext context, BaiaModel baiaNova) async {
@@ -30,6 +34,7 @@ class BaiaController {
 
     return novaGranja;
   }
+  
 
   Future<BaiaModel> update(BuildContext context, BaiaModel baiaEdicao) async {
     
