@@ -5,7 +5,7 @@ import 'package:syspig/model/ocupacao_model.dart';
 class BaiaModel {
   final int? id;
   final FazendaModel? fazenda;
-  final GranjaModel granja;
+  final GranjaModel? granja;
   final OcupacaoModel? ocupacao;
   final String numero;
   final int? capacidade;
@@ -14,7 +14,7 @@ class BaiaModel {
   BaiaModel({
     this.id,
     this.fazenda,
-    required this.granja,
+    this.granja,
     this.ocupacao,
     required this.numero,
     this.capacidade,
@@ -24,8 +24,8 @@ class BaiaModel {
   factory BaiaModel.fromJson(Map<String, dynamic> json) {
     return BaiaModel(
       id: json['id'],
-      fazenda: FazendaModel.fromJson(json['fazenda']),
-      granja: GranjaModel.fromJson(json['granja']),
+      fazenda: json['fazenda'] != null ? FazendaModel.fromJson(json['fazenda']) : null,
+      granja: json['granja'] != null ? GranjaModel.fromJson(json['granja']) : null,
       ocupacao: json['ocupacao'] != null ? OcupacaoModel.fromJson(json['ocupacao']) : null,
       numero: json['numero'],
       capacidade: json['capacidade'],

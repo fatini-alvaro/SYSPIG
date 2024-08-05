@@ -3,20 +3,20 @@ import 'package:syspig/model/fazenda_model.dart';
 
 class InseminacaoModel {
   final int id;
-  final FazendaModel fazenda;
-  final AnimalModel animal;
+  final FazendaModel? fazenda;
+  final AnimalModel? animal;
 
   InseminacaoModel({
     required this.id,
-    required this.fazenda,
-    required this.animal,
+    this.fazenda,
+    this.animal,
   });
 
   factory InseminacaoModel.fromJson(Map<String, dynamic> json) {
     return InseminacaoModel(
       id: json['id'],
-      fazenda: FazendaModel.fromJson(json['fazenda']),
-      animal: AnimalModel.fromJson(json['animal']),
+      fazenda: json['fazenda'] != null ? FazendaModel.fromJson(json['fazenda']) : null,
+      animal: json['animal'] != null ? AnimalModel.fromJson(json['animal']) : null,
     );
   }
 

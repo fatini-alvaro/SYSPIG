@@ -26,7 +26,7 @@ class GranjaRepositoryImp implements GranjaRepository {
     try {
       Map<String, dynamic> granjaData = {
         'descricao': granja.descricao,
-        'tipo_granja_id': granja.tipoGranja.id
+        'tipo_granja_id': granja.tipoGranja?.id
       };
 
       var response = await _apiClient.dio.post('/granjas', data: granjaData);
@@ -42,7 +42,7 @@ class GranjaRepositoryImp implements GranjaRepository {
     try {
       Map<String, dynamic> granjaData = {
         'descricao': granja.descricao,
-        'tipo_granja_id': granja.tipoGranja.id
+        'tipo_granja_id': granja.tipoGranja?.id
       };
 
       var granjId = granja.id;

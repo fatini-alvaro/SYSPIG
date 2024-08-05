@@ -51,7 +51,7 @@ class CustomBaiaCard extends StatelessWidget {
                     width: 150, // Ajuste este valor conforme necessário
                     height: 40,
                     child: Text(
-                        'Granja - ${baia.granja.descricao}',
+                        'Granja - ${baia.granja?.descricao}',
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 20,

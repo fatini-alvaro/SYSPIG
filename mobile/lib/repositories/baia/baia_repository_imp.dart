@@ -37,7 +37,7 @@ class BaiaRepositoryImp implements BaiaRepository {
   Future<BaiaModel> create(BaiaModel baia) async {
     try {
       Map<String, dynamic> baiaData = {
-        'granja_id': baia.granja.id,
+        'granja_id': baia.granja?.id,
         'numero': baia.numero,
       };
 
@@ -53,7 +53,7 @@ class BaiaRepositoryImp implements BaiaRepository {
   Future<BaiaModel> update(BaiaModel baia) async {
     try {
       Map<String, dynamic> baiaData = {
-        'granja_id': baia.granja.id,
+        'granja_id': baia.granja?.id,
         'numero': baia.numero,
       };
 

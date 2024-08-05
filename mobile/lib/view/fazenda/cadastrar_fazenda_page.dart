@@ -85,11 +85,11 @@ class CadastrarFazendaPageState extends State<CadastrarFazendaPage> {
                             cidade.nome.toLowerCase().contains(_searchController.text.toLowerCase()))
                         .map((cidade) {
                       return ListTile(
-                        title: Text('${cidade.nome} - ${cidade.uf.nome}'),
+                        title: Text('${cidade.nome} - ${cidade.uf?.nome}'),
                         onTap: () {
                           _cadastrarFazendaController.setCidade(cidade);
                           setState(() {
-                            _searchController.text = '${cidade.nome} - ${cidade.uf.nome}';
+                            _searchController.text = '${cidade.nome} - ${cidade.uf?.nome}';
                             _isCitySearchFocused = false;
                           });
                         },

@@ -6,7 +6,7 @@ class GranjaModel {
   final String descricao;
   final int? codigo;
   final FazendaModel? fazenda;
-  final TipoGranjaModel tipoGranja;
+  final TipoGranjaModel? tipoGranja;
 
 
   GranjaModel({
@@ -14,7 +14,7 @@ class GranjaModel {
     required this.descricao,
     this.codigo,
     this.fazenda,
-    required this.tipoGranja,
+    this.tipoGranja,
   });
 
   factory GranjaModel.fromJson(Map<String, dynamic> json) {
@@ -23,7 +23,7 @@ class GranjaModel {
       descricao: json['descricao'],
       codigo: json['codigo'],
       fazenda: json['fazenda'] != null ? FazendaModel.fromJson(json['fazenda']) : null,
-      tipoGranja: TipoGranjaModel.fromJson(json['tipoGranja']),
+      tipoGranja: json['tipoGranja'] != null ? TipoGranjaModel.fromJson(json['tipoGranja']) : null,
     );
   }
 

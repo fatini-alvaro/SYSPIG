@@ -77,7 +77,7 @@ class SelecionarGranjaPageState extends State<SelecionarGranjaPage> {
                         ),
                         SizedBox(height: 8),
                         Text(
-                          'Tipo - ${list[idx].tipoGranja.descricao}',
+                          'Tipo - ${list[idx].tipoGranja?.descricao}',
                           style: TextStyle(
                             fontWeight: FontWeight.normal,
                             fontSize: 15,
