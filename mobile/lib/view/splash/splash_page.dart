@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/services/prefs_service.dart';
+import 'package:syspig/services/prefs_service.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});

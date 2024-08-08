@@ -1,21 +1,21 @@
-import 'package:mobile/model/uf_model.dart';
+import 'package:syspig/model/uf_model.dart';
 
 class CidadeModel {
   final int id;
   final String nome;
-  final UfModel uf;
+  final UfModel? uf;
 
   CidadeModel({
     required this.id,
     required this.nome,
-    required this.uf,
+    this.uf,
   });
 
   factory CidadeModel.fromJson(Map<String, dynamic> json) {
     return CidadeModel(
       id: json['id'],
       nome: json['nome'],
-      uf: UfModel.fromJson(json['uf']),
+      uf: json['uf'] != null ? UfModel.fromJson(json['uf']) : null,
     );
   }
 

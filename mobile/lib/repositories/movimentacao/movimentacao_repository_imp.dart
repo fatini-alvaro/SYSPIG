@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
-import 'package:mobile/model/movimentacao_model.dart';
-import 'package:mobile/repositories/movimentacao/movimentacao_repository.dart';
+import 'package:syspig/model/movimentacao_model.dart';
+import 'package:syspig/repositories/movimentacao/movimentacao_repository.dart';
 
 class MovimentacaoRepositoryImp implements MovimentacaoRepository {
   @override

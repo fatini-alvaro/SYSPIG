@@ -1,4 +1,4 @@
-import 'package:mobile/model/cidade_model.dart';
+import 'package:syspig/model/cidade_model.dart';
 
 abstract class CidadeRepository {
 

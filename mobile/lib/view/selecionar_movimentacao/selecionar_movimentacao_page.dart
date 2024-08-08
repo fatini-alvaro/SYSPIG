@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/components/buttons/custom_abrir_tela_adicionar_novo_button_component.dart';
-import 'package:mobile/controller/movimentacao/movimentacao_controller.dart';
-import 'package:mobile/repositories/movimentacao/movimentacao_repository_imp.dart';
-import 'package:mobile/themes/themes.dart';
+import 'package:syspig/components/buttons/custom_abrir_tela_adicionar_novo_button_component.dart';
+import 'package:syspig/controller/movimentacao/movimentacao_controller.dart';
+import 'package:syspig/repositories/movimentacao/movimentacao_repository_imp.dart';
+import 'package:syspig/themes/themes.dart';
 
 class SelecionarMovimentacaoPage extends StatefulWidget {
   @override
@@ -12,12 +12,12 @@ class SelecionarMovimentacaoPage extends StatefulWidget {
 }
 
 class SelecionarMovimentacaoPageState extends State<SelecionarMovimentacaoPage> {
-  final MovimentacaoController _anotacaoController = MovimentacaoController(MovimentacaoRepositoryImp());
+  final MovimentacaoController _movimentacaoController = MovimentacaoController(MovimentacaoRepositoryImp());
 
   @override
   void initState() {
     super.initState();
-    _anotacaoController.fetch();
+    _movimentacaoController.fetch();
   }
 
   @override
@@ -88,7 +88,9 @@ class SelecionarMovimentacaoPageState extends State<SelecionarMovimentacaoPage> 
                 horizontal: 16.0), // Ajuste a quantidade de espaço desejada
             child: CustomAbrirTelaAdicionarNovoButtonComponent(
               buttonText: 'Cadastrar Nova Movimentacao',
-              caminhoTelaCadastro: 'abrirTelaCadastroMovimentacao',
+              onPressed: () {
+                Navigator.of(context).pushNamed('/abrirTelaCadastroMovimentacao');     
+              },
             ),
           ),
           SizedBox(height: 15),
@@ -98,7 +100,7 @@ class SelecionarMovimentacaoPageState extends State<SelecionarMovimentacaoPage> 
           //     builder: (_, list, __) {
           //       return ListView.builder(
           //         itemCount: list.length,
-          //         itemBuilder: (_, idx) => CustomGranjaRegistroCard(
+          //         itemBuilder: (_, idx) => CustomRegistroCard(
           //           granja: list[idx],
           //           onEditarPressed: () {
           //             // Lógica para abrir a tela de edição

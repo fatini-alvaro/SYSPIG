@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
-import 'package:mobile/services/prefs_service.dart';// Importe o serviço de preferências do seu aplicativo
+import 'package:syspig/services/prefs_service.dart';
+import 'package:syspig/services/prefs_service.dart';// Importe o serviço de preferências do seu aplicativo
 
 class ApiClient {
   late Dio _dio;
@@ -18,6 +19,7 @@ class ApiClient {
 
   Future<void> setupApiClient() async {
     int? userId = await PrefsService.getUserId();
+    int? fazendaId = await PrefsService.getFazendaId();
 
     _dio.interceptors.add(InterceptorsWrapper(
       onRequest: (options, handler) async {
@@ -25,7 +27,11 @@ class ApiClient {
         // options.headers['Authorization'] = 'Bearer $token';
 
         if (userId != null) {
-          options.headers['User-Id'] = userId.toString();
+          options.headers['user-id'] = userId.toString();
+        }
+
+        if (fazendaId != null) {
+          options.headers['fazenda-id'] = fazendaId.toString();
         }
 
         return handler.next(options);

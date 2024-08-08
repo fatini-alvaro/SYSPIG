@@ -1,20 +1,20 @@
-import 'package:mobile/model/fazenda_model.dart';
-import 'package:mobile/model/tipo_granja_model.dart';
+import 'package:syspig/model/fazenda_model.dart';
+import 'package:syspig/model/tipo_granja_model.dart';
 
 class GranjaModel {
-  final int id;
+  final int? id;
   final String descricao;
-  final int codigo;
-  final FazendaModel fazenda;
-  final TipoGranjaModel tipoGranja;
+  final int? codigo;
+  final FazendaModel? fazenda;
+  final TipoGranjaModel? tipoGranja;
 
 
   GranjaModel({
-    required this.id,
+    this.id,
     required this.descricao,
-    required this.codigo,
-    required this.fazenda,
-    required this.tipoGranja,
+    this.codigo,
+    this.fazenda,
+    this.tipoGranja,
   });
 
   factory GranjaModel.fromJson(Map<String, dynamic> json) {
@@ -22,8 +22,8 @@ class GranjaModel {
       id: json['id'],
       descricao: json['descricao'],
       codigo: json['codigo'],
-      fazenda: FazendaModel.fromJson(json['fazenda']),
-      tipoGranja: TipoGranjaModel.fromJson(json['tipoGranja']),
+      fazenda: json['fazenda'] != null ? FazendaModel.fromJson(json['fazenda']) : null,
+      tipoGranja: json['tipoGranja'] != null ? TipoGranjaModel.fromJson(json['tipoGranja']) : null,
     );
   }
 

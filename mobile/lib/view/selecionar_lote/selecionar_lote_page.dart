@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/components/buttons/custom_abrir_tela_adicionar_novo_button_component.dart';
-import 'package:mobile/controller/anotacao/anotacao_controller.dart';
-import 'package:mobile/controller/lote/lote_controller.dart';
-import 'package:mobile/repositories/lote/lote_repository_imp.dart';
-import 'package:mobile/themes/themes.dart';
+import 'package:syspig/components/buttons/custom_abrir_tela_adicionar_novo_button_component.dart';
+import 'package:syspig/components/cards/custom_registro_card.dart';
+import 'package:syspig/controller/lote/lote_controller.dart';
+import 'package:syspig/model/lote_model.dart';
+import 'package:syspig/repositories/lote/lote_repository_imp.dart';
+import 'package:syspig/services/prefs_service.dart';
+import 'package:syspig/themes/themes.dart';
+import 'package:logger/logger.dart';
+import 'package:syspig/utils/dialogs.dart';
+import 'package:syspig/view/lote/cadastrar_lote_page.dart';
 
 class SelecionarLotePage extends StatefulWidget {
   @override
@@ -19,7 +24,16 @@ class SelecionarLotePageState extends State<SelecionarLotePage> {
   @override
   void initState() {
     super.initState();
-    _loteController.fetch();
+    _carregarLotes();
+  }
+
+  Future<void> _carregarLotes() async {
+    int? fazendaId = await PrefsService.getFazendaId();
+    if (fazendaId != null) {
+      _loteController.fetch(fazendaId);
+    } else {
+      Logger().e('ID da fazenda não encontrado');
+    }
   }
 
   @override
@@ -35,33 +49,84 @@ class SelecionarLotePageState extends State<SelecionarLotePage> {
         children: [
           SizedBox(height: 20),
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16.0), // Ajuste a quantidade de espaço desejada
+            padding: EdgeInsets.symmetric(horizontal: 16.0),
             child: CustomAbrirTelaAdicionarNovoButtonComponent(
               buttonText: 'Cadastrar Novo Lote', 
-              caminhoTelaCadastro: 'abrirTelaCadastroLote',
+              onPressed: () {
+                Navigator.of(context).pushNamed('/abrirTelaCadastroLote');     
+              },
             ),
           ),
           SizedBox(height: 15),
-          // Expanded(
-          //   child: ValueListenableBuilder<List<GranjaModel>>(
-          //     valueListenable: _granjaController.granjas,
-          //     builder: (_, list, __) {
-          //       return ListView.builder(
-          //         itemCount: list.length,
-          //         itemBuilder: (_, idx) => CustomGranjaRegistroCard(
-          //           granja: list[idx],
-          //           onEditarPressed: () {
-          //             // Lógica para abrir a tela de edição
-          //           },
-          //           onExcluirPressed: () {
-          //             // Lógica para excluir
-          //           },
-          //           caminhoTelaAoClicar: 'home'
-          //         ),
-          //       );
-          //     },
-          //   ),
-          // ),
+          Expanded(
+            child: ValueListenableBuilder<List<LoteModel>>(
+              valueListenable: _loteController.lotes,
+              builder: (_, list, __) {
+                return ListView.builder(
+                  itemCount: list.length,
+                  itemBuilder: (_, idx) => CustomRegistroCard(
+                    descricao: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Número: ${list[idx].numeroLote}',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20,
+                          ),
+                        ),
+                        Text(
+                          'Descrição: ${list[idx].descricao}',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20,
+                          ),
+                        ),
+                      ],
+                    ),
+                    onEditarPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => CadastrarLotePage(
+                            loteParaEditar: list[idx],
+                          ),
+                        ),
+                      );
+                    },
+                    onExcluirPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (_) => AlertDialog(
+                          title: Text('Confirmar exclusão'),
+                          content: Text('Tem certeza de que deseja excluir o lote?'),
+                          actions: [
+                            TextButton(
+                              onPressed: () async {
+                                Navigator.pop(context); // Fechar o diálogo de confirmação
+                                await _loteController.delete(context, list[idx].id!);
+
+                                 Dialogs.successToast(context, 'Lote excluído com sucesso!');
+
+                                 _carregarLotes();
+                              },
+                              child: Text('Confirmar'),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                Navigator.pop(context); // Fechar o diálogo de confirmação
+                              },
+                              child: Text('Cancelar'),
+                            ),
+                          ],
+                        ),
+                      );
+                    },   
+                  ),
+                );
+              },
+            ),
+          )
         ],
       ),
     );

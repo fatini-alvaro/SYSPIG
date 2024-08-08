@@ -1,11 +1,11 @@
 
 import 'package:flutter/material.dart';
-import 'package:mobile/controller/fazenda/fazenda_controller.dart';
-import 'package:mobile/model/cidade_model.dart';
-import 'package:mobile/model/fazenda_model.dart';
-import 'package:mobile/repositories/cidade/cidade_repository_imp.dart';
-import 'package:mobile/repositories/fazenda/fazenda_repository_imp.dart';
-import 'package:mobile/utils/dialogs.dart';
+import 'package:syspig/controller/fazenda/fazenda_controller.dart';
+import 'package:syspig/model/cidade_model.dart';
+import 'package:syspig/model/fazenda_model.dart';
+import 'package:syspig/repositories/cidade/cidade_repository_imp.dart';
+import 'package:syspig/repositories/fazenda/fazenda_repository_imp.dart';
+import 'package:syspig/utils/dialogs.dart';
 
 
 class CadastrarFazendaController with ChangeNotifier {
@@ -21,7 +21,7 @@ class CadastrarFazendaController with ChangeNotifier {
   void setCidade(CidadeModel? value) => _cidade = value;
 
   String getCidadeNome() {
-    return _cidade?.nome ?? ''; // Retorna o nome da cidade ou uma string vazia se não houver cidade selecionada
+    return _cidade?.nome ?? '';
   }
 
   Future<bool> create(BuildContext context) async {
@@ -50,7 +50,6 @@ class CadastrarFazendaController with ChangeNotifier {
 
     return true;
   }
-
 
   Future<List<CidadeModel>> getCidadesFromRepository() async {
     try {

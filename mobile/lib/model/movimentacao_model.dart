@@ -1,10 +1,10 @@
-import 'package:mobile/model/animal_model.dart';
-import 'package:mobile/model/fazenda_model.dart';
+import 'package:syspig/model/animal_model.dart';
+import 'package:syspig/model/fazenda_model.dart';
 
 class MovimentacaoModel {
   final int id;
-  final FazendaModel fazenda;
-  final AnimalModel animal;
+  final FazendaModel? fazenda;
+  final AnimalModel? animal;
   //Tratar a data de forma correta:
   final int dataMovimento;
   //Alterar para classe do tipo baia:
@@ -13,8 +13,8 @@ class MovimentacaoModel {
 
   MovimentacaoModel({
     required this.id,
-    required this.fazenda,
-    required this.animal,
+    this.fazenda,
+    this.animal,
     required this.dataMovimento,
     // required this.baiaEntrada,
     // required this.baiaSaida,
@@ -23,8 +23,8 @@ class MovimentacaoModel {
   factory MovimentacaoModel.fromJson(Map<String, dynamic> json) {
     return MovimentacaoModel(
       id: json['id'],
-      fazenda: FazendaModel.fromJson(json['fazenda']),
-      animal: AnimalModel.fromJson(json['Animal']),
+      fazenda: json['fazenda'] != null ? FazendaModel.fromJson(json['fazenda']) : null,
+      animal: json['Animal'] != null ? AnimalModel.fromJson(json['Animal']) : null,
       dataMovimento: json['data_movimento'],
       // baiaEntrada: BaiaModel.fromJson(json['BaiaEntrada']) ,
       // baiaSaida: BaiaModel.fromJson(json['BaiaSaida']) ,

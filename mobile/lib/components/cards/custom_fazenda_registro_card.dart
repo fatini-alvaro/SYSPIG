@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/model/fazenda_model.dart';
+import 'package:syspig/model/fazenda_model.dart';
 
 class CustomFazendaRegistroCard extends StatelessWidget {
   final FazendaModel fazenda;
@@ -62,7 +62,7 @@ class CustomFazendaRegistroCard extends StatelessWidget {
                           ),
                           SizedBox(width: 8), // Espaçamento entre o ícone e o texto
                           Text(
-                            '${fazenda.cidade?.nome} - ${fazenda.cidade?.uf.sigla}',
+                            '${fazenda.cidade?.nome} - ${fazenda.cidade?.uf?.sigla}',
                             style: TextStyle(
                               fontWeight: FontWeight.normal,
                               fontSize: 15,

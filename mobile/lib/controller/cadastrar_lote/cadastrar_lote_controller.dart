@@ -1,55 +1,129 @@
 
 import 'package:flutter/material.dart';
-import 'package:mobile/controller/lote/lote_controller.dart';
-import 'package:mobile/repositories/lote/lote_repository_imp.dart';
-import 'package:mobile/utils/dialogs.dart';
+import 'package:syspig/controller/lote/lote_controller.dart';
+import 'package:syspig/model/animal_model.dart';
+import 'package:syspig/model/lote_animal_model.dart';
+import 'package:syspig/model/lote_model.dart';
+import 'package:syspig/repositories/animal/animal_repository_imp.dart';
+import 'package:syspig/repositories/lote/lote_repository_imp.dart';
+import 'package:syspig/services/prefs_service.dart';
+import 'package:syspig/utils/dialogs.dart';
 
 
 class CadastrarLoteController with ChangeNotifier {
-
+  
   final LoteController _loteController = LoteController(LoteRepositoryImp());
+  final AnimalRepositoryImp _animalRepository = AnimalRepositoryImp();
 
   String? _numero;
-  setNumero(String value) => _numero = value;
+  setNumero(String? value) => _numero = value;
+  String? get numero => _numero;
 
-  String? _Animal;
-  setAnimal(String value) => _Animal = value;
+  String? _descricao;
+  setDescricao(String? value) => _descricao = value;
+  String? get descricao => _descricao;
 
-  String? _Descricao;
-  setDescricao(String value) => _Descricao = value;
+  final List<AnimalModel> _animaisSelecionados = [];
+  List<AnimalModel> get animaisSelecionados => _animaisSelecionados;
 
-  String? descricaoError;
-
-  // Função para validar os campos
-  bool validateFields() {
-    bool isValid = true;
-    const textObrigatorio = 'Campo obrigatório';
-
-    // Validar e definir mensagens de erro para cada campo
-    if (_Descricao == null || _Descricao!.isEmpty) {
-      descricaoError = textObrigatorio;
-      isValid = false;
-    } else {
-      descricaoError = '';
+  void adicionarAnimal(AnimalModel animal) {
+    if (!_animaisSelecionados.any((a) => a.id == animal.id)) {
+      _animaisSelecionados.add(animal);
+      notifyListeners();
     }
-    
-    notifyListeners();
+  }
 
-    return isValid;
+  void removerAnimal(AnimalModel animal) {
+    _animaisSelecionados.remove(animal);
+    notifyListeners();
+  }
+
+  Future<void> carregarLote(LoteModel lote) async {
+    _numero = lote.numeroLote;
+    _descricao = lote.descricao;
+    _animaisSelecionados.clear();
+    _animaisSelecionados.addAll(
+      (lote.loteAnimais ?? []).map((loteAnimal) => loteAnimal.animal!)
+    );
+    notifyListeners();
   }
 
   Future<bool> create(BuildContext context) async {
 
-    if (!validateFields()) {
-      // Se houver campos vazios, retornar false sem realizar a ação
-      return false;
+    Dialogs.showLoading(context, message:'Aguarde, Criando Lote');
+
+    try {
+
+      List<LoteAnimalModel> loteAnimais = _animaisSelecionados
+          .map((animal) => LoteAnimalModel(animal: animal))
+          .toList();
+
+      LoteModel novoLote = await LoteModel(
+        numeroLote: _numero,
+        descricao: _descricao,
+        loteAnimais: loteAnimais
+      );
+
+      LoteModel loteCriado = await _loteController.create(context, novoLote);
+
+      Dialogs.hideLoading(context);
+
+      if (loteCriado != null) {
+        Dialogs.successToast(context, 'Lote criado com sucesso!');
+      } else {
+        Dialogs.errorToast(context, 'Falha ao criar Lote');
+      }
+    } catch (e) {
+      print(e);
+      Dialogs.hideLoading(context);
+      Dialogs.errorToast(context, 'Falha ao criar a Lote');
     }
 
-    Dialogs.showLoading(context, message:'Aguarde, Criando Nova anotação');
-    await Future.delayed(Duration(seconds: 2));
-    //To-do chama o create do fazendacontroller
+    return true;
+  }
 
-    Dialogs.hideLoading(context);
+  Future<List<AnimalModel>> getAnimaisFromRepository() async {
+    try {
+
+      var idFazenda = await PrefsService.getFazendaId();
+
+      return await _animalRepository.getList(idFazenda!); 
+    } catch (e) {
+      print('Erro ao buscar as animais do repositório: $e');
+      throw Exception('Erro ao buscar os animais');
+    }
+  }
+
+  Future<bool> update(BuildContext context, LoteModel lote) async {
+
+    Dialogs.showLoading(context, message:'Aguarde, Criando Novo Lote');
+
+    try {
+
+      List<LoteAnimalModel> loteAnimais = _animaisSelecionados
+          .map((animal) => LoteAnimalModel(animal: animal))
+          .toList();
+
+      LoteModel loteEdicao = await LoteModel(
+        id: lote.id,
+        descricao: _descricao,
+        numeroLote: _numero,
+        loteAnimais: loteAnimais
+      );
+
+      LoteModel loteEditado = await _loteController.update(context, loteEdicao);
+
+      Dialogs.hideLoading(context);
+
+      if (loteEditado != null) {
+        Dialogs.successToast(context, 'Lote editada com sucesso!');
+      } else {
+        Dialogs.errorToast(context, 'Falha ao editar a Lote');
+      }
+    } catch (e) {
+      Dialogs.hideLoading(context);
+      Dialogs.errorToast(context, 'Falha ao editar a Lote');
+    }
 
     return true;
   }

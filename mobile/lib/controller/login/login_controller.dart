@@ -1,6 +1,6 @@
-import 'package:mobile/model/usuario_model.dart';
-import 'package:mobile/repositories/usuario/usuario_repository.dart';
-import 'package:mobile/services/prefs_service.dart';
+import 'package:syspig/model/usuario_model.dart';
+import 'package:syspig/repositories/usuario/usuario_repository.dart';
+import 'package:syspig/services/prefs_service.dart';
 
 class LoginController {
 

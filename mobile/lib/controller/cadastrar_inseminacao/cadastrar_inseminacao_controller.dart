@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/controller/inseminacao/inseminacao_controller.dart';
-import 'package:mobile/repositories/iseminacao/inseminacao_repository_imp.dart';
-import 'package:mobile/utils/dialogs.dart';
+import 'package:syspig/controller/inseminacao/inseminacao_controller.dart';
+import 'package:syspig/repositories/iseminacao/inseminacao_repository_imp.dart';
+import 'package:syspig/utils/dialogs.dart';
 
 class CadastrarInseminacaoController with ChangeNotifier {
   final InseminacaoController _inseminacaoController = InseminacaoController(InseminacaoRepositoryImp());

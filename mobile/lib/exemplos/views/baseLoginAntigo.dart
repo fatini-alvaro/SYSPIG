@@ -1,8 +1,8 @@
 // import 'package:flutter/material.dart';
-// import 'package:mobile/components/login/custom_login_button_component.dart';
-// import 'package:mobile/controller/login/login_controller.dart';
-// import 'package:mobile/controller/post/posts_controller.dart';
-// import 'package:mobile/widgets/custom_text_field_widget.dart';
+// import 'package:syspig/components/login/custom_login_button_component.dart';
+// import 'package:syspig/controller/login/login_controller.dart';
+// import 'package:syspig/controller/post/posts_controller.dart';
+// import 'package:syspig/widgets/custom_text_field_widget.dart';
 
 // class LoginPage extends StatefulWidget {
 //   @override

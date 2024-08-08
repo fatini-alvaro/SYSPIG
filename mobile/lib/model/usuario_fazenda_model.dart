@@ -1,6 +1,6 @@
-import 'package:mobile/model/fazenda_model.dart';
-import 'package:mobile/model/tipo_usuario.dart';
-import 'package:mobile/model/usuario_model.dart';
+import 'package:syspig/model/fazenda_model.dart';
+import 'package:syspig/model/tipo_usuario.dart';
+import 'package:syspig/model/usuario_model.dart';
 
 class UsuarioFazendaModel {
   final int id;

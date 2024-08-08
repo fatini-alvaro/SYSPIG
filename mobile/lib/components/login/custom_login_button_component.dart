@@ -1,6 +1,6 @@
 
 import 'package:flutter/material.dart';
-import 'package:mobile/controller/login/login_controller.dart';
+import 'package:syspig/controller/login/login_controller.dart';
 
 class CustomLoginButtonComponent extends StatelessWidget {
   

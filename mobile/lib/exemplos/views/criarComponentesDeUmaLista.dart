@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/controller/app_controller.dart';
-import 'package:mobile/controller/home/home_controller.dart';
-import 'package:mobile/model/post_model.dart';
-import 'package:mobile/repositories/home/home_repository_mock.dart';
-import 'package:mobile/widgets/custom_drawer_widget.dart';
+import 'package:syspig/controller/app_controller.dart';
+import 'package:syspig/controller/home/home_controller.dart';
+import 'package:syspig/model/post_model.dart';
+import 'package:syspig/repositories/home/home_repository_mock.dart';
+import 'package:syspig/widgets/custom_drawer_widget.dart';
 
 class HomePage extends StatefulWidget{
   @override

@@ -1,4 +1,4 @@
-import 'package:mobile/model/tipo_usuario.dart';
+import 'package:syspig/model/tipo_usuario.dart';
 
 class UsuarioModel {
   final int? id;

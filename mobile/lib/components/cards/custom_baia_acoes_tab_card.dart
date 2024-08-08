@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/components/cards/custom_baia_acao_card.dart';
-import 'package:mobile/widgets/custom_add_anotacao_widget.dart';
-import 'package:mobile/widgets/custom_adicionar_nascimento_widget.dart';
-import 'package:mobile/widgets/custom_movimentar_animal_widget.dart';
+import 'package:syspig/components/cards/custom_baia_acao_card.dart';
+import 'package:syspig/widgets/custom_add_anotacao_widget.dart';
+import 'package:syspig/widgets/custom_adicionar_nascimento_widget.dart';
+import 'package:syspig/widgets/custom_movimentar_animal_widget.dart';
 
 class CustomBaiaAcoesTabCard extends StatefulWidget {
   @override

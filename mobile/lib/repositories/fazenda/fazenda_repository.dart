@@ -1,4 +1,4 @@
-import 'package:mobile/model/fazenda_model.dart';
+import 'package:syspig/model/fazenda_model.dart';
 
 abstract class FazendaRepository {
 

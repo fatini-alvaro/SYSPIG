@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/components/criar_conta/custom_criar_conta_button_component.dart';
-import 'package:mobile/components/login/custom_login_button_component.dart';
-import 'package:mobile/controller/login/login_controller.dart';
-import 'package:mobile/repositories/usuario/usuario_repository_imp.dart';
-import 'package:mobile/utils/dialogs.dart';
+import 'package:syspig/components/criar_conta/custom_criar_conta_button_component.dart';
+import 'package:syspig/components/login/custom_login_button_component.dart';
+import 'package:syspig/controller/login/login_controller.dart';
+import 'package:syspig/repositories/usuario/usuario_repository_imp.dart';
+import 'package:syspig/utils/dialogs.dart';
+import 'package:syspig/widgets/custom_text_form_field_widget.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -18,12 +19,12 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: SizedBox(
-          width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height,
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
+      body: SizedBox(
+        width: MediaQuery.of(context).size.width,
+        height: MediaQuery.of(context).size.height,
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: SingleChildScrollView(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -44,46 +45,44 @@ class _LoginPageState extends State<LoginPage> {
                       key: _formKey,
                       child: Column(
                         children: [
-                          TextFormField(
+                          CustomTextFormFieldWidget(
+                            label: 'Email',
+                            hintText: 'Digite seu email',
+                            prefixIcon: Icon(Icons.email),
                             validator: (value) {
                               // add email validation
                               if (value == null || value.isEmpty) {
                                 return 'Email obrigatório';
                               }
-
+                  
                               bool emailValid = RegExp(
                                       r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
                                   .hasMatch(value);
                               if (!emailValid) {
                                 return 'Email inválido';
                               }
-
+                  
                               return null;
                             },
-                            decoration: InputDecoration(
-                              labelText: 'Insira o email',
-                              border: OutlineInputBorder(),
-                            ),
                             onChanged: _loginController.setEmail,
-                            keyboardType: TextInputType.emailAddress,
+                            keyboardType: TextInputType.emailAddress
                           ),
                           SizedBox(height: 25),
-                          TextFormField(
+                          CustomTextFormFieldWidget(
+                            label: 'Senha',
+                            hintText: 'Digite sua senha',
+                            prefixIcon: Icon(Icons.password),
                             validator: (value) {
                               if (value == null || value.isEmpty) {
                                 return 'Senha obrigatória';
                               }
-
+                  
                               if (value.length < 6) {
                                 return 'A senha deve ter pelo menos 6 caracteres';
                               }
                               return null;
                             },
                             obscureText: true,
-                            decoration: InputDecoration(
-                              labelText: 'Insira a senha',
-                              border: OutlineInputBorder(),
-                            ),
                             onChanged: _loginController.setSenha,
                           ),
                           SizedBox(height: 10),

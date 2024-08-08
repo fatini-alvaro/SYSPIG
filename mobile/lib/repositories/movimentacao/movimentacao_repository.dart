@@ -1,4 +1,4 @@
-import 'package:mobile/model/movimentacao_model.dart';
+import 'package:syspig/model/movimentacao_model.dart';
 
 abstract class MovimentacaoRepository {
 

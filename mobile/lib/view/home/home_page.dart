@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/components/cards/custom_home_card.dart';
-import 'package:mobile/controller/app_controller.dart';
-import 'package:mobile/controller/home/home_controller.dart';
-import 'package:mobile/model/fazenda_model.dart';
-import 'package:mobile/model/usuario_model.dart';
-import 'package:mobile/repositories/home/home_repository_imp.dart';
-import 'package:mobile/services/prefs_service.dart';
-import 'package:mobile/widgets/custom_appbar_widget.dart';
-import 'package:mobile/widgets/custom_drawer_widget.dart';
-import 'package:mobile/services/prefs_service.dart';
+import 'package:syspig/components/cards/custom_home_card.dart';
+import 'package:syspig/controller/app_controller.dart';
+import 'package:syspig/controller/home/home_controller.dart';
+import 'package:syspig/model/fazenda_model.dart';
+import 'package:syspig/model/usuario_model.dart';
+import 'package:syspig/repositories/home/home_repository_imp.dart';
+import 'package:syspig/services/prefs_service.dart';
+import 'package:syspig/widgets/custom_appbar_widget.dart';
+import 'package:syspig/widgets/custom_drawer_widget.dart';
+import 'package:syspig/services/prefs_service.dart';
 
 class HomePage extends StatefulWidget{
   @override
@@ -49,8 +49,8 @@ class HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       drawer: CustomDrawerWidget(
-        accountName: _user!.nome,
-        accountEmail: _user!.email,
+        accountName: _user != null ? _user!.nome : 'nome',
+        accountEmail: _user != null ? _user!.email : 'email',
         onHomeTap: () {
           print('Home tapped');
         },
@@ -62,12 +62,13 @@ class HomePageState extends State<HomePage> {
           Navigator.of(context).pushNamedAndRemoveUntil('/login', (_) => true);
         },
       ),
-      appBar: CustomAppBarWidget(titulo: Text(_fazenda!.nome)),      
+      appBar: CustomAppBarWidget(titulo: Text(_fazenda != null ? _fazenda!.nome : 'Fazenda')),      
       body: SingleChildScrollView(
         child: Column(
           children: [
             SizedBox(height: 20),
             Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 CustomHomeCard(
                   descricao: 'Gestação',
@@ -87,6 +88,7 @@ class HomePageState extends State<HomePage> {
               ]
             ),
             Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 CustomHomeCard(
                   descricao: 'Granjas',
@@ -106,6 +108,7 @@ class HomePageState extends State<HomePage> {
               ]
             ),
             Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 CustomHomeCard(
                   descricao: 'lotes',
@@ -125,6 +128,7 @@ class HomePageState extends State<HomePage> {
               ]
             ),
             Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 CustomHomeCard(
                   descricao: 'Baias',

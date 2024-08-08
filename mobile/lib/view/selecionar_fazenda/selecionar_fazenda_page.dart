@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/components/buttons/custom_abrir_tela_adicionar_novo_button_component.dart';
-import 'package:mobile/components/cards/custom_fazenda_registro_card.dart';
-import 'package:mobile/controller/fazenda/fazenda_controller.dart';
-import 'package:mobile/model/fazenda_model.dart';
-import 'package:mobile/repositories/fazenda/fazenda_repository_imp.dart';
-import 'package:mobile/services/prefs_service.dart';
-import 'package:mobile/themes/themes.dart';
+import 'package:syspig/components/buttons/custom_abrir_tela_adicionar_novo_button_component.dart';
+import 'package:syspig/components/cards/custom_fazenda_registro_card.dart';
+import 'package:syspig/controller/fazenda/fazenda_controller.dart';
+import 'package:syspig/model/fazenda_model.dart';
+import 'package:syspig/repositories/fazenda/fazenda_repository_imp.dart';
+import 'package:syspig/services/prefs_service.dart';
+import 'package:syspig/themes/themes.dart';
 
 class SelecionarFazendaPage extends StatefulWidget {
   @override
@@ -50,7 +50,9 @@ class SelecionarFazendaPageState extends State<SelecionarFazendaPage> {
             padding: EdgeInsets.symmetric(horizontal: 16.0), // Ajuste a quantidade de espaço desejada
             child: CustomAbrirTelaAdicionarNovoButtonComponent(
               buttonText: 'Cadastrar Nova Fazenda', 
-              caminhoTelaCadastro: 'abrirTelaCadastroFazenda',
+              onPressed: () {
+                Navigator.of(context).pushNamed('/abrirTelaCadastroFazenda');     
+              },
             ),
           ),
           SizedBox(height: 15),

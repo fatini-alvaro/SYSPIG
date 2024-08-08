@@ -1,5 +1,5 @@
 
-import 'package:mobile/model/inseminacao_model.dart';
+import 'package:syspig/model/inseminacao_model.dart';
 
 abstract class InseminacaoRepository {
 

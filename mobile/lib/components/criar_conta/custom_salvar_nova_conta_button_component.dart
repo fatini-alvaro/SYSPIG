@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/controller/criar_conta/criar_conta_controller.dart';
+import 'package:syspig/controller/criar_conta/criar_conta_controller.dart';
 
 class CustomSalvarNovaContaButtonComponent extends StatelessWidget {
   final CriarContaController criarContaController;

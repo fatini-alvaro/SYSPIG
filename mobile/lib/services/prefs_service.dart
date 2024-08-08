@@ -1,6 +1,6 @@
 import 'dart:convert';
-import 'package:mobile/model/fazenda_model.dart';
-import 'package:mobile/model/usuario_model.dart';
+import 'package:syspig/model/fazenda_model.dart';
+import 'package:syspig/model/usuario_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class PrefsService {
@@ -42,7 +42,18 @@ class PrefsService {
       var user = userData['user'];
       return user['id'];
     }
-    return null; // Retorna null se não encontrar o ID do usuário
+    return null;
+  }
+
+  static Future<int?> getFazendaId() async {
+    var prefs = await SharedPreferences.getInstance();
+    var userDataString = prefs.getString(_key);
+    if (userDataString != null) {
+      Map<String, dynamic> userData = jsonDecode(userDataString);
+      var fazenda = userData['fazenda'];
+      return fazenda['id'];
+    }
+    return null;
   }
 
   static Future<FazendaModel?> getFazenda() async {

@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 
 class CustomAbrirTelaAdicionarNovoButtonComponent extends StatelessWidget {
   final String buttonText;
-  final String caminhoTelaCadastro;
+  final Function()? onPressed;
 
-  CustomAbrirTelaAdicionarNovoButtonComponent({required this.buttonText, required this.caminhoTelaCadastro});
+  CustomAbrirTelaAdicionarNovoButtonComponent({required this.buttonText, this.onPressed});
 
   @override
   Widget build(BuildContext context) {
@@ -18,9 +18,7 @@ class CustomAbrirTelaAdicionarNovoButtonComponent extends StatelessWidget {
           borderRadius: BorderRadius.circular(5), // Ajuste o valor conforme necessário
         ),
       ),
-      onPressed: () {
-        Navigator.of(context).pushNamed('/${caminhoTelaCadastro}');               
-      }, 
+      onPressed: onPressed, 
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [

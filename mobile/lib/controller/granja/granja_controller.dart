@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/model/granja_model.dart';
-import 'package:mobile/repositories/granja/granja_repository.dart';
+import 'package:syspig/model/granja_model.dart';
+import 'package:syspig/repositories/granja/granja_repository.dart';
 
 class GranjaController {
   final GranjaRepository _granjaRepository;
@@ -8,12 +8,28 @@ class GranjaController {
 
   ValueNotifier<List<GranjaModel>> granjas = ValueNotifier<List<GranjaModel>>([]);
 
-  fetch() async {
-    granjas.value = await _granjaRepository.getList();
+  fetch(int fazendaId) async {
+    granjas.value = await _granjaRepository.getList(fazendaId);
   }
 
-  Future<bool> create (BuildContext context) async {
+  Future<GranjaModel> create(BuildContext context, GranjaModel granjaNova) async {
+    
+    GranjaModel novaGranja = await  _granjaRepository.create(granjaNova);
 
-    return true;
+    return novaGranja;
+  }
+  
+  Future<GranjaModel> update(BuildContext context, GranjaModel granjaEdicao) async {
+    
+    GranjaModel granjaEditada = await  _granjaRepository.update(granjaEdicao);
+
+    return granjaEditada;
+  }
+
+  Future<bool> delete(BuildContext context, int granjaExclusaoID) async {
+    
+    bool excluido = await  _granjaRepository.delete(granjaExclusaoID);
+
+    return excluido;
   }
 }

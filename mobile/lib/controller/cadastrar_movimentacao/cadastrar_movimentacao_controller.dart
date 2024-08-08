@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/controller/movimentacao/movimentacao_controller.dart';
-import 'package:mobile/repositories/movimentacao/movimentacao_repository_imp.dart';
-import 'package:mobile/utils/dialogs.dart';
+import 'package:syspig/controller/movimentacao/movimentacao_controller.dart';
+import 'package:syspig/repositories/movimentacao/movimentacao_repository_imp.dart';
+import 'package:syspig/utils/dialogs.dart';
 
 class CadastrarMovimentacaoController with ChangeNotifier {
   final MovimentacaoController _movimentacaoController = MovimentacaoController(MovimentacaoRepositoryImp());

@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
-import 'package:mobile/model/inseminacao_model.dart';
-import 'package:mobile/repositories/iseminacao/inseminacao_repository.dart';
+import 'package:syspig/model/inseminacao_model.dart';
+import 'package:syspig/repositories/iseminacao/inseminacao_repository.dart';
 
 class InseminacaoRepositoryImp implements InseminacaoRepository {   
   @override

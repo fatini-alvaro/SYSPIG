@@ -1,6 +1,6 @@
-import 'package:mobile/api/api_cliente.dart';
-import 'package:mobile/model/fazenda_model.dart';
-import 'package:mobile/repositories/fazenda/fazenda_repository.dart';
+import 'package:syspig/api/api_cliente.dart';
+import 'package:syspig/model/fazenda_model.dart';
+import 'package:syspig/repositories/fazenda/fazenda_repository.dart';
 
 class FazendaRepositoryImp implements FazendaRepository {
   late final ApiClient _apiClient;
