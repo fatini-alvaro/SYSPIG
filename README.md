@@ -14,8 +14,9 @@ Documentação para instalação e configuração do projeto API e Mobile.
   - [Instalações e configurações](#instalações-e-configurações)
     - [PostgreSQL 15](#postgresql-15)
     - [Node e Yarn](#node-e-yarn)
+    - [Flutter SDK](#flutter-sdk)
     - [Android Studio](#android-studio)
-    - [Flutter](#flutter)
+    - [Visual Studio Code](#visual-studio-code)
 - [Rodando o Projeto](#rodando-o-projeto)
   - [Rodar API](#rodar-api)
   - [Rodar o Mobile](#rodar-o-mobile)
@@ -63,6 +64,7 @@ Esse projeto é composto por:
 
 - **Node.js**: v22.6.0
 - **Yarn**: v1.22.22
+- **Flutter SDK**: >=3.2.6 <4.0.0
 
 ## Setup
 
@@ -152,9 +154,70 @@ Comandos para máquinhas Linux.
      yarn -v
      ```
 
-### Android Studio
+### Flutter SDK
+Video aula flutter: https://www.youtube.com/watch?v=XeUiJJN0vsE&list=PLlBnICoI-g-d-J57QIz6Tx5xtUDGQdBFB&index=1&ab_channel=JacobMouradaFlutterando
 
-### Flutter
+INSTALAÇÕES:
+https://www.youtube.com/watch?v=WT2vDNUvGTw&ab_channel=LearningLab
+
+Instalar globalmente:
+
+1. **Baixar a versão correta do Flutter SDK:**
+   - Primeiro, você precisará baixar o Flutter SDK da versão correta diretamente do site do Flutter:
+     ```bash
+     sudo snap install flutter --classic
+     ```
+
+2. **Verifique a instalação:**
+   - Certifique-se de que a versão do Flutter esteja dentro do intervalo >=3.2.6 <4.0.0 rodando o comando (necessario rodar para instalar mais dependencias):
+     ```bash
+     flutter --version
+     ```
+
+3. **Adicione o Flutter ao PATH:**
+   - Comando:
+     ```bash
+     export PATH="$PATH:`pwd`/flutter/bin"
+     ```
+
+4. **Execute o comando de checagem:**
+  - Para ver se há algum ajuste necessário no ambiente de desenvolvimento:
+    ```bash
+    flutter doctor
+    ```
+    Isso irá verificar o ambiente e mostrar possíveis pendências, como Android SDK ou outros requisitos.
+
+### Android Studio
+Este projeto utiliza Flutter para desenvolvimento mobile. Embora o VS Code seja a IDE principal, é necessário instalar o Android Studio para configurar o SDK Android e emuladores. Abaixo estão as instruções para configurar o ambiente no Linux.
+
+1. **Baixe e instale o Android Studio:**
+   - Use o seguinte comando para instalar via snap:
+     ```bash
+     sudo snap install android-studio --classic
+     ```
+
+2. **Configure o Android SDK:**
+   - Siga o passo a passo desse video: https://www.youtube.com/watch?v=WT2vDNUvGTw&ab_channel=LearningLab
+   -Mas resumindo é Next -> Standard -> Acceppt all quando pedir para instalar -> finish.
+   -Com ele instalado clicar em more actions -> SDK Manager -> SDK tools -> Marcar a opção 'Android SDK Command-line Tools(latest)' -> apply -> ok -> finish -> ok.
+
+3. **Aceite as licenças do Android SDK:**
+   - Rodando o comando abaixo:
+     ```bash
+     flutter doctor --android-licenses
+     ```
+
+4. **Execute o comando de checagem:**
+  - Para ver se há algum ajuste necessário no ambiente de desenvolvimento:
+    ```bash
+    flutter doctor
+    ```
+    Não deve mais ter nenhum erro.
+
+### Visual Studio Code
+No Vscode voce pode adicionar algumas extensões para ajudar no desenvolvimento:
+
+1. **Flutter:**
 
 ## Rodando o Projeto
 
