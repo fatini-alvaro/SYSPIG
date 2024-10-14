@@ -9,6 +9,7 @@ Documentação para instalação e configuração do projeto API e Mobile.
   - [API](#api)
   - [Mobile](#mobile)
   - [Banco de Dados](#banco-de-dados)
+- [Requisitos Versões](#requisitos-versões)
 - [Setup](#setup)
   - [Instalações e configurações](#instalações-e-configurações)
     - [PostgreSQL 15](#postgresql-15)
@@ -57,6 +58,11 @@ Esse projeto é composto por:
 - **PostgreSQL**
 - Porta: `5432`
 - Usuário: `alvaro`
+
+## Requisitos Versões
+
+- **Node.js**: v22.6.0
+- **Yarn**: v1.22.22
 
 ## Setup
 
