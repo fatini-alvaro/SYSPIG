@@ -51,7 +51,6 @@ export class Default1722709772245 implements MigrationInterface {
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
-        // Remover as triggers e a função PL/pgSQL
         await queryRunner.query(`
             DROP TRIGGER atualizar_codigo_animal ON animal;
             DROP TRIGGER atualizar_codigo_anotacao ON anotacao;
