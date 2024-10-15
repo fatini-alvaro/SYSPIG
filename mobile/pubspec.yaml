@@ -18,6 +18,7 @@ dependencies:
   logger: ^2.1.0
   flutter_localization: ^0.2.0
   intl: ^0.19.0
+  win32: ^5.3.0
 
 dev_dependencies:
   flutter_test:
