@@ -65,7 +65,7 @@ class SelecionarGranjaPageState extends State<SelecionarGranjaPage> {
                 return ListView.builder(
                   itemCount: list.length,
                   itemBuilder: (_, idx) => CustomRegistroCard(
-                    descricao:Column(
+                    descricao: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
@@ -99,6 +99,23 @@ class SelecionarGranjaPageState extends State<SelecionarGranjaPage> {
                             ),
                           ],
                         ),
+                        SizedBox(height: 12), // Espaço para a dica
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.arrow_drop_down, // Ícone de seta para baixo
+                              color: Colors.grey, // Cor do ícone de seta
+                            ),
+                            SizedBox(width: 4), // Espaço entre a seta e o texto
+                            Text(
+                              'Clique para ver as baias', // Dica para o usuário
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.black, // Cor do texto da dica
+                              ),
+                            ),
+                          ],
+                        ),
                       ],
                     ),
                     onEditarPressed: () {
@@ -123,9 +140,8 @@ class SelecionarGranjaPageState extends State<SelecionarGranjaPage> {
                                 Navigator.pop(context); // Fechar o diálogo de confirmação
                                 await _granjaController.delete(context, list[idx].id!);
 
-                                 Dialogs.successToast(context, 'Granja excluída com sucesso!');
-
-                                 _carregarGranjas();
+                                Dialogs.successToast(context, 'Granja excluída com sucesso!');
+                                _carregarGranjas();
                               },
                               child: Text('Confirmar'),
                             ),
@@ -146,7 +162,7 @@ class SelecionarGranjaPageState extends State<SelecionarGranjaPage> {
                           builder: (context) => SelecionarBaiaPage(granja: list[idx]),
                         ),
                       );
-                    },          
+                    },
                   ),
                 );
               },

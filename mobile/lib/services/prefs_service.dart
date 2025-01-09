@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:logger/logger.dart';
 import 'package:syspig/model/fazenda_model.dart';
 import 'package:syspig/model/usuario_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -46,15 +47,21 @@ class PrefsService {
   }
 
   static Future<int?> getFazendaId() async {
-    var prefs = await SharedPreferences.getInstance();
-    var userDataString = prefs.getString(_key);
-    if (userDataString != null) {
+  var prefs = await SharedPreferences.getInstance();
+  var userDataString = prefs.getString(_key);
+  if (userDataString != null) {
+    try {
       Map<String, dynamic> userData = jsonDecode(userDataString);
       var fazenda = userData['fazenda'];
-      return fazenda['id'];
+      if (fazenda != null && fazenda is Map<String, dynamic> && fazenda.containsKey('id')) {
+        return fazenda['id'];
+      }
+    } catch (e) {
+      Logger().e('Erro ao recuperar fazenda: $e');
     }
-    return null;
   }
+  return null;
+}
 
   static Future<FazendaModel?> getFazenda() async {
     var prefs = await SharedPreferences.getInstance();

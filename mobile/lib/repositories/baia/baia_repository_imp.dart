@@ -34,6 +34,17 @@ class BaiaRepositoryImp implements BaiaRepository {
   }
 
   @override
+  Future<BaiaModel> getById(int baiaId) async {
+    try {
+      var response = await _apiClient.dio.get('/baias/baia/$baiaId');
+      return BaiaModel.fromJson(response.data);
+    } catch (e) {
+      Logger().e('Erro ao obter dados da baia: $e');
+      throw Exception('Erro ao obter dados da baia');
+    }
+  }
+
+  @override
   Future<BaiaModel> create(BaiaModel baia) async {
     try {
       Map<String, dynamic> baiaData = {

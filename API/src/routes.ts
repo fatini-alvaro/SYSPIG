@@ -43,6 +43,7 @@ routes.put('/baias/:baia_id', new BaiaController().update);
 routes.delete('/baias/:baia_id', new BaiaController().delete); 
 routes.get('/baias/:granja_id', new BaiaController().list);
 routes.get('/baias/byFazenda/:fazenda_id', new BaiaController().listByFazenda);
+routes.get('/baias/baia/:baia_id', new BaiaController().getById);
 
 //Cidade
 routes.get('/cidades', new cidadeController().list);
@@ -52,6 +53,7 @@ routes.post('/animais', new AnimalController().create);
 routes.put('/animais/:animal_id', new AnimalController().update); 
 routes.delete('/animais/:animal_id', new AnimalController().delete); 
 routes.get('/animais/:fazenda_id', new AnimalController().list);
+routes.get('/animais/animal/:animal_id', new AnimalController().getById);
 
 //Anotacao
 routes.post('/anotacoes', new AnotacaoController().create);
@@ -68,5 +70,6 @@ routes.put('/lotes/:lote_id', new LoteController().update);
 
 //Ocupacao
 routes.post('/ocupacoes', new OcupacaoController().create);
+routes.get('/ocupacoes/ocupacao/:ocupacao_id', new OcupacaoController().getById);
 
 export default routes

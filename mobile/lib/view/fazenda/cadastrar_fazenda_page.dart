@@ -20,6 +20,7 @@ class CadastrarFazendaPageState extends State<CadastrarFazendaPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   List<CidadeModel> cidades = [];
+  List<CidadeModel> cidadesFiltradas = [];
   TextEditingController _searchController = TextEditingController();
   bool _isCitySearchFocused = false;
 
@@ -27,12 +28,31 @@ class CadastrarFazendaPageState extends State<CadastrarFazendaPage> {
   void initState() {
     super.initState();
     _carregarCidades();
+    _searchController.addListener(_filtrarCidades);
   }
 
   Future<void> _carregarCidades() async {
     cidades = await _cadastrarFazendaController.getCidadesFromRepository();
+    cidadesFiltradas = cidades; // Inicialmente, exibe todas as cidades
     setState(() {});
-  }  
+  }
+
+  void _filtrarCidades() {
+    final query = _searchController.text.toLowerCase();
+    setState(() {
+      cidadesFiltradas = cidades
+          .where((cidade) => cidade.nome.toLowerCase().contains(query))
+          .toList();
+    });
+  }
+
+  void _selecionarCidade(CidadeModel cidade) {
+    _cadastrarFazendaController.setCidade(cidade);
+    _searchController.text = '${cidade.nome} - ${cidade.uf?.nome}';
+    setState(() {
+      _isCitySearchFocused = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -79,22 +99,15 @@ class CadastrarFazendaPageState extends State<CadastrarFazendaPage> {
               SizedBox(height: 10),
               if (_isCitySearchFocused) 
                 Expanded(
-                  child: ListView(
-                    children: cidades
-                        .where((cidade) =>
-                            cidade.nome.toLowerCase().contains(_searchController.text.toLowerCase()))
-                        .map((cidade) {
+                  child: ListView.builder(
+                    itemCount: cidadesFiltradas.length,
+                    itemBuilder: (context, index) {
+                      final cidade = cidadesFiltradas[index];
                       return ListTile(
                         title: Text('${cidade.nome} - ${cidade.uf?.nome}'),
-                        onTap: () {
-                          _cadastrarFazendaController.setCidade(cidade);
-                          setState(() {
-                            _searchController.text = '${cidade.nome} - ${cidade.uf?.nome}';
-                            _isCitySearchFocused = false;
-                          });
-                        },
+                        onTap: () => _selecionarCidade(cidade),
                       );
-                    }).toList(),
+                    },
                   ),
                 ),
               SizedBox(height: 20),

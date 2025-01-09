@@ -1,3 +1,4 @@
+import 'package:syspig/enums/ocupacao_constants.dart';
 import 'package:syspig/model/animal_model.dart';
 import 'package:syspig/model/baia_model.dart';
 import 'package:syspig/model/fazenda_model.dart';
@@ -7,7 +8,7 @@ import 'package:syspig/model/usuario_model.dart';
 class OcupacaoModel {
   final int? id;
   final int? codigo;
-  final String? status;
+  final StatusOcupacao? status;
   final FazendaModel? fazenda;
   final GranjaModel? granja;
   final AnimalModel? animal;
@@ -37,7 +38,7 @@ class OcupacaoModel {
     return OcupacaoModel(
       id: json['id'],
       codigo: json['codigo'],
-      status: json['status'],
+      status: intToStatusOcupacao[json['status']],
       fazenda: json['fazenda'] != null ? FazendaModel.fromJson(json['fazenda']) : null,
       granja: json['granja'] != null ? GranjaModel.fromJson(json['granja']) : null,
       animal: json['animal'] != null ? AnimalModel.fromJson(json['animal']) : null,
@@ -52,6 +53,6 @@ class OcupacaoModel {
 
   @override
   String toString() {
-    return 'id: $id, codigo: $codigo, status: $status, fazenda: $fazenda, granja: $granja, animal: $animal, baia: $baia, data_abertura: $dataAbertura, createdBy: $createdBy, created_at: $createdAt, updatedBy: $updatedBy, updated_at: $updatedAt';
+    return 'id: $id, codigo: $codigo,  status: ${statusOcupacaoDescriptions[status]}, fazenda: $fazenda, granja: $granja, animal: $animal, baia: $baia, data_abertura: $dataAbertura, createdBy: $createdBy, created_at: $createdAt, updatedBy: $updatedBy, updated_at: $updatedAt';
   }
 }

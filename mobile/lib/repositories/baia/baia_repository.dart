@@ -6,6 +6,8 @@ abstract class BaiaRepository {
 
   Future<List<BaiaModel>> getListAll(int fazendaId);
 
+  Future<BaiaModel> getById(int baiaId);
+
   Future<BaiaModel> create(BaiaModel baia);
 
   Future<BaiaModel> update(BaiaModel baia);

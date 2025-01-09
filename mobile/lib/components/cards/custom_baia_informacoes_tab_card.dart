@@ -81,7 +81,7 @@ class _CustomBaiaInformacoesTabCardState extends State<CustomBaiaInformacoesTabC
                   context,
                   MaterialPageRoute(
                     builder: (context) => CadastrarAnimalPage(
-                      animalParaEditar: widget.ocupacao!.animal!,
+                      animalId: widget.ocupacao!.animal!.id,
                     ),
                   )
                 );

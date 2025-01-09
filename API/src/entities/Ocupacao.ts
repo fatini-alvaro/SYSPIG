@@ -13,8 +13,8 @@ export class Ocupacao{
   @Column({ type: 'int', nullable: true })
   codigo: number;
 
-  @Column({ type: 'text' })
-  status: string;
+  @Column({ type: 'int' })
+  status: number;
 
   @ManyToOne(() => Fazenda, { eager: true, nullable: true })
   @JoinColumn({ name: 'fazenda_id', referencedColumnName: 'id' }) 

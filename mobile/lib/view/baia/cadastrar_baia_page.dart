@@ -48,7 +48,7 @@ class CadastrarBaiaPageState extends State<CadastrarBaiaPage> {
   }
 
   void _preencherCamposParaEdicao(BaiaModel baia) {
-    _cadastrarBaiaController.setNumero(baia.numero);
+    _cadastrarBaiaController.setNumero(baia.numero!);
     _cadastrarBaiaController.setGranja(baia.granja);
   }
 

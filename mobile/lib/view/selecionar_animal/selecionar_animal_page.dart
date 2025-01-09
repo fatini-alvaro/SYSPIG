@@ -81,7 +81,7 @@ class SelecionarAnimalPageState extends State<SelecionarAnimalPage> {
                         context,
                         MaterialPageRoute(
                           builder: (context) => CadastrarAnimalPage(
-                            animalParaEditar: list[idx],
+                            animalId: list[idx].id,
                           ),
                         ),
                       );
@@ -96,9 +96,9 @@ class SelecionarAnimalPageState extends State<SelecionarAnimalPage> {
                             TextButton(
                               onPressed: () async {
                                 Navigator.pop(context); // Fechar o diálogo de confirmação
-                                await _animalController.delete(context, list[idx].id!);
+                                await _animalController.delete(list[idx].id!);
 
-                                 Dialogs.successToast(context, 'Animal excluída com sucesso!');
+                                 Dialogs.successToast(context, 'Animal excluído com sucesso!');
 
                                  _carregarAnimais();
                               },

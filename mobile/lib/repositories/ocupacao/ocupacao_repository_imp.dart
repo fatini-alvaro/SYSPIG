@@ -29,4 +29,15 @@ class OcupacaoRepositoryImp implements OcupacaoRepository {
     }
   }
 
+  @override
+  Future<OcupacaoModel> getById(int ocupacaoId) async {
+    try {
+      var response = await _apiClient.dio.get('/ocupacoes/ocupacao/$ocupacaoId');
+      return OcupacaoModel.fromJson(response.data);
+    } catch (e) {
+      Logger().e('Erro ao obter dados da ocupacao: $e');
+      throw Exception('Erro ao obter dados da ocupacao');
+    }
+  }
+
 }

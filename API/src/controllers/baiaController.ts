@@ -5,7 +5,7 @@ import { Fazenda } from "../entities/Fazenda";
 import { TipoGranja } from "../entities/TipoGranja";
 import { baiaRepository } from "../repositories/baiaRepository";
 import { Baia } from "../entities/Baia";
-import { TabelaConstantesBancos } from "../utils/tabelaConstantesBancos";
+import { StatusOcupacao } from "../constants/ocupacaoConstants";
 
 export class BaiaController {
   async create(req: Request, res: Response){
@@ -59,27 +59,24 @@ export class BaiaController {
     try {      
       const { granja_id } = req.params;
 
-      const baias = await baiaRepository.find({
-        where: {
-          granja: {
-            id: Number(granja_id),
-          },
-        },
-        relations: ['granja', 'granja.tipoGranja', 'fazenda', 'fazenda.cidade', 'fazenda.cidade.uf', 
-        'ocupacoes.granja', 'ocupacoes.granja.tipoGranja', 'ocupacoes.animal', 'ocupacoes.baia', 'ocupacoes.baia.granja',
-        'ocupacoes.baia.granja.tipoGranja'],
-        order: {
-          numero: 'ASC'
-        }
-      });
+      const baias = await baiaRepository
+        .createQueryBuilder("baia")
+        .leftJoinAndSelect("baia.granja", "granja")
+        .leftJoinAndSelect("baia.ocupacao", "ocupacao")
+        .leftJoinAndSelect("ocupacao.animal", "animal")
+        .select([
+          "baia.id",
+          "baia.numero",
+          "baia.vazia",
+          "granja.descricao",
+          "ocupacao.id",
+          "animal.numero_brinco"
+        ])
+        .where("baia.granja = :granja_id", { granja_id: Number(granja_id) })
+        .orderBy("baia.numero", "DESC")
+        .getMany();
 
-      //filtra as ocupações de cada baia para retornar a ocupação ativa apenas, ou entao null
-      const baiasComOcupacaoUnica = baias.map(baia => {
-        const ocupacaoAtiva = baia.ocupacoes.find(ocupacao => ocupacao.status === TabelaConstantesBancos.ocupacao.ABERTA);
-        return { ...baia, ocupacao: ocupacaoAtiva ? ocupacaoAtiva : null };
-      });
-
-      return res.status(200).json(baiasComOcupacaoUnica);      
+      return res.status(200).json(baias);      
     } catch (error) {
       console.log(error);
       return res.status(500).json({ message: ''});
@@ -90,24 +87,56 @@ export class BaiaController {
     try {      
       const { fazenda_id } = req.params;
 
-      const baias = await baiaRepository.find({
-        where: {
-          fazenda: {
-            id: Number(fazenda_id),
-          },
-        },
-        relations: ['granja', 'granja.tipoGranja', 'fazenda', 'fazenda.cidade', 'fazenda.cidade.uf', 
-        'ocupacoes.granja', 'ocupacoes.granja.tipoGranja', 'ocupacoes.animal', 'ocupacoes.baia', 'ocupacoes.baia.granja',
-        'ocupacoes.baia.granja.tipoGranja'],
-        order: {
-          numero: 'ASC'
-        }
-      });
+      const baias = await baiaRepository
+        .createQueryBuilder("baia")
+        .leftJoinAndSelect("baia.granja", "granja")
+        .leftJoinAndSelect("baia.ocupacao", "ocupacao")
+        .leftJoinAndSelect("ocupacao.animal", "animal")
+        .select([
+          "baia.id",
+          "baia.numero",
+          "baia.vazia",
+          "granja.descricao",
+          "ocupacao.id",
+          "animal.numero_brinco"
+        ])
+        .where("baia.fazenda_id = :fazenda_id", { fazenda_id: Number(fazenda_id) })
+        .orderBy("baia.numero", "DESC")
+        .getMany();
 
-      return res.status(200).json(baias);      
+      return res.status(200).json(baias);       
     } catch (error) {
       console.log(error);
       return res.status(500).json({ message: ''});
+    }
+  }
+
+  async getById(req: Request, res: Response){
+    try {      
+      const { baia_id } = req.params;
+
+      const baia = await baiaRepository
+        .createQueryBuilder("baia")
+        .leftJoinAndSelect("baia.ocupacao", "ocupacao")
+        .leftJoinAndSelect("ocupacao.animal", "animal")
+        .select([
+          "baia.id",
+          "baia.numero",
+          "baia.vazia",
+          "ocupacao",
+          "animal"
+        ])
+        .where("baia.id = :baia_id", { baia_id: Number(baia_id) })  // Corrigido para baia.id
+        .getOne();
+
+      if (!baia) {
+        return res.status(404).json({ message: 'Baia não encontrada' });
+      }
+
+      return res.status(200).json(baia);      
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({ message: 'Erro ao buscar a baia'});
     }
   }
 

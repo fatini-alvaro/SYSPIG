@@ -36,7 +36,7 @@ class CustomDrawerWidget extends StatelessWidget {
           ),
           ListTile(
             leading: Icon(Icons.landscape),
-            title: Text('Trocar Fazenda'),
+            title: Text('Trocar ou Criar Fazenda'),
             subtitle: Text('Selecionar outra fazenda'),
             onTap: onSelecionarFazendaTap,
           ),

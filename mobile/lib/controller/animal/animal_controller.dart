@@ -12,21 +12,28 @@ class AnimalController {
     animais.value = await _animalRepository.getList(fazendaId);
   }
 
-  Future<AnimalModel> create(BuildContext context, AnimalModel animalNovo) async {
+  Future<AnimalModel> fetchAnimalById(int animalId) async {
+    
+    AnimalModel animal = await  _animalRepository.getById(animalId);
+
+    return animal;
+  }
+
+  Future<AnimalModel> create(AnimalModel animalNovo) async {
     
     AnimalModel novoAnimal = await  _animalRepository.create(animalNovo);
 
     return novoAnimal;
   }
   
-  Future<AnimalModel> update(BuildContext context, AnimalModel animalEdicao) async {
+  Future<AnimalModel> update(AnimalModel animalEdicao) async {
     
     AnimalModel animalEditada = await  _animalRepository.update(animalEdicao);
 
     return animalEditada;
   }
 
-  Future<bool> delete(BuildContext context, int animalExclusaoID) async {
+  Future<bool> delete(int animalExclusaoID) async {
     
     bool excluido = await  _animalRepository.delete(animalExclusaoID);
 

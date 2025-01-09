@@ -16,7 +16,7 @@ export class AnimalController {
             id: Number(fazenda_id) 
           } 
         }, 
-        relations: ['fazenda', 'fazenda.cidade', 'fazenda.cidade.uf']
+        select: ['id', 'numero_brinco'],
       });
 
       return res.status(200).json(animais);
@@ -24,6 +24,26 @@ export class AnimalController {
     } catch (error) {
       console.log(error);
       return res.status(500).json({ message: ''});
+    }
+  }
+
+  async getById(req: Request, res: Response){
+    try {      
+      const { animal_id } = req.params;
+
+      const animal = await animalRepository.findOne({
+        where: { id: Number(animal_id) }
+      });
+
+      if (!animal) {
+        return res.status(404).json({ message: 'Animal não encontrado' });
+      }
+
+      return res.status(200).json(animal);
+      
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({ message: 'Erro ao buscar o animal'});
     }
   }
 

@@ -7,18 +7,18 @@ class BaiaModel {
   final FazendaModel? fazenda;
   final GranjaModel? granja;
   final OcupacaoModel? ocupacao;
-  final String numero;
+  final String? numero;
   final int? capacidade;
-  final bool vazia;
+  final bool? vazia;
 
   BaiaModel({
     this.id,
     this.fazenda,
     this.granja,
     this.ocupacao,
-    required this.numero,
+    this.numero,
     this.capacidade,
-    required this.vazia,
+    this.vazia,
   });
 
   factory BaiaModel.fromJson(Map<String, dynamic> json) {

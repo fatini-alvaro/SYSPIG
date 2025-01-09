@@ -1,3 +1,4 @@
+import 'package:syspig/enums/animal_constants.dart';
 import 'package:syspig/model/fazenda_model.dart';
 import 'package:syspig/model/usuario_model.dart';
 
@@ -5,8 +6,8 @@ class AnimalModel {
   final int? id;
   final String numeroBrinco;
   final FazendaModel? fazenda;
-  final String sexo;
-  final String status;
+  final SexoAnimal sexo;
+  final StatusAnimal status;
   final DateTime? dataNascimento;
   final UsuarioModel? createdBy;
   final DateTime? createdAt;
@@ -30,8 +31,8 @@ class AnimalModel {
     return AnimalModel(
       id: json['id'],
       numeroBrinco: json['numero_brinco'],
-      sexo: json['sexo'],
-      status: json['status'],
+      sexo: sexoFromApi(json['sexo']),
+      status: intToStatusAnimal[json['status']] ?? StatusAnimal.vivo,
       fazenda: json['fazenda'] != null ? FazendaModel.fromJson(json['fazenda']) : null,
       dataNascimento: json['data_nascimento'] != null ? DateTime.parse(json['data_nascimento']) : null,
       createdBy: json['createdBy'] != null ? UsuarioModel.fromJson(json['createdBy']) : null,
@@ -41,8 +42,23 @@ class AnimalModel {
     );
   }
 
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'numero_brinco': numeroBrinco,
+      'sexo': sexo.name,
+      'status': statusAnimalToInt[status],
+      'fazenda': fazenda?.toJson(),
+      'data_nascimento': dataNascimento?.toIso8601String(),
+      'createdBy': createdBy?.toJson(),
+      'created_at': createdAt?.toIso8601String(),
+      'updatedBy': updatedBy?.toJson(),
+      'updated_at': updatedAt?.toIso8601String(),
+    };
+  }
+
   @override
   String toString() {
-    return 'id: $id, numero_brinco: $numeroBrinco, sexo: $sexo, status: $status, fazenda: $fazenda, data_nascimento: $dataNascimento, createdBy: $createdBy, created_at: $createdAt, updatedBy: $updatedBy, updated_at: $updatedAt';
+    return 'id: $id, numero_brinco: $numeroBrinco, sexo: ${sexoAnimalDescriptions[sexo]}, status: ${statusAnimalDescriptions[status]}, fazenda: $fazenda, data_nascimento: $dataNascimento, createdBy: $createdBy, created_at: $createdAt, updatedBy: $updatedBy, updated_at: $updatedAt';
   }
 }

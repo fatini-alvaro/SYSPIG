@@ -28,6 +28,13 @@ class BaiaController {
     baias.value = await _baiaRepository.getListAll(fazendaId);
   }
 
+  Future<BaiaModel> fetchBaiaById(int baiaId) async {
+    
+    BaiaModel baia = await  _baiaRepository.getById(baiaId);
+
+    return baia;
+  }
+
   Future<BaiaModel> create(BuildContext context, BaiaModel baiaNova) async {
 
     BaiaModel novaGranja = await  _baiaRepository.create(baiaNova);

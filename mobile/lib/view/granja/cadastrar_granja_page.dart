@@ -107,9 +107,9 @@ class CadastrarGranjaPageState extends State<CadastrarGranjaPage> {
               ),
               CustomSalvarCadastroButtonComponent(
                 buttonText: widget.granjaParaEditar == null
-                    ? 'Salvar Fazenda'
+                    ? 'Salvar Granja'
                     : 'Salvar Alterações', 
-                rotaTelaAposSalvar:'selecionarFazenda',
+                rotaTelaAposSalvar:'selecionarGranja',
                 onPressed: () {    
                   if (_formKey.currentState!.validate()) {
                     if (widget.granjaParaEditar == null) {

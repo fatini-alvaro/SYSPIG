@@ -6,7 +6,8 @@ import { Baia } from "../entities/Baia";
 import { Usuario } from "../entities/Usuario";
 import { Animal } from "../entities/Animal";
 import { Ocupacao } from "../entities/Ocupacao";
-import { TabelaConstantesBancos } from "../utils/tabelaConstantesBancos";
+import { StatusOcupacao } from "../constants/ocupacaoConstants";
+import { ocupacaoRepository } from "../repositories/ocupacaoRepository";
 
 export class OcupacaoController {
   async create(req: Request, res: Response){
@@ -53,7 +54,8 @@ export class OcupacaoController {
           animal: animalInstancia,
           baia: baiaInstancia,
           createdBy: usuarioInstancia,
-          status: TabelaConstantesBancos.ocupacao.ABERTA
+          status: StatusOcupacao.ABERTA,
+          dataInicio: new Date()
         });
 
         await transactionalEntityManager.save(newOcupacao);
@@ -65,6 +67,7 @@ export class OcupacaoController {
           
         //Atualiza baia
         baiaInstancia.vazia = false;
+        baiaInstancia.ocupacao = savedOcupacao!;
 
         await transactionalEntityManager.save(baiaInstancia);
 
@@ -76,6 +79,26 @@ export class OcupacaoController {
       console.log(error);
       return res.status(500).json({ message: 'Erro ao criar ocupação'});
     } 
+  }
+
+  async getById(req: Request, res: Response){
+    try {      
+      const { ocupacao_id } = req.params;
+
+      const ocupacao = await ocupacaoRepository.findOne({
+        where: { id: Number(ocupacao_id) }
+      });
+
+      if (!ocupacao) {
+        return res.status(404).json({ message: 'Ocupação não encontrado' });
+      }
+
+      return res.status(200).json(ocupacao);
+      
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({ message: 'Erro ao buscar o ocupação'});
+    }
   }
 
 

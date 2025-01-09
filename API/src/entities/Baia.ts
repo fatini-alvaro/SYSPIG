@@ -29,14 +29,14 @@ export class Baia{
   @Column({ type: 'boolean', default: true})
   vazia: boolean;
 
-  @ManyToOne(() => Usuario, { eager: true, nullable: true })
+  @ManyToOne(() => Usuario, { nullable: true, eager: true })
   @JoinColumn({ name: 'created_by', referencedColumnName: 'id' }) 
   createdBy: Usuario;
 
   @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Date;
 
-  @ManyToOne(() => Usuario, { eager: true, nullable: true })
+  @ManyToOne(() => Usuario, { nullable: true, eager: true })
   @JoinColumn({ name: 'updated_by', referencedColumnName: 'id' }) 
   updatedBy: Usuario;
 
@@ -45,4 +45,8 @@ export class Baia{
   
   @OneToMany(() => Ocupacao, ocupacao => ocupacao.baia)
   ocupacoes: Ocupacao[]; 
+
+  @ManyToOne(() => Ocupacao, (ocupacao) => ocupacao.baia, { nullable: true })
+  @JoinColumn({ name: 'ocupacao_id', referencedColumnName: 'id' })
+  ocupacao: Ocupacao;
 }

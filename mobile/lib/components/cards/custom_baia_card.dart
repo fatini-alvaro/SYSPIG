@@ -19,9 +19,9 @@ class CustomBaiaCard extends StatelessWidget {
       margin: EdgeInsets.symmetric(horizontal: 5, vertical: 8),
       height: 50,
       child: GestureDetector(
-        onTap: this.baia.vazia ? onTapVazia : onTapOcupada,
+        onTap: baia.vazia! ? onTapVazia : onTapOcupada,
         child: Card(
-          color: this.baia.vazia ? Colors.grey : Colors.orange,
+          color: baia.vazia! ? Colors.grey : Colors.orange,
           elevation: 7,
           child: Container(
             width: 170,
@@ -59,7 +59,7 @@ class CustomBaiaCard extends StatelessWidget {
                     ),                    
                   ),
                 ),
-                if (!this.baia.vazia) 
+                if (!baia.vazia!) 
                   Positioned(
                     bottom: 10,
                     left: 10,
@@ -84,8 +84,8 @@ class CustomBaiaCard extends StatelessWidget {
                       ],
                     ),
                   ),
-                 if (this.baia.vazia)  
-                  Positioned(
+                 if (baia.vazia!)  
+                  const Positioned(
                     bottom: 50,
                     left: 10,
                     child: Column(

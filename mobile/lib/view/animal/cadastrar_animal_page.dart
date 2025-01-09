@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:syspig/components/buttons/custom_salvar_cadastro_button_component.dart';
 import 'package:syspig/controller/cadastrar_animal/cadastrar_animal_controller.dart';
+import 'package:syspig/enums/animal_constants.dart';
 import 'package:syspig/model/animal_model.dart';
 import 'package:syspig/themes/themes.dart';
 import 'package:syspig/widgets/custom_date_time_field_widget.dart';
@@ -8,45 +9,69 @@ import 'package:syspig/widgets/custom_dropdown_button_form_field_widget.dart';
 import 'package:syspig/widgets/custom_text_form_field_widget.dart';
 
 class CadastrarAnimalPage extends StatefulWidget {
+  final int? animalId;
 
-  final AnimalModel? animalParaEditar;
-
-  CadastrarAnimalPage({Key? key, this.animalParaEditar}) : super(key: key);
+  CadastrarAnimalPage({Key? key, this.animalId}) : super(key: key);
 
   @override
-  State<CadastrarAnimalPage> createState() {
-    return CadastrarAnimalPageState();
-  }
+  State<CadastrarAnimalPage> createState() => CadastrarAnimalPageState();
 }
 
 class CadastrarAnimalPageState extends State<CadastrarAnimalPage> {
   final CadastrarAnimalController _cadastrarAnimalController =
       CadastrarAnimalController();
-
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  late TextEditingController _numeroBrincoController;
+  DateTime? _dataNascimento;
 
   @override
   void initState() {
     super.initState();
-    if (widget.animalParaEditar != null) {
-      _preencherCamposParaEdicao(widget.animalParaEditar!);
+
+    _numeroBrincoController = TextEditingController();
+
+    if (widget.animalId != null) {
+      _carregarDadosDoAnimal(widget.animalId!);
+    }
+  }
+
+  Future<void> _carregarDadosDoAnimal(int animalId) async {
+    final animal = await _cadastrarAnimalController.fetchAnimalById(animalId);
+    if (animal != null) {
+      _preencherCamposParaEdicao(animal);
     }
   }
 
   void _preencherCamposParaEdicao(AnimalModel animal) {
-    _cadastrarAnimalController.setNascimento(animal.dataNascimento);
-    _cadastrarAnimalController.setNumeroBrinco(animal.numeroBrinco);
-    _cadastrarAnimalController.setSexo(animal.sexo);
-    _cadastrarAnimalController.setStatus(animal.status);
+    setState(() {
+      _numeroBrincoController.text = animal.numeroBrinco;
+      _cadastrarAnimalController.setSexo(animal.sexo);
+      _cadastrarAnimalController.setStatus(animal.status);
+      _dataNascimento = animal.dataNascimento; // Preenche a data inicial.
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+
+    if (widget.animalId != null && _numeroBrincoController.text == '') {
+      return Scaffold(
+        appBar: AppBar(
+          backgroundColor: AppThemes.lightTheme.primaryColor,
+          foregroundColor: Colors.white,
+          title: Text('Carregando...'),
+          centerTitle: true,
+        ),
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+    
     return Scaffold(
       appBar: AppBar(
         backgroundColor: AppThemes.lightTheme.primaryColor,
         foregroundColor: Colors.white,
-        title: Text(widget.animalParaEditar == null
+        title: Text(widget.animalId == null
             ? 'Cadastrar Animal'
             : 'Editar Animal'),
         centerTitle: true,
@@ -57,10 +82,11 @@ class CadastrarAnimalPageState extends State<CadastrarAnimalPage> {
           key: _formKey,
           child: Column(
             children: [
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               CustomTextFormFieldWidget(
+                controller: _numeroBrincoController,
                 label: 'Brinco',
-                hintText: 'Numero do Brinco',
+                hintText: 'Número do Brinco',
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Campo Obrigatório';
@@ -68,22 +94,18 @@ class CadastrarAnimalPageState extends State<CadastrarAnimalPage> {
                   return null;
                 },
                 onChanged: _cadastrarAnimalController.setNumeroBrinco,
-                initialValue: _cadastrarAnimalController.numeroBrinco,
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               CustomDropdownButtonFormFieldWidget(
-                items: ['Feminino', 'Masculino'].map((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value == 'Feminino' ? 'F' : 'M', // Mapeando para 'F' e 'M'
-                    child: Text(value),
-                  );
-                }).toList(),
+                items: SexoAnimal.values
+                    .map((sexo) => DropdownMenuItem(
+                          value: sexo,
+                          child: Text(sexoAnimalDescriptions[sexo]!),
+                        ))
+                    .toList(),
                 value: _cadastrarAnimalController.sexo,
                 labelText: 'Selecione o sexo do animal',
-                onChanged: (sexo) {
-                  String valorMapeado = sexo == 'Feminino' ? 'F' : 'M'; // Mapeando de 'Feminino' para 'F' e de 'Masculino' para 'M'
-                  _cadastrarAnimalController.setSexo(valorMapeado);
-                },
+                onChanged: _cadastrarAnimalController.setSexo,
                 validator: (sexo) {
                   if (sexo == null) {
                     return 'Campo Obrigatório';
@@ -91,19 +113,17 @@ class CadastrarAnimalPageState extends State<CadastrarAnimalPage> {
                   return null;
                 },
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               CustomDropdownButtonFormFieldWidget(
-                items: ['Vivo', 'Morto', 'Vendido'].map((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
+                items: StatusAnimal.values
+                    .map((status) => DropdownMenuItem(
+                          value: status,
+                          child: Text(statusAnimalDescriptions[status]!),
+                        ))
+                    .toList(),
                 value: _cadastrarAnimalController.status,
                 labelText: 'Selecione o status do animal',
-                onChanged: (status) {
-                  _cadastrarAnimalController.setStatus(status);
-                },
+                onChanged: _cadastrarAnimalController.setStatus,
                 validator: (status) {
                   if (status == null) {
                     return 'Campo Obrigatório';
@@ -111,28 +131,24 @@ class CadastrarAnimalPageState extends State<CadastrarAnimalPage> {
                   return null;
                 },
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               CustomDateTimeFieldWidget(
                 labelText: 'Data de Nascimento',
-                onChanged: (data) {
-                  _cadastrarAnimalController.setNascimento(data);
-                },              
+                onChanged: (selectedDate) {
+                  setState(() {
+                    _dataNascimento = selectedDate;
+                  });
+                  _cadastrarAnimalController.setNascimento(selectedDate);
+                },
               ),
-              SizedBox(height: 20),
-              Expanded(
-                child: ListView(
-                  children: [
-                    // Adicione outros widgets aqui se necessário
-                  ],
-                ),
-              ),
+              const SizedBox(height: 20),
               CustomSalvarCadastroButtonComponent(
-                buttonText: widget.animalParaEditar == null
+                buttonText: widget.animalId == null
                     ? 'Salvar Animal'
-                    : 'Salvar Alterações', 
-                onPressed: () {    
+                    : 'Salvar Alterações',
+                onPressed: () {
                   if (_formKey.currentState!.validate()) {
-                    if (widget.animalParaEditar == null) {
+                    if (widget.animalId == null) {
                       _cadastrarAnimalController
                           .create(context)
                           .then((resultado) {
@@ -143,7 +159,7 @@ class CadastrarAnimalPageState extends State<CadastrarAnimalPage> {
                       });
                     } else {
                       _cadastrarAnimalController
-                          .update(context, widget.animalParaEditar!)
+                          .update(context, widget.animalId!)
                           .then((resultado) {
                         if (resultado) {
                           Navigator.popUntil(context, (route) => route.isFirst);
@@ -151,7 +167,7 @@ class CadastrarAnimalPageState extends State<CadastrarAnimalPage> {
                         }
                       });
                     }
-                  }                           
+                  }
                 },
               ),
             ],
@@ -160,5 +176,10 @@ class CadastrarAnimalPageState extends State<CadastrarAnimalPage> {
       ),
     );
   }
-}
 
+  @override
+  void dispose() {
+    _numeroBrincoController.dispose();
+    super.dispose();
+  }
+}

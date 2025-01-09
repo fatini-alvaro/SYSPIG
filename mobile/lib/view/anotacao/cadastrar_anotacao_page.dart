@@ -53,7 +53,7 @@ class CadastrarAnotacaoPageState extends State<CadastrarAnotacaoPage> {
     _cadastrarAnotacaoController.setAnimal(anotacao.animal);
     _searchControllerAnimal.text = anotacao.animal != null ? anotacao.animal!.numeroBrinco : '';
     _cadastrarAnotacaoController.setBaia(anotacao.baia);
-    _searchControllerBaia.text = anotacao.baia != null ? anotacao.baia!.numero : '';
+    _searchControllerBaia.text = anotacao.baia != null ? anotacao.baia!.numero! : '';
   }
 
   Future<void> _carregarAnimais() async {
@@ -102,7 +102,7 @@ class CadastrarAnotacaoPageState extends State<CadastrarAnotacaoPage> {
                   child: ListView(
                     children: baias
                         .where((baia) =>
-                            baia.numero.toLowerCase().contains(_searchControllerBaia.text.toLowerCase()))
+                            baia.numero!.toLowerCase().contains(_searchControllerBaia.text.toLowerCase()))
                         .map((baia) {
                       return ListTile(
                         title: Text('${baia.numero}'),

@@ -1,3 +1,4 @@
+import 'package:logger/logger.dart';
 import 'package:syspig/api/api_cliente.dart';
 import 'package:syspig/model/fazenda_model.dart';
 import 'package:syspig/repositories/fazenda/fazenda_repository.dart';
@@ -31,8 +32,7 @@ class FazendaRepositoryImp implements FazendaRepository {
       var response = await _apiClient.dio.post('/fazendas', data: fazendaData);
       return FazendaModel.fromJson(response.data);
     } catch (e) {
-      
-      print(e);
+      Logger().e('Erro ao criar fazenda (create - fazenda): $e');
       throw Exception('Erro ao criar fazenda');
     }
   }

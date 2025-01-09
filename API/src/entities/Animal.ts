@@ -7,7 +7,7 @@ export class Animal{
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => Fazenda, { eager: true })
+  @ManyToOne(() => Fazenda)
   @JoinColumn({ name: 'fazenda_id', referencedColumnName: 'id' }) 
   fazenda: Fazenda;
 
@@ -20,20 +20,20 @@ export class Animal{
   @Column({ type: 'text' })
   sexo: string;
 
-  @Column({ type: 'text' })
-  status: string;
+  @Column({ type: 'int' })
+  status: number;
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', nullable: true })
   data_nascimento: Date;
 
-  @ManyToOne(() => Usuario, { eager: true, nullable: true })
+  @ManyToOne(() => Usuario, { nullable: true })
   @JoinColumn({ name: 'created_by', referencedColumnName: 'id' }) 
   createdBy: Usuario;
 
   @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Date;
 
-  @ManyToOne(() => Usuario, { eager: true, nullable: true })
+  @ManyToOne(() => Usuario, { nullable: true })
   @JoinColumn({ name: 'updated_by', referencedColumnName: 'id' }) 
   updatedBy: Usuario;
 

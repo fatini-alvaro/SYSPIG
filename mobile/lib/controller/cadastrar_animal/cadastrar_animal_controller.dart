@@ -1,89 +1,94 @@
-
 import 'package:flutter/material.dart';
 import 'package:syspig/controller/animal/animal_controller.dart';
+import 'package:syspig/enums/animal_constants.dart';
 import 'package:syspig/model/animal_model.dart';
 import 'package:syspig/repositories/animal/animal_repository_imp.dart';
 import 'package:syspig/utils/dialogs.dart';
 
-
 class CadastrarAnimalController with ChangeNotifier {
-
-  final AnimalController _animalController = AnimalController(AnimalRepositoryImp());
+  final AnimalController _animalController =
+      AnimalController(AnimalRepositoryImp());
 
   String? _numeroBrinco;
   setNumeroBrinco(String? value) => _numeroBrinco = value;
   String? get numeroBrinco => _numeroBrinco;
 
-  String? _sexo;
-  setSexo(String? value) => _sexo = value;
-  String? get sexo => _sexo;
+  SexoAnimal? _sexo;
+  setSexo(SexoAnimal? value) => _sexo = value;
+  SexoAnimal? get sexo => _sexo;
 
-  String? _status;
-  setStatus(String? value) => _status = value;
-  String? get status => _status;
+  StatusAnimal? _status;
+  setStatus(StatusAnimal? value) => _status = value;
+  StatusAnimal? get status => _status;
 
   DateTime? _dataNascimento;
   setNascimento(DateTime? value) => _dataNascimento = value;
   DateTime? get dataNascimento => _dataNascimento;
 
-  Future<bool> create(BuildContext context) async {
+  Future<AnimalModel> createAnimal() async {
+    return AnimalModel(
+      numeroBrinco: _numeroBrinco!,
+      sexo: _sexo!,
+      dataNascimento: _dataNascimento,
+      status: _status!,
+    );
+  }
 
-    Dialogs.showLoading(context, message:'Aguarde, Criando Animal');
+  Future<bool> create(BuildContext context) async {
+    Dialogs.showLoading(context, message: 'Aguarde, Criando Animal');
 
     try {
-      AnimalModel novoAnimal = await AnimalModel(
-        numeroBrinco: _numeroBrinco!,
-        sexo: _sexo!,
-        dataNascimento: _dataNascimento,
-        status:_status! 
-      );
-
-      AnimalModel animalCriada = await _animalController.create(context, novoAnimal);
+      final novoAnimal = await createAnimal();
+      final animalCriado = await _animalController.create(novoAnimal);
 
       Dialogs.hideLoading(context);
-
-      if (animalCriada != null) {
+      if (animalCriado != null) {
         Dialogs.successToast(context, 'Animal criado com sucesso!');
+        return true;
       } else {
         Dialogs.errorToast(context, 'Falha ao criar Animal');
       }
     } catch (e) {
-      print(e);
       Dialogs.hideLoading(context);
-      Dialogs.errorToast(context, 'Falha ao criar Animal');
+      Dialogs.errorToast(context, 'Erro: $e');
     }
-
-    return true;
+    return false;
   }
 
-  Future<bool> update(BuildContext context, AnimalModel animal) async {
-
-    Dialogs.showLoading(context, message:'Aguarde, Editando Animal');
+  Future<bool> update(BuildContext context, int animalId) async {
+    Dialogs.showLoading(context, message: 'Aguarde, Editando Animal');
 
     try {
-      AnimalModel animalEditadoData = await AnimalModel(
-        id: animal.id,
+      final animalEditadoData = AnimalModel(
+        id: animalId,
         numeroBrinco: _numeroBrinco!,
         sexo: _sexo!,
         dataNascimento: _dataNascimento,
-        status:_status! 
+        status: _status!,
       );
 
-      AnimalModel animalEditado = await _animalController.update(context, animalEditadoData);
+      final animalEditado = await _animalController.update(animalEditadoData);
 
       Dialogs.hideLoading(context);
-
       if (animalEditado != null) {
-        Dialogs.successToast(context, 'Animal editada com sucesso!');
+        Dialogs.successToast(context, 'Animal editado com sucesso!');
+        return true;
       } else {
-        Dialogs.errorToast(context, 'Falha ao editada a Animal');
+        Dialogs.errorToast(context, 'Falha ao editar Animal');
       }
     } catch (e) {
-      print(e);
       Dialogs.hideLoading(context);
-      Dialogs.errorToast(context, 'Falha ao editar a Animal');
+      Dialogs.errorToast(context, 'Erro: $e');
     }
+    return false;
+  }
 
-    return true;
+  Future<AnimalModel?> fetchAnimalById(int animalId) async {
+    try {
+      return await _animalController.fetchAnimalById(animalId);
+    } catch (e) {
+      print(e);
+      return null;
+    }
   }
 }

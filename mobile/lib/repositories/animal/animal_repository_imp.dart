@@ -1,6 +1,7 @@
 
 import 'package:logger/logger.dart';
 import 'package:syspig/api/api_cliente.dart';
+import 'package:syspig/enums/animal_constants.dart';
 import 'package:syspig/model/animal_model.dart';
 import 'package:syspig/repositories/animal/animal_repository.dart';
 
@@ -24,13 +25,24 @@ class AnimalRepositoryImp implements AnimalRepository {
   }
 
   @override
+  Future<AnimalModel> getById(int animalId) async {
+    try {
+      var response = await _apiClient.dio.get('/animais/animal/$animalId');
+      return AnimalModel.fromJson(response.data);
+    } catch (e) {
+      Logger().e('Erro ao obter dados do animal: $e');
+      throw Exception('Erro ao obter dados do animal');
+    }
+  }
+
+  @override
   Future<AnimalModel> create(AnimalModel animal) async {
     try {
       Map<String, dynamic> animalData = {
         'numeroBrinco': animal.numeroBrinco,
-        'sexo': animal.sexo,
-        'status': animal.status,
-        'dataNascimento': animal.dataNascimento,
+        'sexo': animal.sexo.toShortString(),
+        'status': statusAnimalToInt[animal.status],
+        'dataNascimento': animal.dataNascimento?.toIso8601String(),
       };
 
       var response = await _apiClient.dio.post('/animais', data: animalData);

@@ -99,7 +99,7 @@ class SelecionarBaiaPageState extends State<SelecionarBaiaPage> {
                         context,
                         MaterialPageRoute(
                           builder: (context) => BaiaPage(
-                            ocupacao: list[idx].ocupacao,
+                            baiaId: list[idx].id,
                           ),
                         ),
                       );
@@ -190,7 +190,7 @@ class SelecionarBaiaPageState extends State<SelecionarBaiaPage> {
                                                       context,
                                                       MaterialPageRoute(
                                                         builder: (context) => BaiaPage(
-                                                          ocupacao: ocupacaoCriada,
+                                                          baiaId: list[idx].id,
                                                         ),
                                                       ),
                                                     );
