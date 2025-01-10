@@ -18,7 +18,7 @@ const routes = Router();
 //usuario rotas
 routes.post('/usuarios', new UsuarioController().create);
 routes.post('/auth', new UsuarioController().auth);
-
+routes.post('/auth/refresh', new UsuarioController().refreshToken);
 
 // Middleware global para todas as rotas, exceto a de login
 routes.use(verifyToken);

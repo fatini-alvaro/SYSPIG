@@ -65,25 +65,81 @@ export class UsuarioController {
         return res.status(401).json({ message: 'Credenciais inválidas' });
       }
 
-      if (!process.env.JWT_SECRET) {
-        throw new Error('A variável JWT_SECRET não foi definida no .env');
-      }      
+      if (!process.env.JWT_SECRET || !process.env.JWT_REFRESH_SECRET) {
+        throw new Error('As variáveis JWT_SECRET ou JWT_REFRESH_SECRET não foram definidas no .env');
+      }
+
+      // Gera um refresh token
+      const refreshToken = jwt.sign(
+        { id: usuario.id, email: usuario.email },
+        process.env.JWT_REFRESH_SECRET,
+        { expiresIn: '7d' } // Expiração de 7 dias
+      );
+
+      // Armazena o refresh token no banco de dados
+      usuario.refreshToken = refreshToken;
+      await usuarioRepository.save(usuario);
 
       // Gera um token de autenticação
-      const token = jwt.sign(
+      const accessToken = jwt.sign(
         { id: usuario.id, email: usuario.email },
         process.env.JWT_SECRET,
         { expiresIn: '1h' }
       );
 
       return res.json({
-        usuario: usuario,
-        token: token
+        usuario,
+        accessToken,
+        refreshToken,
       });
     } catch (error) {
       console.error(error);
       return res.status(500).json({ message: 'Erro ao autenticar usuário' });
     }
   }
+
+  async refreshToken(req: Request, res: Response) {
+    const { refreshToken } = req.body;
+  
+    if (!refreshToken) {
+      return res.status(400).json({ message: 'Refresh token não fornecido.' });
+    }
+  
+    try {
+      // Verifica o refresh token
+      const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET as string);
+  
+      // Verifica se o refresh token está armazenado no banco de dados
+      const usuario = await usuarioRepository.findOneBy({ id: (decoded as jwt.JwtPayload).id });
+      if (!usuario || usuario.refreshToken !== refreshToken) {
+        return res.status(403).json({ message: 'Refresh token inválido.' });
+      }
+
+      if (!process.env.JWT_SECRET || !process.env.JWT_REFRESH_SECRET) {
+        throw new Error('As variáveis JWT_SECRET ou JWT_REFRESH_SECRET não foram definidas no .env');
+      }
+  
+      // Gera um novo access token
+      const newAccessToken = jwt.sign(
+        { id: usuario.id, email: usuario.email },
+        process.env.JWT_SECRET,
+        { expiresIn: '1h' }
+      );
+
+      // Adicionar ao método refreshToken
+      usuario.refreshToken = jwt.sign(
+        { id: usuario.id, email: usuario.email },
+        process.env.JWT_REFRESH_SECRET,
+        { expiresIn: '7d' }
+      );
+      await usuarioRepository.save(usuario);
+  
+      return res.json({ accessToken: newAccessToken });
+    } catch (error) {
+      console.error(error);
+      return res.status(403).json({ message: 'Token inválido ou expirado.' });
+    }
+  }
+  
 
 }

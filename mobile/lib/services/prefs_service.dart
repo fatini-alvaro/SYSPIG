@@ -16,7 +16,7 @@ class PrefsService {
       jsonEncode({
         "user": user.toJson(),
         "isAuth": true,
-        "token": user.token,
+        "accessToken": user.accessToken,
       }),
     );
   }
@@ -121,6 +121,6 @@ class PrefsService {
   static Future<String?> getAuthToken() async {
     var prefs = await SharedPreferences.getInstance();
     var data = jsonDecode(prefs.getString(_key) ?? '{}');
-    return data['token'];
+    return data['accessToken'];
   }
 }

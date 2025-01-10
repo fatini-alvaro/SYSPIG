@@ -16,7 +16,7 @@ export class Usuario {
   email: string;
 
   @ManyToOne(() => TipoUsuario, tipousuario => tipousuario.usuarios)
-  @JoinColumn({name: 'tipo_usuario_id', referencedColumnName: 'id'})
+  @JoinColumn({ name: 'tipo_usuario_id', referencedColumnName: 'id' })
   tipoUsuario: TipoUsuario;
 
   @Column()
@@ -28,10 +28,12 @@ export class Usuario {
   @OneToMany(() => Fazenda, fazenda => fazenda.usuario)
   fazendas: Fazenda[];
 
+  @Column({ name: 'refresh_token', type: 'text', nullable: true })
+  refreshToken: string;
+
   @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Date;
 
   @UpdateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   updated_at: Date;
-  
 }

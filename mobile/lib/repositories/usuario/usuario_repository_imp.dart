@@ -23,10 +23,10 @@ class UsuarioRepositoryImp implements UsuarioRepository {
       if (response.statusCode == 200) {
         // Criando um objeto UsuarioModel com o token recebido
         var usuario = UsuarioModel.fromJson(response.data['usuario']);
-        var token = response.data['token'];
+        var accessToken = response.data['accessToken'];
 
         // Agora podemos retornar o usuário com o token
-        usuario.token = token;
+        usuario.accessToken = accessToken;
 
         return usuario;
       } else {

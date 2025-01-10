@@ -6,7 +6,8 @@ class UsuarioModel {
   final String email;
   final TipoUsuarioModel? tipoUsuario;
   final String senha;
-  String? token;
+  String? accessToken;
+  String? refreshToken;
 
   UsuarioModel({
     this.id,
@@ -14,7 +15,8 @@ class UsuarioModel {
     required this.email,
     this.tipoUsuario,
     required this.senha,
-    this.token,
+    this.accessToken,
+    this.refreshToken,
   });
 
   factory UsuarioModel.fromJson(Map<String, dynamic> json) {
@@ -24,13 +26,14 @@ class UsuarioModel {
       email: json['email'],
       tipoUsuario: json['tipoUsuario'] != null ? TipoUsuarioModel.fromJson(json['tipoUsuario']) : null,
       senha: json['senha'],
-      token: json['token'],
+      accessToken: json['accessToken'],
+      refreshToken: json['refreshToken'],
     );
   }
 
   @override
   String toString() {
-    return 'id: $id, nome: $nome, email: $email, tipoUsuario: $tipoUsuario, senha: $senha, token: $token';
+    return 'id: $id, nome: $nome, email: $email, tipoUsuario: $tipoUsuario, senha: $senha, accessToken: $accessToken, refreshToken: $refreshToken';
   }
 
   Map<String, dynamic> toJson() {
@@ -40,7 +43,8 @@ class UsuarioModel {
       'email': email,
       'tipoUsuario': tipoUsuario != null ? tipoUsuario!.toJson() : null,
       'senha': senha,
-      'token': token,
+      'accessToken': accessToken,
+      'refreshToken': refreshToken,
     };
   }
 
