@@ -1,4 +1,4 @@
-import 'package:syspig/api/api_cliente.dart';
+import 'package:syspig/api/api_client.dart';
 import 'package:syspig/model/cidade_model.dart';
 import 'package:syspig/repositories/cidade/cidade_repository.dart';
 

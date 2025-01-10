@@ -1,4 +1,4 @@
-import 'package:syspig/api/api_cliente.dart';
+import 'package:syspig/api/api_client.dart';
 import 'package:syspig/model/tipo_granja_model.dart';
 import 'package:syspig/repositories/tipo_granja/tipo_granja_repository.dart';
 

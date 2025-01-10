@@ -105,9 +105,6 @@ class _CriarContaPageState extends State<CriarContaPage> {
                                   if (resultado) {
                                     Navigator.of(context)
                                         .pushNamed('/login');
-                                  } else {
-                                    Dialogs.errorToast(context,
-                                        "Não foi possível criar o usuário.");
                                   }
                               });
                             }

@@ -10,11 +10,13 @@ class PrefsService {
 
   static save(UsuarioModel user) async {
     var prefs = await SharedPreferences.getInstance();
+
     prefs.setString(
       _key, 
       jsonEncode({
         "user": user.toJson(),
         "isAuth": true,
+        "token": user.token,
       }),
     );
   }
@@ -114,5 +116,11 @@ class PrefsService {
       userData['fazenda'] = fazenda.toJson(); 
       prefs.setString(_key, jsonEncode(userData));
     }
+  }
+
+  static Future<String?> getAuthToken() async {
+    var prefs = await SharedPreferences.getInstance();
+    var data = jsonDecode(prefs.getString(_key) ?? '{}');
+    return data['token'];
   }
 }

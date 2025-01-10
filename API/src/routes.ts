@@ -11,14 +11,20 @@ import { AnimalController } from "./controllers/animalController";
 import { OcupacaoController } from "./controllers/ocupacaoController";
 import { AnotacaoController } from "./controllers/anotacaoController";
 import { LoteController } from "./controllers/loteController";
+import { verifyToken } from "./middleware/verifyToken";
 const routes = Router();
 
-//fazenda rotas
-routes.post('/fazendas', new FazendaController().create);
-
+// Usuario Routes - Sem necessidade de autenticação
 //usuario rotas
 routes.post('/usuarios', new UsuarioController().create);
 routes.post('/auth', new UsuarioController().auth);
+
+
+// Middleware global para todas as rotas, exceto a de login
+routes.use(verifyToken);
+
+//fazenda rotas
+routes.post('/fazendas', new FazendaController().create);
 
 //tipoUsuarios rotas
 routes.post('/tipousuarios', new TipoUsuarioController().create);

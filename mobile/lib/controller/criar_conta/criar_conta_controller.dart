@@ -1,4 +1,5 @@
 
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:syspig/controller/usuario/usuario_controller.dart';
 import 'package:syspig/model/usuario_model.dart';
@@ -19,34 +20,48 @@ class CriarContaController with ChangeNotifier {
   String? _senha;
   setSenha(String value) => _senha = value; 
   
-  Future<bool> create (BuildContext context) async {
-
+  Future<bool> create(BuildContext context) async {
+    bool sucesso = false;
     Dialogs.showLoading(context, message:'Aguarde, Criando Nova Conta');
     
     try {
-      UsuarioModel novoUsuario = await UsuarioModel(
+      UsuarioModel novoUsuario = UsuarioModel(
         email: _email,
         nome: _nome!,
         senha: _senha! 
       );
 
-      UsuarioModel usuarioCriado = await _usuarioController.create(context, novoUsuario);
-
-      Dialogs.hideLoading(context);
+      UsuarioModel? usuarioCriado = await _usuarioController.create(context, novoUsuario);
 
       if (usuarioCriado != null) {
+        sucesso = true;
         Dialogs.successToast(context, 'Usuário criado com sucesso!');
       } else {
         Dialogs.errorToast(context, 'Falha ao criar usuário');
       }
     } catch (e) {
-      print(e);
-      Dialogs.hideLoading(context);
-      Dialogs.errorToast(context, 'Falha ao criar usuário');
+      if (context.mounted) {
+        // Tratar o erro de forma mais limpa
+        String mensagemErro = 'Falha ao criar usuário: ';
+        
+        if (e is DioException && e.response != null) {
+          mensagemErro += e.response?.data['message'] ?? 'Erro desconhecido';
+        } else if (e is Exception) {
+          mensagemErro += e.toString().replaceFirst('Exception:', '').trim();
+        } else if (e is String) {
+          mensagemErro += e;
+        } else {
+          mensagemErro += 'Erro desconhecido';
+        }
+        
+        Dialogs.errorToast(context, mensagemErro);
+      }
+    } finally {
+      if (context.mounted) {
+        Dialogs.hideLoading(context);
+      }
     }
-    
-    Dialogs.hideLoading(context);    
 
-    return true;
+    return sucesso;
   }
 }

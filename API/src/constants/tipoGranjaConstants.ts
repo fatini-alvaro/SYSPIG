@@ -5,7 +5,7 @@ export enum TipoGranjaId {
     ENGORDA = 2
 }
 
-export const TipoUsuarioIdDescriptions: Record<TipoGranjaId, string> = {
+export const TipoGranjaIdDescriptions: Record<TipoGranjaId, string> = {
     [TipoGranjaId.GESTACAO]: 'Granja para gestação de porcas',
     [TipoGranjaId.ENGORDA]: 'Granja para engorda de suínos'
 };

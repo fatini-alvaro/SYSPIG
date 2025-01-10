@@ -1,5 +1,5 @@
 import 'package:logger/logger.dart';
-import 'package:syspig/api/api_cliente.dart';
+import 'package:syspig/api/api_client.dart';
 import 'package:syspig/model/baia_model.dart';
 import 'package:syspig/repositories/baia/baia_repository.dart';
 

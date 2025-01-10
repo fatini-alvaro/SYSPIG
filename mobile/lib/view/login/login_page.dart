@@ -107,14 +107,11 @@ class _LoginPageState extends State<LoginPage> {
                             onPressed: () {
                               if (_formKey.currentState!.validate()) {
                                 _loginController
-                                    .autenticarUsuario()
+                                    .autenticarUsuario(context)
                                     .then((resultado) {
                                   if (resultado) {
                                     Navigator.of(context)
                                         .pushNamed('/selecionarFazenda');
-                                  } else {
-                                    Dialogs.errorToast(context,
-                                        "Credenciais inválidas.Tente novamente.");
                                   }
                                 });
                               }

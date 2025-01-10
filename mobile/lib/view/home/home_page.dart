@@ -8,7 +8,6 @@ import 'package:syspig/repositories/home/home_repository_imp.dart';
 import 'package:syspig/services/prefs_service.dart';
 import 'package:syspig/widgets/custom_appbar_widget.dart';
 import 'package:syspig/widgets/custom_drawer_widget.dart';
-import 'package:syspig/services/prefs_service.dart';
 
 class HomePage extends StatefulWidget{
   @override
@@ -19,7 +18,6 @@ class HomePage extends StatefulWidget{
 
 class HomePageState extends State<HomePage> {
 
-  final HomeController _homeController = HomeController(HomeRepositoryImp());
   UsuarioModel? _user;
   FazendaModel? _fazenda;
 

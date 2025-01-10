@@ -1,4 +1,4 @@
-import 'package:syspig/api/api_cliente.dart';
+import 'package:syspig/api/api_client.dart';
 import 'package:syspig/model/lote_model.dart';
 import 'package:syspig/repositories/lote/lote_repository.dart';
 import 'package:logger/logger.dart';
