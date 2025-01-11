@@ -11,7 +11,7 @@ class ApiClient {
 
     _dio = Dio(options);
 
-     setupApiClient();
+    setupApiClient();
   }
 
   Dio get dio => _dio;
@@ -19,15 +19,15 @@ class ApiClient {
   Future<void> setupApiClient() async {
     int? userId = await PrefsService.getUserId();
     int? fazendaId = await PrefsService.getFazendaId();
-    String? accessToken = await PrefsService.getAuthToken();
+    String? accessToken = await PrefsService.getAccessToken();
+    String? refreshToken = await PrefsService.getRefreshToken();
 
     _dio.interceptors.add(InterceptorsWrapper(
       onRequest: (options, handler) async {
-
         if (accessToken != null) {
           options.headers['Authorization'] = 'Bearer $accessToken';
         }
-        
+
         if (userId != null) {
           options.headers['user-id'] = userId.toString();
         }
@@ -37,6 +37,46 @@ class ApiClient {
         }
 
         return handler.next(options);
+      },
+      onError: (DioException error, handler) async {
+        if (error.response?.statusCode == 401 && refreshToken != null) {
+          // Tentativa de renovar o accessToken com o refreshToken
+          try {
+            var response = await _dio.post('/auth/refresh', data: {
+              'refreshToken': refreshToken,
+            });
+
+            if (response.statusCode == 200) {
+              // Armazena o novo accessToken
+              String newAccessToken = response.data['accessToken'];
+              await PrefsService.saveAccessToken(newAccessToken);
+
+              // Repete a requisição original com o novo accessToken
+              error.requestOptions.headers['Authorization'] = 'Bearer $newAccessToken';
+              final retryResponse = await _dio.request(
+                error.requestOptions.path,
+                options: Options(
+                  method: error.requestOptions.method,
+                  headers: error.requestOptions.headers,
+                ),
+                data: error.requestOptions.data,
+                queryParameters: error.requestOptions.queryParameters,
+              );
+              return handler.resolve(retryResponse);
+            }
+          } catch (e) {
+            // Caso falhe a tentativa de renovação, retorna o erro original
+            return handler.reject(
+              DioException(
+                requestOptions: error.requestOptions,
+                error: e,
+                type: DioExceptionType.unknown, // Substituto para DioErrorType.other
+              ),
+            );
+          }
+        }
+
+        return handler.next(error);
       },
     ));
   }

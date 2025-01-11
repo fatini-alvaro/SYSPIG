@@ -5,9 +5,11 @@ import 'package:syspig/model/usuario_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class PrefsService {
+  static const String _key = 'key';
+  static const String _refreshTokenKey = 'refreshToken';
+  static const String _accessToken = 'accessToken';
 
-  static final String _key = 'key';
-
+  // Salva os dados do usuário, incluindo o accessToken e refreshToken
   static save(UsuarioModel user) async {
     var prefs = await SharedPreferences.getInstance();
 
@@ -17,8 +19,43 @@ class PrefsService {
         "user": user.toJson(),
         "isAuth": true,
         "accessToken": user.accessToken,
+        "refreshToken": user.refreshToken,
       }),
     );
+  }
+
+  // Salva apenas o accessToken
+  static saveAccessToken(String accessToken) async {
+    var prefs = await SharedPreferences.getInstance();
+    prefs.setString(_accessToken, accessToken);  // Salva o accessToken
+  }
+
+  // Salva apenas o refreshToken
+  static saveRefreshToken(String refreshToken) async {
+    var prefs = await SharedPreferences.getInstance();
+    prefs.setString(_refreshTokenKey, refreshToken);  // Salva o refreshToken
+  }
+
+  // Recupera o accessToken
+  static Future<String?> getAccessToken() async {
+    var prefs = await SharedPreferences.getInstance();
+    var data = jsonDecode(prefs.getString(_key) ?? '{}');
+    return data[_accessToken];
+  }
+
+  // Recupera o refreshToken
+  static Future<String?> getRefreshToken() async {
+    var prefs = await SharedPreferences.getInstance();
+    var data = jsonDecode(prefs.getString(_key) ?? '{}');
+    return data[_refreshTokenKey];
+  }
+
+  // Limpa os dados de autenticação (accessToken, refreshToken, etc.)
+  static clearAuthData() async {
+    var prefs = await SharedPreferences.getInstance();
+    prefs.remove(_accessToken);  // Remove o accessToken
+    prefs.remove(_refreshTokenKey);  // Remove o refreshToken
+    prefs.remove(_key);  // Remove os dados do usuário
   }
 
   static Future<UsuarioModel?> getUser() async {
@@ -37,6 +74,7 @@ class PrefsService {
     return null;
   }
 
+  // Outras funções de recuperação de dados
   static Future<int?> getUserId() async {
     var prefs = await SharedPreferences.getInstance();
     var userDataString = prefs.getString(_key);
@@ -49,21 +87,21 @@ class PrefsService {
   }
 
   static Future<int?> getFazendaId() async {
-  var prefs = await SharedPreferences.getInstance();
-  var userDataString = prefs.getString(_key);
-  if (userDataString != null) {
-    try {
-      Map<String, dynamic> userData = jsonDecode(userDataString);
-      var fazenda = userData['fazenda'];
-      if (fazenda != null && fazenda is Map<String, dynamic> && fazenda.containsKey('id')) {
-        return fazenda['id'];
+    var prefs = await SharedPreferences.getInstance();
+    var userDataString = prefs.getString(_key);
+    if (userDataString != null) {
+      try {
+        Map<String, dynamic> userData = jsonDecode(userDataString);
+        var fazenda = userData['fazenda'];
+        if (fazenda != null && fazenda is Map<String, dynamic> && fazenda.containsKey('id')) {
+          return fazenda['id'];
+        }
+      } catch (e) {
+        Logger().e('Erro ao recuperar fazenda: $e');
       }
-    } catch (e) {
-      Logger().e('Erro ao recuperar fazenda: $e');
     }
+    return null;
   }
-  return null;
-}
 
   static Future<FazendaModel?> getFazenda() async {
     var prefs = await SharedPreferences.getInstance();
@@ -81,21 +119,11 @@ class PrefsService {
     return null;
   }
 
-  static int? getUserIdFromUserString(String userString) {
-    // Lógica para extrair o ID do usuário da string
-    // Por exemplo: 'User(id: 123, name: John)' => 123
-    var idStartIndex = userString.indexOf('id: ') + 4;
-    var idEndIndex = userString.indexOf(',', idStartIndex);
-    var userIdString = userString.substring(idStartIndex, idEndIndex);
-    var userId = int.tryParse(userIdString);
-    return userId;
-  }
-
   static Future<bool> isAuth() async {
     var prefs = await SharedPreferences.getInstance();
 
     var jsonResult = prefs.getString(_key);
-    if(jsonResult != null) {
+    if (jsonResult != null) {
       var mapUser = jsonDecode(jsonResult);
       return mapUser['isAuth'];
     }
@@ -113,14 +141,8 @@ class PrefsService {
     var userDataString = prefs.getString(_key);
     if (userDataString != null) {
       Map<String, dynamic> userData = jsonDecode(userDataString);
-      userData['fazenda'] = fazenda.toJson(); 
+      userData['fazenda'] = fazenda.toJson();
       prefs.setString(_key, jsonEncode(userData));
     }
-  }
-
-  static Future<String?> getAuthToken() async {
-    var prefs = await SharedPreferences.getInstance();
-    var data = jsonDecode(prefs.getString(_key) ?? '{}');
-    return data['accessToken'];
   }
 }
