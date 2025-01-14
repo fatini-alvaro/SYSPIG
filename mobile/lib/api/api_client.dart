@@ -11,27 +11,19 @@ class ApiClient {
 
     _dio = Dio(options);
 
-    setupApiClient();
-  }
-
-  Dio get dio => _dio;
-
-  Future<void> setupApiClient() async {
-    int? userId = await PrefsService.getUserId();
-    int? fazendaId = await PrefsService.getFazendaId();
-    String? accessToken = await PrefsService.getAccessToken();
-    String? refreshToken = await PrefsService.getRefreshToken();
-
+    // Adiciona interceptors imediatamente
     _dio.interceptors.add(InterceptorsWrapper(
       onRequest: (options, handler) async {
+        String? accessToken = await PrefsService.getAccessToken();
+        int? userId = await PrefsService.getUserId();
+        int? fazendaId = await PrefsService.getFazendaId();
+
         if (accessToken != null) {
           options.headers['Authorization'] = 'Bearer $accessToken';
         }
-
         if (userId != null) {
           options.headers['user-id'] = userId.toString();
         }
-
         if (fazendaId != null) {
           options.headers['fazenda-id'] = fazendaId.toString();
         }
@@ -39,6 +31,7 @@ class ApiClient {
         return handler.next(options);
       },
       onError: (DioException error, handler) async {
+        String? refreshToken = await PrefsService.getRefreshToken();
         if (error.response?.statusCode == 401 && refreshToken != null) {
           // Tentativa de renovar o accessToken com o refreshToken
           try {
@@ -80,4 +73,6 @@ class ApiClient {
       },
     ));
   }
+
+  Dio get dio => _dio;
 }
