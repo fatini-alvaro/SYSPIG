@@ -30,9 +30,18 @@ class ApiClient {
 
         return handler.next(options);
       },
-      onError: (DioException error, handler) async {
+      onError: (error, handler) async {
         String? refreshToken = await PrefsService.getRefreshToken();
-        if (error.response?.statusCode == 401 && refreshToken != null) {
+        if (error.response?.statusCode == 403 && refreshToken != null) {
+
+          // Evita loops definindo um flag
+          if (error.requestOptions.extra["retry"] == true) {
+            return handler.next(error); // Já foi tentado, retorna o erro original
+          }
+
+          // Marca como tentativa de renovação
+          error.requestOptions.extra["retry"] = true;
+
           // Tentativa de renovar o accessToken com o refreshToken
           try {
             var response = await _dio.post('/auth/refresh', data: {
@@ -46,6 +55,7 @@ class ApiClient {
 
               // Repete a requisição original com o novo accessToken
               error.requestOptions.headers['Authorization'] = 'Bearer $newAccessToken';
+              
               final retryResponse = await _dio.request(
                 error.requestOptions.path,
                 options: Options(

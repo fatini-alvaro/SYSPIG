@@ -27,13 +27,23 @@ class PrefsService {
   // Salva apenas o accessToken
   static saveAccessToken(String accessToken) async {
     var prefs = await SharedPreferences.getInstance();
-    prefs.setString(_accessToken, accessToken);  // Salva o accessToken
+    var userDataString = prefs.getString(_key);
+    if (userDataString != null) {
+      Map<String, dynamic> userData = jsonDecode(userDataString);
+      userData['accessToken'] = accessToken;
+      prefs.setString(_key, jsonEncode(userData));
+    }
   }
 
   // Salva apenas o refreshToken
   static saveRefreshToken(String refreshToken) async {
     var prefs = await SharedPreferences.getInstance();
-    prefs.setString(_refreshTokenKey, refreshToken);  // Salva o refreshToken
+    var userDataString = prefs.getString(_key);
+    if (userDataString != null) {
+      Map<String, dynamic> userData = jsonDecode(userDataString);
+      userData['refreshToken'] = refreshToken;
+      prefs.setString(_key, jsonEncode(userData));
+    }    
   }
 
   // Recupera o accessToken
