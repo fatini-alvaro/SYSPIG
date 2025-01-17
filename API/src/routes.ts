@@ -1,4 +1,5 @@
 import { Router } from "express";
+import cors from 'cors';
 import { FazendaController } from "./controllers/fazendaController";
 import { UsuarioController } from "./controllers/usuarioController";
 import { TipoUsuarioController } from "./controllers/tipoUsuarioController";
@@ -13,6 +14,17 @@ import { AnotacaoController } from "./controllers/anotacaoController";
 import { LoteController } from "./controllers/loteController";
 import { verifyToken } from "./middleware/verifyToken";
 const routes = Router();
+
+// Configuração do CORS
+const corsOptions = {
+    origin: 'http://localhost:3000',
+    methods: ['GET', 'POST', 'PUT', 'DELETE'], // Métodos permitidos
+    allowedHeaders: ['Content-Type', 'Authorization'], // Cabeçalhos permitidos
+    credentials: true, // Permite o envio de cookies/credenciais
+};
+
+// Aplica CORS globalmente a todas as rotas
+routes.use(cors(corsOptions));
 
 // Usuario Routes - Sem necessidade de autenticação
 //usuario rotas
