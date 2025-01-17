@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:syspig/api/api_client.dart';
 import 'package:syspig/services/prefs_service.dart';
 
 class SplashPage extends StatefulWidget {
@@ -10,14 +11,37 @@ class SplashPage extends StatefulWidget {
 
 class _SplashPageState extends State<SplashPage> {
 
+  final ApiClient _apiClient = ApiClient();
+
   void initState() {
     super.initState();
+    _checkAuthentication();
+  }
 
-    Future.wait([
-      PrefsService.isAuth(),
-    ]).then((value) => value[0] 
-        ? Navigator.of(context).pushReplacementNamed('/home') 
-        : Navigator.of(context).pushReplacementNamed('/login'));
+  Future<void> _checkAuthentication() async {
+    String? refreshToken = await PrefsService.getRefreshToken();
+
+    if (refreshToken != null) {
+      try {
+        final response = await _apiClient.dio.post('/auth/refresh', data: {
+          'refreshToken': refreshToken,
+        });
+
+        if (response.statusCode == 200) {
+          String newAccessToken = response.data['accessToken'];
+          await PrefsService.saveAccessToken(newAccessToken);
+
+          // Redireciona para a página principal
+          Navigator.pushReplacementNamed(context, '/home');
+        } else {
+          PrefsService.logout();
+        }
+      } catch (e) {
+        PrefsService.logout();
+      }
+    } else {
+      PrefsService.logout();
+    }
   }
 
   @override
