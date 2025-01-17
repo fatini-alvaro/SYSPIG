@@ -1,5 +1,9 @@
 import 'dart:convert';
+import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
+import 'package:syspig/api/api_client.dart';
+import 'package:syspig/app_widget.dart';
 import 'package:syspig/model/fazenda_model.dart';
 import 'package:syspig/model/usuario_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -141,9 +145,31 @@ class PrefsService {
     return false;
   }
 
-  static logout() async {
-    var prefs = await SharedPreferences.getInstance();
-    await prefs.remove(_key);
+  static Future<void> logout() async {
+    try {
+      // Obter uma instância do ApiClient configurado
+      final apiClient = ApiClient();
+      final prefs = await SharedPreferences.getInstance();
+
+      // Obter o refreshToken armazenado
+      final refreshToken = await getRefreshToken();
+      if (refreshToken != null) {
+        // Chama a API de logout para invalidar o refresh token
+        await apiClient.dio.post(
+          '/logout', // Endpoint relativo à baseUrl configurada no ApiClient
+          data: {'refreshToken': refreshToken},
+        );
+      }
+
+      // Remove todos os dados locais
+      await prefs.clear();
+
+      // Redireciona para a tela de login
+      AppWidget.navigatorKey.currentState?.pushNamedAndRemoveUntil('/login', (_) => false);
+    } catch (e) {
+      // Log do erro para depuração
+      print('Erro ao realizar logout: $e');
+    }
   }
 
   static setFazenda(FazendaModel fazenda) async {

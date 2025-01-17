@@ -57,7 +57,6 @@ class HomePageState extends State<HomePage> {
         },
         onLogoutTap: () {
           PrefsService.logout();
-          Navigator.of(context).pushNamedAndRemoveUntil('/login', (_) => true);
         },
       ),
       appBar: CustomAppBarWidget(titulo: Text(_fazenda != null ? _fazenda!.nome : 'Fazenda')),      

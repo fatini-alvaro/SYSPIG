@@ -112,7 +112,7 @@ export class UsuarioController {
       // Verifica se o refresh token está armazenado no banco de dados
       const usuario = await usuarioRepository.findOneBy({ id: (decoded as jwt.JwtPayload).id });
       if (!usuario || usuario.refreshToken !== refreshToken) {
-        return res.status(403).json({ message: 'Refresh token inválido.' });
+        return res.status(403).json({ message: 'Refresh token inválido ou expirado.' });
       }
 
       if (!process.env.JWT_SECRET || !process.env.JWT_REFRESH_SECRET) {
@@ -125,21 +125,42 @@ export class UsuarioController {
         process.env.JWT_SECRET,
         { expiresIn: '1h' }
       );
-
-      // Adicionar ao método refreshToken
-      usuario.refreshToken = jwt.sign(
-        { id: usuario.id, email: usuario.email },
-        process.env.JWT_REFRESH_SECRET,
-        { expiresIn: '7d' }
-      );
-      await usuarioRepository.save(usuario);
   
       return res.json({ accessToken: newAccessToken });
-    } catch (error) {
+    } catch (error: any) {
+
+      if (error.name === 'TokenExpiredError') {
+        return res.status(403).json({ message: 'Refresh token expirado. Faça login novamente.' });
+      }
+
       console.error(error);
       return res.status(403).json({ message: 'Token inválido ou expirado.' });
     }
   }
+  
+  async logout(req: Request, res: Response) {
+    const { refreshToken } = req.body;
+  
+    if (!refreshToken) {
+      return res.status(400).json({ message: 'Refresh token não fornecido.' });
+    }
+  
+    try {
+      const usuario = await usuarioRepository.findOneBy({ refreshToken });
+      if (!usuario) {
+        return res.status(404).json({ message: 'Usuário não encontrado.' });
+      }
+  
+      // Invalida o refresh token
+      usuario.refreshToken = '';
+      await usuarioRepository.save(usuario);
+  
+      return res.status(200).json({ message: 'Logout realizado com sucesso.' });
+    } catch (error) {
+      console.error('Erro ao realizar logout:', error);
+      return res.status(500).json({ message: 'Erro ao realizar logout.' });
+    }
+  }  
   
 
 }

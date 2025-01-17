@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:syspig/app_context.dart';
 import 'package:syspig/controller/app_controller.dart';
 import 'package:syspig/themes/themes.dart';
 import 'package:syspig/view/animal/cadastrar_animal_page.dart';
@@ -28,13 +29,18 @@ import 'package:syspig/view/splash/splash_page.dart';
 import 'view/home/home_page.dart';
 
 class AppWidget extends StatelessWidget {  
+
+  static final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
       animation: AppController.instance,
       builder: (context, child) {
+      AppContext.setContext(context);
       return MaterialApp(
         debugShowCheckedModeBanner: false,
+        navigatorKey: navigatorKey,
         theme: AppThemes.lightTheme,
         darkTheme: AppThemes.darkTheme,
         themeMode: AppController.instance.isDarkTheme ? ThemeMode.dark : ThemeMode.light,

@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import 'package:syspig/services/prefs_service.dart';
 
 class ApiClient {
@@ -10,6 +11,8 @@ class ApiClient {
     );
 
     _dio = Dio(options);
+
+    bool isRefreshing = false;
 
     // Adiciona interceptors imediatamente
     _dio.interceptors.add(InterceptorsWrapper(
@@ -35,9 +38,11 @@ class ApiClient {
         if (error.response?.statusCode == 403 && refreshToken != null) {
 
           // Evita loops definindo um flag
-          if (error.requestOptions.extra["retry"] == true) {
+          if (isRefreshing) {
             return handler.next(error); // Já foi tentado, retorna o erro original
           }
+
+          isRefreshing = true;
 
           // Marca como tentativa de renovação
           error.requestOptions.extra["retry"] = true;
@@ -68,7 +73,13 @@ class ApiClient {
               return handler.resolve(retryResponse);
             }
           } catch (e) {
-            // Caso falhe a tentativa de renovação, retorna o erro original
+            // Se a renovação falhar, verifica se o erro é devido ao refreshToken expirado
+            if (e is DioException && e.response?.statusCode == 403) {
+              await PrefsService.logout(); // Limpa os dados locais
+              return;
+            }
+
+            // Retorna o erro original em caso de falha geral
             return handler.reject(
               DioException(
                 requestOptions: error.requestOptions,
