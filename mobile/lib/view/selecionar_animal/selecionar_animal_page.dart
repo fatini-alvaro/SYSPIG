@@ -95,12 +95,17 @@ class SelecionarAnimalPageState extends State<SelecionarAnimalPage> {
                           actions: [
                             TextButton(
                               onPressed: () async {
-                                Navigator.pop(context); // Fechar o diálogo de confirmação
-                                await _animalController.delete(list[idx].id!);
+                                try {
+                                  bool excluido = await _animalController.delete(list[idx].id!);
 
-                                 Dialogs.successToast(context, 'Animal excluído com sucesso!');
-
-                                 _carregarAnimais();
+                                  if (excluido) {
+                                    Dialogs.successToast(context, 'Animal excluído com sucesso!');
+                                    _carregarAnimais();
+                                  }
+                                } catch (e) {
+                                  String errorMessage = e.toString().replaceFirst('Exception: ', ''); // Removendo duplicação
+                                  Dialogs.errorToast(context, errorMessage);
+                                }
                               },
                               child: Text('Confirmar'),
                             ),

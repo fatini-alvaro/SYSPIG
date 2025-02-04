@@ -66,7 +66,7 @@ class AnimalRepositoryImp implements AnimalRepository {
       if (response.statusCode == 200) {
         return true; // Exclusão bem-sucedida
       } else {
-        return false; // Exclusão falhou
+        throw Exception(response.data['message'] ?? 'Erro desconhecido ao excluir animal');
       }
     } catch (e) {
       Logger().e('Erro ao excluir animal (delete - Animais): $e');

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 import 'package:syspig/model/animal_model.dart';
 import 'package:syspig/repositories/animal/animal_repository.dart';
 
@@ -34,9 +35,12 @@ class AnimalController {
   }
 
   Future<bool> delete(int animalExclusaoID) async {
-    
-    bool excluido = await  _animalRepository.delete(animalExclusaoID);
-
-    return excluido;
+    try {
+      return await _animalRepository.delete(animalExclusaoID);
+    } catch (e) {
+      Logger().e('Erro ao excluir animal: $e');
+      throw e;
+    }
   }
+
 }
