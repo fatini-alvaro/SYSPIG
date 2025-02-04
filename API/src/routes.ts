@@ -68,11 +68,12 @@ routes.get('/baias/baia/:baia_id', new BaiaController().getById);
 routes.get('/cidades', new cidadeController().list);
 
 //Animal
-routes.post('/animais', new AnimalController().create);
-routes.put('/animais/:animal_id', new AnimalController().update); 
-routes.delete('/animais/:animal_id', new AnimalController().delete); 
-routes.get('/animais/:fazenda_id', new AnimalController().list);
-routes.get('/animais/animal/:animal_id', new AnimalController().getById);
+const animalController = new AnimalController();
+routes.post('/animais', animalController.createOrUpdate);
+routes.put('/animais/:animal_id', animalController.createOrUpdate);
+routes.delete('/animais/:animal_id', animalController.delete); 
+routes.get('/animais/:fazenda_id', animalController.list);
+routes.get('/animais/animal/:animal_id', animalController.getById);
 
 //Anotacao
 routes.post('/anotacoes', new AnotacaoController().create);

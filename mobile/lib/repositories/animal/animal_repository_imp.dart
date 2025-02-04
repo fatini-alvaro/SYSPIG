@@ -38,14 +38,7 @@ class AnimalRepositoryImp implements AnimalRepository {
   @override
   Future<AnimalModel> create(AnimalModel animal) async {
     try {
-      Map<String, dynamic> animalData = {
-        'numeroBrinco': animal.numeroBrinco,
-        'sexo': animal.sexo.toShortString(),
-        'status': statusAnimalToInt[animal.status],
-        'dataNascimento': animal.dataNascimento?.toIso8601String(),
-      };
-
-      var response = await _apiClient.dio.post('/animais', data: animalData);
+      var response = await _apiClient.dio.post('/animais', data: animal.toJson());
       return AnimalModel.fromJson(response.data);
     } catch (e) {      
       Logger().e('Erro ao criar animal (create - Animais): $e');
@@ -56,16 +49,8 @@ class AnimalRepositoryImp implements AnimalRepository {
   @override
   Future<AnimalModel> update(AnimalModel animal) async {
     try {
-      Map<String, dynamic> animalData = {
-        'numeroBrinco': animal.numeroBrinco,
-        'sexo': animal.sexo,
-        'status': animal.status,
-        'dataNascimento': animal.dataNascimento,
-      };
-
       var animalId = animal.id;
-
-      var response = await _apiClient.dio.put('/animais/$animalId', data: animalData);
+      var response = await _apiClient.dio.put('/animais/$animalId', data: animal.toJson());
       return AnimalModel.fromJson(response.data);
     } catch (e) {    
       Logger().e('Erro ao editar animal (update - Animais): $e');

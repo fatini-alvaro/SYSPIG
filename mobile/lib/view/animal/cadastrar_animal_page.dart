@@ -45,10 +45,15 @@ class CadastrarAnimalPageState extends State<CadastrarAnimalPage> {
 
   void _preencherCamposParaEdicao(AnimalModel animal) {
     setState(() {
+      //valores em tela
       _numeroBrincoController.text = animal.numeroBrinco;
+      _dataNascimento = animal.dataNascimento;
+
+      //valores no controller
+      _cadastrarAnimalController.setNumeroBrinco(animal.numeroBrinco);
       _cadastrarAnimalController.setSexo(animal.sexo);
       _cadastrarAnimalController.setStatus(animal.status);
-      _dataNascimento = animal.dataNascimento; // Preenche a data inicial.
+      _cadastrarAnimalController.setNascimento(animal.dataNascimento);
     });
   }
 
@@ -134,6 +139,7 @@ class CadastrarAnimalPageState extends State<CadastrarAnimalPage> {
               const SizedBox(height: 20),
               CustomDateTimeFieldWidget(
                 labelText: 'Data de Nascimento',
+                initialValue: _dataNascimento,
                 onChanged: (selectedDate) {
                   setState(() {
                     _dataNascimento = selectedDate;
@@ -141,7 +147,14 @@ class CadastrarAnimalPageState extends State<CadastrarAnimalPage> {
                   _cadastrarAnimalController.setNascimento(selectedDate);
                 },
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: 20),            
+              Expanded(
+                child: ListView(
+                  children: [
+                    // Adicione outros widgets aqui se necessário
+                  ],
+                ),
+              ),
               CustomSalvarCadastroButtonComponent(
                 buttonText: widget.animalId == null
                     ? 'Salvar Animal'

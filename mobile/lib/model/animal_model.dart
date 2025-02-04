@@ -45,11 +45,11 @@ class AnimalModel {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'numero_brinco': numeroBrinco,
-      'sexo': sexo.name,
+      'numeroBrinco': numeroBrinco,
+      'sexo': sexo.toShortString(),
       'status': statusAnimalToInt[status],
       'fazenda': fazenda?.toJson(),
-      'data_nascimento': dataNascimento?.toIso8601String(),
+      'dataNascimento': dataNascimento?.toIso8601String(),
       'createdBy': createdBy?.toJson(),
       'created_at': createdAt?.toIso8601String(),
       'updatedBy': updatedBy?.toJson(),

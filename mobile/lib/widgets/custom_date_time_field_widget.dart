@@ -4,11 +4,13 @@ import 'package:flutter_localization/flutter_localization.dart';
 class CustomDateTimeFieldWidget extends StatefulWidget {
   final String? labelText;
   final ValueChanged<DateTime?> onChanged;
+  final DateTime? initialValue; // Novo parâmetro
 
   const CustomDateTimeFieldWidget({
     Key? key,
     this.labelText,
     required this.onChanged,
+    this.initialValue, // Adiciona o valor inicial
   }) : super(key: key);
 
   @override
@@ -19,6 +21,12 @@ class CustomDateTimeFieldWidget extends StatefulWidget {
 class _CustomDateTimeFieldWidgetState extends State<CustomDateTimeFieldWidget> {
   DateTime? selectedDate;
 
+  @override
+  void initState() {
+    super.initState();
+    selectedDate = widget.initialValue; // Inicializa com o valor passado
+  }
+
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
@@ -26,7 +34,7 @@ class _CustomDateTimeFieldWidgetState extends State<CustomDateTimeFieldWidget> {
       firstDate: DateTime(2015),
       lastDate: DateTime(2100),
     );
-    if (picked != null && picked != selectedDate) {
+    if (picked != null) {
       setState(() {
         selectedDate = picked;
         widget.onChanged(picked);
@@ -38,7 +46,9 @@ class _CustomDateTimeFieldWidgetState extends State<CustomDateTimeFieldWidget> {
   Widget build(BuildContext context) {
     return TextField(
       controller: TextEditingController(
-        text: selectedDate != null ? '${selectedDate!.toLocal()}' : '',
+        text: selectedDate != null
+            ? '${selectedDate!.toLocal()}'.split(' ')[0] // Formata a data
+            : '',
       ),
       onTap: () => _selectDate(context),
       decoration: InputDecoration(
