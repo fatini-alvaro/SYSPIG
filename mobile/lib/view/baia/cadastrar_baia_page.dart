@@ -146,13 +146,8 @@ class CadastrarBaiaPageState extends State<CadastrarBaiaPage> {
                           .create(context)
                           .then((resultado) {
                         if (resultado) {
-                          Navigator.popUntil(context, (route) => route.isFirst);
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => SelecionarBaiaPage(granja: granja),
-                            ),
-                          );
+                          Navigator.pop(context);
+                          Navigator.pushReplacementNamed(context, '/selecionarBaia', arguments: granja);
                         }
                       });
                     } else {
@@ -160,13 +155,8 @@ class CadastrarBaiaPageState extends State<CadastrarBaiaPage> {
                           .update(context, widget.baiaParaEditar!)
                           .then((resultado) {
                         if (resultado) {
-                          Navigator.popUntil(context, (route) => route.isFirst);
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => SelecionarBaiaPage(granja: granja),
-                            ),
-                          );
+                          Navigator.pop(context);
+                          Navigator.pushReplacementNamed(context, '/selecionarBaia', arguments: granja);
                         }
                       });
                     }

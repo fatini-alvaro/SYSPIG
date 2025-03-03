@@ -51,6 +51,23 @@ class OcupacaoModel {
     );
   }
 
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'codigo': codigo,
+      'status': statusOcupacaoToInt[status],
+      'fazenda': fazenda?.toJson(),
+      'granja': granja?.toJson(),
+      'animal': animal?.toJson(),
+      'baia': baia?.toJson(),
+      'data_abertura': dataAbertura?.toIso8601String(),
+      'createdBy': createdBy?.toJson(),
+      'created_at': createdAt?.toIso8601String(),
+      'updatedBy': updatedBy?.toJson(),
+      'updated_at': updatedAt?.toIso8601String(),
+    };
+  }
+
   @override
   String toString() {
     return 'id: $id, codigo: $codigo,  status: ${statusOcupacaoDescriptions[status]}, fazenda: $fazenda, granja: $granja, animal: $animal, baia: $baia, data_abertura: $dataAbertura, createdBy: $createdBy, created_at: $createdAt, updatedBy: $updatedBy, updated_at: $updatedAt';

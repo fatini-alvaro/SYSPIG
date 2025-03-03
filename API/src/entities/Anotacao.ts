@@ -21,25 +21,25 @@ export class Anotacao{
 
   @ManyToOne(() => Animal, { eager: true, nullable: true })
   @JoinColumn({ name: 'animal_id', referencedColumnName: 'id' }) 
-  animal: Animal;
+  animal: Animal | null;
 
   @ManyToOne(() => Baia, { eager: true, nullable: true})
   @JoinColumn({ name: 'baia_id', referencedColumnName: 'id' }) 
-  baia: Baia;
+  baia: Baia | null;
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   data: Date;
 
   @ManyToOne(() => Usuario, { eager: true, nullable: true })
   @JoinColumn({ name: 'created_by', referencedColumnName: 'id' }) 
-  createdBy: Usuario;
+  createdBy: Usuario | null;
 
   @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Date;
 
   @ManyToOne(() => Usuario, { eager: true, nullable: true })
   @JoinColumn({ name: 'updated_by', referencedColumnName: 'id' }) 
-  updatedBy: Usuario;
+  updatedBy: Usuario | null;
 
   @UpdateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   updated_at: Date;

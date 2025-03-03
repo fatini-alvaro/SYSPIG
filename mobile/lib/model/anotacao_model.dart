@@ -29,6 +29,16 @@ class AnotacaoModel {
     );
   }
 
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'fazenda_id': fazenda?.id,
+      'descricao': descricao,
+      'animal_id': animal?.id,
+      'baia_id': baia?.id,
+    };
+  }
+
   @override
   String toString() {
     return 'id: $id, fazenda: $fazenda, descricao: $descricao, animal: $animal, baia: $baia';

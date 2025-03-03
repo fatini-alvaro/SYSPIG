@@ -2,12 +2,16 @@ import { AppDataSource } from "../data-source";
 import { animalRepository } from "../repositories/animalRepository";
 import { Animal } from "../entities/Animal";
 import { Fazenda } from "../entities/Fazenda";
+import { ValidationService } from "./ValidationService";
+import { ValidationError } from "../utils/validationError";
+import { Usuario } from "../entities/Usuario";
 
 interface AnimalCreateOrUpdateData {
-  numeroBrinco: string;
+  numero_brinco: string;
   sexo: string;
   status: number;
-  dataNascimento: Date;
+  data_nascimento: Date;
+  fazenda_id: number;
 }
 
 export class AnimalService {
@@ -25,45 +29,36 @@ export class AnimalService {
     return await animalRepository.findOne({ where: { id: animal_id } });
   }
 
-  async createOrUpdate(fazenda_id: number, animalData: AnimalCreateOrUpdateData, animal_id?: number) {
+  async createOrUpdate(animalData: AnimalCreateOrUpdateData, animal_id?: number) {
     return await AppDataSource.transaction(async transactionalEntityManager => {
-      let animal;
+      let animal: Animal | null = null;
 
       if (animal_id) {
-        // Atualiza o animal existente
-        animal = await transactionalEntityManager.findOne(Animal, { where: { id: animal_id } });
-        if (!animal) {
-        throw new Error('Animal não encontrado');
-        }
-        animal.numero_brinco = animalData.numeroBrinco;
-        animal.sexo = animalData.sexo;
-        animal.status = animalData.status;
-        animal.data_nascimento = animalData.dataNascimento;
-      } else {
-        // Cria um novo animal
-        const fazenda = await transactionalEntityManager.findOne(Fazenda, { where: { id: fazenda_id } });
-        if (!fazenda) {
-        throw new Error('Fazenda não encontrada');
-        }
-
-        animal = transactionalEntityManager.create(Animal, {
-        fazenda,
-        numero_brinco: animalData.numeroBrinco,
-        sexo: animalData.sexo,
-        data_nascimento: animalData.dataNascimento,
-        status: animalData.status
-        });
+        animal = await ValidationService.validateAndReturnAnimal(animal_id);
       }
 
-      await transactionalEntityManager.save(animal);
+      const { fazenda, createdBy, updatedBy } =
+        await this.validateAnimal(animalData, animal);
 
+      if (!animal) {
+        animal = transactionalEntityManager.create(Animal, { fazenda });
+      }
+
+      animal.numero_brinco = animalData.numero_brinco;
+      animal.sexo = animalData.sexo;
+      animal.status = animalData.status;
+      animal.data_nascimento = animalData.data_nascimento;
+      animal.createdBy = createdBy ?? animal.createdBy;
+      animal.updatedBy = updatedBy ?? animal.updatedBy;
+
+      await transactionalEntityManager.save(animal);
       return animal;
     });
   }
 
   async deleteAnimal(animal_id: number): Promise<void> {
     if (!animal_id) {
-      throw new Error('Parâmetros não informados');
+      throw new ValidationError('Parâmetros não informados');
     }
 
     await AppDataSource.transaction(async (transactionalEntityManager) => {
@@ -71,4 +66,32 @@ export class AnimalService {
     });
   }
 
+  async validateAnimal(animalData: AnimalCreateOrUpdateData, animal?: Animal | null) {
+    const fazenda = await ValidationService.validateAndReturnFazenda(animalData.fazenda_id);
+
+    if (!animalData.numero_brinco || animalData.numero_brinco.trim() === '') {
+      throw new ValidationError('O número do brinco é obrigatório.');
+    }
+
+    if (animalData.numero_brinco.length > 500) {
+      throw new ValidationError('O número do brinco não pode ter mais de 500 caracteres.');
+    }
+
+    if (animalData.sexo !== 'M' && animalData.sexo !== 'F') {
+      throw new ValidationError('O sexo do animal deve ser M ou F.');
+    }
+
+    if (animalData.status < 0 || animalData.status > 2) {
+      throw new ValidationError('O status do animal deve ser Vivo, Morto ou Vendido.');
+    }
+
+    let createdBy: Usuario | null = null;
+    let updatedBy: Usuario | null = null;
+
+    return {
+      fazenda,
+      createdBy,
+      updatedBy,
+    };
+  }
 }

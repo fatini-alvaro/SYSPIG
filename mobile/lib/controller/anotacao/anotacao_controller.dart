@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 import 'package:syspig/model/anotacao_model.dart';
 import 'package:syspig/repositories/anotacao/anotacao_repository.dart';
 
@@ -12,28 +13,37 @@ class AnotacaoController {
     anotacoes.value = await _anotacaoRepository.getList(fazendaId);
   }
 
-  getAnotacoesByBaia(int baia_id) async {
-    anotacoes.value = await _anotacaoRepository.getAnotacoesByBaia(baia_id);
+  Future<AnotacaoModel> fetchAnotacaoById(int anotacaoId) async {
+    
+    AnotacaoModel anotacao = await  _anotacaoRepository.getById(anotacaoId);
+
+    return anotacao;
   }
 
-  Future<AnotacaoModel> create(BuildContext context, AnotacaoModel baiaNova) async {
+  getAnotacoesByBaia(int baiaId) async {
+    anotacoes.value = await _anotacaoRepository.getAnotacoesByBaia(baiaId);
+  }
 
-    AnotacaoModel novaAnotacao = await  _anotacaoRepository.create(baiaNova);
+  Future<AnotacaoModel> create(AnotacaoModel anotacaoNova) async {
+
+    AnotacaoModel novaAnotacao = await  _anotacaoRepository.create(anotacaoNova);
 
     return novaAnotacao;
   }
 
-  Future<AnotacaoModel> update(BuildContext context, AnotacaoModel anotacaoEdicao) async {
+  Future<AnotacaoModel> update(AnotacaoModel anotacaoEdicao) async {
     
     AnotacaoModel anotacaoEditado = await  _anotacaoRepository.update(anotacaoEdicao);
 
     return anotacaoEditado;
   }
 
-  Future<bool> delete(BuildContext context, int anotacaoExclusaoID) async {
-    
-    bool excluido = await  _anotacaoRepository.delete(anotacaoExclusaoID);
-
-    return excluido;
+  Future<bool> delete(int anotacaoExclusaoID) async {
+    try {
+      return await _anotacaoRepository.delete(anotacaoExclusaoID);
+    } catch (e) {
+      Logger().e('Erro ao excluir animal: $e');
+      rethrow;
+    }
   }
 }

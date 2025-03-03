@@ -3,6 +3,8 @@ import 'package:syspig/controller/animal/animal_controller.dart';
 import 'package:syspig/enums/animal_constants.dart';
 import 'package:syspig/model/animal_model.dart';
 import 'package:syspig/repositories/animal/animal_repository_imp.dart';
+import 'package:syspig/utils/async_fetcher_util.dart';
+import 'package:syspig/utils/async_handler_util.dart';
 import 'package:syspig/utils/dialogs.dart';
 
 class CadastrarAnimalController with ChangeNotifier {
@@ -35,60 +37,42 @@ class CadastrarAnimalController with ChangeNotifier {
   }
 
   Future<bool> create(BuildContext context) async {
-    Dialogs.showLoading(context, message: 'Aguarde, Criando Animal');
+    final animalCriado = await AsyncHandler.execute(
+      context: context,
+      action: () async {
+        final novoAnimal = await createAnimal();
+        return await _animalController.create(novoAnimal);
+      },
+      loadingMessage: 'Aguarde, Criando Animal',
+      successMessage: 'Animal criado com sucesso!',
+    );
 
-    try {
-      final novoAnimal = await createAnimal();
-      final animalCriado = await _animalController.create(novoAnimal);
-
-      Dialogs.hideLoading(context);
-      if (animalCriado != null) {
-        Dialogs.successToast(context, 'Animal criado com sucesso!');
-        return true;
-      } else {
-        Dialogs.errorToast(context, 'Falha ao criar Animal');
-      }
-    } catch (e) {
-      Dialogs.hideLoading(context);
-      Dialogs.errorToast(context, 'Erro: $e');
-    }
-    return false;
+    return animalCriado != null;
   }
 
   Future<bool> update(BuildContext context, int animalId) async {
-    Dialogs.showLoading(context, message: 'Aguarde, Editando Animal');
+    final animalEditado = await AsyncHandler.execute(
+      context: context,
+      action: () async {
+        final animalEditadoData = AnimalModel(
+          id: animalId,
+          numeroBrinco: _numeroBrinco!,
+          sexo: _sexo!,
+          dataNascimento: _dataNascimento,
+          status: _status!,
+        );
+        return await _animalController.update(animalEditadoData);
+      },
+      loadingMessage: 'Aguarde, Editando Animal',
+      successMessage: 'Animal editado com sucesso!',
+    );
 
-    try {
-      final animalEditadoData = AnimalModel(
-        id: animalId,
-        numeroBrinco: _numeroBrinco!,
-        sexo: _sexo!,
-        dataNascimento: _dataNascimento,
-        status: _status!,
-      );
-
-      final animalEditado = await _animalController.update(animalEditadoData);
-
-      Dialogs.hideLoading(context);
-      if (animalEditado != null) {
-        Dialogs.successToast(context, 'Animal editado com sucesso!');
-        return true;
-      } else {
-        Dialogs.errorToast(context, 'Falha ao editar Animal');
-      }
-    } catch (e) {
-      Dialogs.hideLoading(context);
-      Dialogs.errorToast(context, 'Erro: $e');
-    }
-    return false;
+    return animalEditado != null;
   }
 
   Future<AnimalModel?> fetchAnimalById(int animalId) async {
-    try {
-      return await _animalController.fetchAnimalById(animalId);
-    } catch (e) {
-      print(e);
-      return null;
-    }
+    return await AsyncFetcher.fetch(
+      action: () => _animalController.fetchAnimalById(animalId),
+    );
   }
 }

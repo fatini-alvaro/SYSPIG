@@ -96,6 +96,8 @@ class SelecionarAnimalPageState extends State<SelecionarAnimalPage> {
                             TextButton(
                               onPressed: () async {
                                 try {
+                                  Navigator.pop(context);
+
                                   bool excluido = await _animalController.delete(list[idx].id!);
 
                                   if (excluido) {

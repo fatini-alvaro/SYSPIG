@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { AnimalService } from "../services/AnimalService";
+import { handleError } from "../utils/errorHandler";
 
 export class AnimalController {
 
@@ -15,8 +16,8 @@ export class AnimalController {
       const animais = await this.animalService.list(Number(fazenda_id));
       return res.status(200).json(animais);
     } catch (error) {
-      console.error(error);
-      return res.status(500).json({ message: 'Erro ao listar animais' });
+      console.error("Erro ao listar animais:", error);
+      return handleError(error, res, "Erro ao listar animais");
     }
   };
 
@@ -33,8 +34,8 @@ export class AnimalController {
       return res.status(200).json(animal);
       
     } catch (error) {
-      console.log(error);
-      return res.status(500).json({ message: 'Erro ao buscar o animal'});
+      console.error("Erro ao buscar animal:", error);
+      return handleError(error, res, "Erro ao buscar animal");
     }
   }
 
@@ -49,23 +50,32 @@ export class AnimalController {
 
       return res.status(200).json({ message: 'Animal excluído com sucesso' });
     } catch (error) {
-      console.log(error);
-      return res.status(500).json({ message: 'Erro ao excluir animal' });
+      console.error("Erro ao excluir animal:", error);
+      return handleError(error, res, "Erro ao excluir animal");
     }
   }
 
   createOrUpdate = async (req: Request, res: Response) => {
-    const { numeroBrinco, sexo, dataNascimento, status } = req.body;
+    const { numero_brinco, sexo, data_nascimento, status } = req.body;
     const fazenda_id = req.headers['fazenda-id'];
+    const usuario_id = req.headers['user-id'];
     const animal_id = req.params.animal_id ? Number(req.params.animal_id) : undefined;
 
-    if (!fazenda_id || !numeroBrinco || !sexo || !status) {
+    if (!fazenda_id || !numero_brinco || !sexo || !status) {
       return res.status(400).json({ message: 'Parâmetros não informados' });
     }
 
     try {
-      const animalData = { numeroBrinco, sexo, dataNascimento, status };
-      const animal = await this.animalService.createOrUpdate(Number(fazenda_id), animalData, animal_id);
+      const animalData = { 
+        numero_brinco, 
+        sexo, 
+        data_nascimento, 
+        status,
+        fazenda_id: Number(fazenda_id),
+        usuarioIdAcao :  Number(usuario_id)
+      };
+
+      const animal = await this.animalService.createOrUpdate(animalData, animal_id);
 
       if (animal_id) {
         return res.status(200).json(animal); // Atualizado
@@ -74,8 +84,8 @@ export class AnimalController {
       }
 
     } catch (error) {
-      console.error(error);
-      return res.status(500).json({ message: 'Erro ao processar animal' });
+      console.error("Erro ao criar/atualizar animal:", error);
+      return handleError(error, res, "Erro interno ao processar animal");
     }
   };
 

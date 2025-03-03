@@ -6,7 +6,7 @@ class CustomTextFormFieldWidget extends StatelessWidget {
   final String label;
   final String? hintText;
   final Icon? prefixIcon;
-  final Icon? suffixIcon;
+  final Widget? suffixIcon;
   final TextInputType? keyboardType;
   final bool obscureText;
   final String? errorText;

@@ -84,7 +84,7 @@ class ApiClient {
               DioException(
                 requestOptions: error.requestOptions,
                 error: e,
-                type: DioExceptionType.unknown, // Substituto para DioErrorType.other
+                type: DioExceptionType.unknown,
               ),
             );
           }

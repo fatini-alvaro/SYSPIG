@@ -4,6 +4,8 @@ abstract class AnotacaoRepository {
 
   Future<List<AnotacaoModel>> getList(int fazendaId);
 
+  Future<AnotacaoModel> getById(int anotacaoId);
+
   Future<AnotacaoModel> create(AnotacaoModel anotacao);
 
   Future<AnotacaoModel> update(AnotacaoModel anotacao);

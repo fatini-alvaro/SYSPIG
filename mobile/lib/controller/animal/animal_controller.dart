@@ -39,7 +39,7 @@ class AnimalController {
       return await _animalRepository.delete(animalExclusaoID);
     } catch (e) {
       Logger().e('Erro ao excluir animal: $e');
-      throw e;
+      rethrow;
     }
   }
 

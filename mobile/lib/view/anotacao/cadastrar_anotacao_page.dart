@@ -9,14 +9,12 @@ import 'package:syspig/view/selecionar_anotacao/selecionar_anotacao_page.dart';
 import 'package:syspig/widgets/custom_text_form_field_widget.dart';
 
 class CadastrarAnotacaoPage extends StatefulWidget {
-  final AnotacaoModel? anotacaoParaEditar;
+  final int? anotacaoId;
 
-  CadastrarAnotacaoPage({Key? key, this.anotacaoParaEditar}) : super(key: key);
+  CadastrarAnotacaoPage({Key? key, this.anotacaoId}) : super(key: key);
 
   @override
-  State<CadastrarAnotacaoPage> createState() {
-    return CadastrarAnotacaoPageState();
-  }
+  State<CadastrarAnotacaoPage> createState() => CadastrarAnotacaoPageState();
 }
 
 class CadastrarAnotacaoPageState extends State<CadastrarAnotacaoPage> {
@@ -24,6 +22,8 @@ class CadastrarAnotacaoPageState extends State<CadastrarAnotacaoPage> {
       CadastrarAnotacaoController();
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  late TextEditingController _descricaoController;
 
   List<AnimalModel> animais = [];
   List<BaiaModel> baias = [];
@@ -40,20 +40,36 @@ class CadastrarAnotacaoPageState extends State<CadastrarAnotacaoPage> {
   @override
   void initState() {
     super.initState();
+
+    _descricaoController = TextEditingController();
+
     _carregarAnimais();
     _carregarBaias();
-    if (widget.anotacaoParaEditar != null) {
-      // Caso seja uma edição, preencha os campos com os dados da granja
-      _preencherCamposParaEdicao(widget.anotacaoParaEditar!);
+
+    if (widget.anotacaoId != null) {
+      _carregarDadosDaAnotacao(widget.anotacaoId!);
+    }
+  }
+
+  Future<void> _carregarDadosDaAnotacao(int anotacaoId) async {
+    final animal = await _cadastrarAnotacaoController.fetchAnotacaoById(anotacaoId);
+    if (animal != null) {
+      _preencherCamposParaEdicao(animal);
     }
   }
 
   void _preencherCamposParaEdicao(AnotacaoModel anotacao) {
-    _cadastrarAnotacaoController.setDescricao(anotacao.descricao!);
-    _cadastrarAnotacaoController.setAnimal(anotacao.animal);
-    _searchControllerAnimal.text = anotacao.animal != null ? anotacao.animal!.numeroBrinco : '';
-    _cadastrarAnotacaoController.setBaia(anotacao.baia);
-    _searchControllerBaia.text = anotacao.baia != null ? anotacao.baia!.numero! : '';
+    setState(() {
+      //valores em tela
+      _searchControllerAnimal.text = anotacao.animal != null ? anotacao.animal!.numeroBrinco : '';
+      _searchControllerBaia.text = anotacao.baia != null ? anotacao.baia!.numero! : '';
+      _descricaoController.text = anotacao.descricao!;
+
+      //valores no controller
+      _cadastrarAnotacaoController.setDescricao(anotacao.descricao!);
+      _cadastrarAnotacaoController.setAnimal(anotacao.animal);    
+      _cadastrarAnotacaoController.setBaia(anotacao.baia);
+    });
   }
 
   Future<void> _carregarAnimais() async {
@@ -64,15 +80,30 @@ class CadastrarAnotacaoPageState extends State<CadastrarAnotacaoPage> {
   Future<void> _carregarBaias() async {
     baias = await _cadastrarAnotacaoController.getBaiasFromRepository();
     setState(() {});
-  } 
+  }
 
   @override
   Widget build(BuildContext context) {
+
+    if (widget.anotacaoId != null && _descricaoController.text == '') {
+      return Scaffold(
+        appBar: AppBar(
+          backgroundColor: AppThemes.lightTheme.primaryColor,
+          foregroundColor: Colors.white,
+          title: Text('Carregando...'),
+          centerTitle: true,
+        ),
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: AppThemes.lightTheme.primaryColor,
         foregroundColor: Colors.white,
-        title: Text('Cadastrar Anotação'),
+        title: Text(widget.anotacaoId == null
+            ? 'Cadastrar Anotação'
+            : 'Editar Anotação'),
         centerTitle: true,
       ),
       body: Padding(
@@ -86,7 +117,17 @@ class CadastrarAnotacaoPageState extends State<CadastrarAnotacaoPage> {
                 controller: _searchControllerBaia,
                 label: 'Baia',
                 hintText: 'Buscar Baia',
-                suffixIcon: Icon(Icons.search),
+                suffixIcon: _searchControllerBaia.text.isNotEmpty
+                    ? IconButton(
+                        icon: Icon(Icons.clear),
+                        onPressed: () {
+                          setState(() {
+                            _searchControllerBaia.clear();
+                            _cadastrarAnotacaoController.setBaia(null);
+                          });
+                        },
+                      )
+                    : Icon(Icons.search),
                 onChanged: (value) {
                   //
                 },
@@ -122,7 +163,17 @@ class CadastrarAnotacaoPageState extends State<CadastrarAnotacaoPage> {
                 controller: _searchControllerAnimal,
                 label: 'Animal',
                 hintText: 'Buscar Animal',
-                suffixIcon: Icon(Icons.search),
+                suffixIcon: _searchControllerAnimal.text.isNotEmpty
+                    ? IconButton(
+                        icon: Icon(Icons.clear),
+                        onPressed: () {
+                          setState(() {
+                            _searchControllerAnimal.clear();
+                            _cadastrarAnotacaoController.setAnimal(null);
+                          });
+                        },
+                      )
+                    : Icon(Icons.search),
                 onChanged: (value) {
                   //
                 },
@@ -155,15 +206,16 @@ class CadastrarAnotacaoPageState extends State<CadastrarAnotacaoPage> {
                 ),
               SizedBox(height: 20),
               CustomTextFormFieldWidget(
-                label: 'Descrever Anotação',
-                onChanged: _cadastrarAnotacaoController.setDescricao,
-                initialValue: _cadastrarAnotacaoController.descricao,
+                controller: _descricaoController,
+                label: 'Descrição',
+                hintText: 'Descrever Anotação',
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Campo Obrigatório';
                   }
                   return null;
                 },   
+                onChanged: _cadastrarAnotacaoController.setDescricao,
               ),
               SizedBox(height: 20),            
               Expanded(
@@ -174,38 +226,28 @@ class CadastrarAnotacaoPageState extends State<CadastrarAnotacaoPage> {
                 ),
               ),
               CustomSalvarCadastroButtonComponent(
-                buttonText: widget.anotacaoParaEditar == null
+                buttonText: widget.anotacaoId == null
                     ? 'Salvar Anotação'
                     : 'Salvar Alterações', 
                 rotaTelaAposSalvar:'selecionarAnotacao',
                 onPressed: () {    
                   if (_formKey.currentState!.validate()) {
-                    if (widget.anotacaoParaEditar == null) {
+                    if (widget.anotacaoId == null) {
                       _cadastrarAnotacaoController
                           .create(context)
                           .then((resultado) {
                         if (resultado) {
-                          Navigator.popUntil(context, (route) => route.isFirst);
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => SelecionarAnotacaoPage(),
-                            ),
-                          );
+                          Navigator.pop(context);
+                          Navigator.pushReplacementNamed(context, '/selecionarAnotacao');
                         }
                       });
                     } else {
                       _cadastrarAnotacaoController
-                          .update(context, widget.anotacaoParaEditar!)
+                          .update(context, widget.anotacaoId!)
                           .then((resultado) {
                         if (resultado) {
-                          Navigator.popUntil(context, (route) => route.isFirst);
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => SelecionarAnotacaoPage(),
-                            ),
-                          );
+                          Navigator.pop(context);
+                          Navigator.pushReplacementNamed(context, '/selecionarAnotacao');
                         }
                       });
                     }

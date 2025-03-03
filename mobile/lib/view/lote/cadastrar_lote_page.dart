@@ -217,13 +217,8 @@ class CadastrarLotePageState extends State<CadastrarLotePage> {
                           .create(context)
                           .then((resultado) {
                         if (resultado) {
-                          Navigator.popUntil(context, (route) => route.isFirst);
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => SelecionarLotePage(),
-                            ),
-                          );
+                          Navigator.pop(context);
+                          Navigator.pushReplacementNamed(context, '/selecionarLote');
                         }
                       });
                     } else {
@@ -231,13 +226,8 @@ class CadastrarLotePageState extends State<CadastrarLotePage> {
                           .update(context, widget.loteParaEditar!)
                           .then((resultado) {
                         if (resultado) {
-                          Navigator.popUntil(context, (route) => route.isFirst);
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => SelecionarLotePage(),
-                            ),
-                          );
+                          Navigator.pop(context);
+                          Navigator.pushReplacementNamed(context, '/selecionarLote');
                         }
                       });
                     }

@@ -76,11 +76,13 @@ routes.get('/animais/:fazenda_id', animalController.list);
 routes.get('/animais/animal/:animal_id', animalController.getById);
 
 //Anotacao
-routes.post('/anotacoes', new AnotacaoController().create);
-routes.put('/anotacoes/:anotacao_id', new AnotacaoController().update); 
-routes.delete('/anotacoes/:anotacao_id', new AnotacaoController().delete); 
-routes.get('/anotacoes/:fazenda_id', new AnotacaoController().list);
-routes.get('/anotacoes/getbybaia:baia_id', new AnotacaoController().listByBaia);
+const anotacaoController = new AnotacaoController();
+routes.post('/anotacoes', anotacaoController.createOrUpdate);
+routes.put('/anotacoes/:anotacao_id', anotacaoController.createOrUpdate); 
+routes.delete('/anotacoes/:anotacao_id', anotacaoController.delete); 
+routes.get('/anotacoes/:fazenda_id', anotacaoController.list);
+routes.get('/anotacoes/getbybaia:baia_id', anotacaoController.listByBaia);
+routes.get('/anotacoes/anotacao/:anotacao_id', anotacaoController.getById);
 
 //Lote
 routes.post('/lotes', new LoteController().create);

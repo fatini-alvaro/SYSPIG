@@ -7,7 +7,7 @@ export class Animal{
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => Fazenda)
+  @ManyToOne(() => Fazenda, { eager: true })
   @JoinColumn({ name: 'fazenda_id', referencedColumnName: 'id' }) 
   fazenda: Fazenda;
 

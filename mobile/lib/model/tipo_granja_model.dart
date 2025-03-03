@@ -25,6 +25,13 @@ class TipoGranjaModel {
   @override
   int get hashCode => id.hashCode ^ descricao.hashCode;
 
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'descricao': descricao,
+    };
+  }
+
   @override
   String toString() {
     return 'id: $id, descricao: $descricao';

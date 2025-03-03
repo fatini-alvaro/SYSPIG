@@ -166,8 +166,8 @@ class CadastrarAnimalPageState extends State<CadastrarAnimalPage> {
                           .create(context)
                           .then((resultado) {
                         if (resultado) {
-                          Navigator.popUntil(context, (route) => route.isFirst);
-                          Navigator.pushNamed(context, '/selecionarAnimal');
+                          Navigator.pop(context);
+                          Navigator.pushReplacementNamed(context, '/selecionarAnimal');
                         }
                       });
                     } else {
@@ -175,8 +175,8 @@ class CadastrarAnimalPageState extends State<CadastrarAnimalPage> {
                           .update(context, widget.animalId!)
                           .then((resultado) {
                         if (resultado) {
-                          Navigator.popUntil(context, (route) => route.isFirst);
-                          Navigator.pushNamed(context, '/selecionarAnimal');
+                          Navigator.pop(context);
+                          Navigator.pushReplacementNamed(context, '/selecionarAnimal');
                         }
                       });
                     }

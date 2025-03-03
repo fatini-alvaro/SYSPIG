@@ -33,6 +33,18 @@ class BaiaModel {
     );
   }
 
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'fazenda': fazenda?.toJson(),
+      'granja': granja?.toJson(),
+      'ocupacao': ocupacao?.toJson(),
+      'numero': numero,
+      'capacidade': capacidade,
+      'vazia': vazia,
+    };
+  }
+
   @override
   String toString() {
     return 'id: $id, fazenda: $fazenda, granja: $granja, ocupacao: $ocupacao, numero: $numero, capacidade: $capacidade, vazia: $vazia';

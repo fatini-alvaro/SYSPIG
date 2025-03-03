@@ -81,7 +81,7 @@ class SelecionarAnotacaoPageState extends State<SelecionarAnotacaoPage> {
                         context,
                         MaterialPageRoute(
                           builder: (context) => CadastrarAnotacaoPage(
-                            anotacaoParaEditar: list[idx],
+                            anotacaoId: list[idx].id,
                           ),
                         ),
                       );
@@ -95,18 +95,27 @@ class SelecionarAnotacaoPageState extends State<SelecionarAnotacaoPage> {
                           actions: [
                             TextButton(
                               onPressed: () async {
-                                Navigator.pop(context); // Fechar o diálogo de confirmação
-                                await _anotacaoController.delete(context, list[idx].id!);
+                                try {
+                                  Navigator.pop(context);
 
-                                 Dialogs.successToast(context, 'Anotação excluída com sucesso!');
+                                  bool excluido = await _anotacaoController.delete(list[idx].id!);
 
-                                 _carregarAnotacoes();
+                                  if (excluido) {
+                                    Dialogs.successToast(context, 'Anotação excluída com sucesso!');
+                                    _carregarAnotacoes();
+                                  } else {
+                                    Dialogs.errorToast(context, 'Falha ao excluir a Anotação');
+                                  }
+                                } catch (e) {
+                                  String errorMessage = e.toString().replaceFirst('Exception: ', '');
+                                  Dialogs.errorToast(context, errorMessage);
+                                }
                               },
                               child: Text('Confirmar'),
                             ),
                             TextButton(
                               onPressed: () {
-                                Navigator.pop(context); // Fechar o diálogo de confirmação
+                                Navigator.pop(context);
                               },
                               child: Text('Cancelar'),
                             ),
