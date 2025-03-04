@@ -52,9 +52,9 @@ class CadastrarAnotacaoPageState extends State<CadastrarAnotacaoPage> {
   }
 
   Future<void> _carregarDadosDaAnotacao(int anotacaoId) async {
-    final animal = await _cadastrarAnotacaoController.fetchAnotacaoById(anotacaoId);
-    if (animal != null) {
-      _preencherCamposParaEdicao(animal);
+    final anotacao = await _cadastrarAnotacaoController.fetchAnotacaoById(anotacaoId);
+    if (anotacao != null) {
+      _preencherCamposParaEdicao(anotacao);
     }
   }
 

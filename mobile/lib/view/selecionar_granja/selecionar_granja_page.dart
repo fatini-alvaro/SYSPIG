@@ -123,7 +123,7 @@ class SelecionarGranjaPageState extends State<SelecionarGranjaPage> {
                         context,
                         MaterialPageRoute(
                           builder: (context) => CadastrarGranjaPage(
-                            granjaParaEditar: list[idx],
+                            granjaId: list[idx].id,
                           ),
                         ),
                       );
@@ -137,11 +137,21 @@ class SelecionarGranjaPageState extends State<SelecionarGranjaPage> {
                           actions: [
                             TextButton(
                               onPressed: () async {
-                                Navigator.pop(context); // Fechar o diálogo de confirmação
-                                await _granjaController.delete(context, list[idx].id!);
+                                try {
+                                  Navigator.pop(context);
 
-                                Dialogs.successToast(context, 'Granja excluída com sucesso!');
-                                _carregarGranjas();
+                                  bool excluido = await _granjaController.delete(list[idx].id!);
+
+                                  if (excluido) {
+                                    Dialogs.successToast(context, 'Granja excluída com sucesso!');
+                                    _carregarGranjas();
+                                  } else {
+                                    Dialogs.errorToast(context, 'Falha ao excluir a Granja');
+                                  }
+                                } catch (e) {
+                                  String errorMessage = e.toString().replaceFirst('Exception: ', '');
+                                  Dialogs.errorToast(context, errorMessage);
+                                }
                               },
                               child: Text('Confirmar'),
                             ),

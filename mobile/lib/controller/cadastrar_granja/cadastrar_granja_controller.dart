@@ -5,12 +5,15 @@ import 'package:syspig/model/granja_model.dart';
 import 'package:syspig/model/tipo_granja_model.dart';
 import 'package:syspig/repositories/granja/granja_repository_imp.dart';
 import 'package:syspig/repositories/tipo_granja/tipo_granja_repository_imp.dart';
-import 'package:syspig/utils/dialogs.dart';
+import 'package:syspig/utils/async_fetcher_util.dart';
+import 'package:syspig/utils/async_handler_util.dart';
 
 
 class CadastrarGranjaController with ChangeNotifier {
 
-  final GranjaController _granjaController = GranjaController(GranjaRepositoryImp());
+  final GranjaController _granjaController = 
+      GranjaController(GranjaRepositoryImp());
+
   final TipoGranjaRepositoryImp _tipoGranjaRepository = TipoGranjaRepositoryImp();
 
   String? _descricao;
@@ -18,64 +21,50 @@ class CadastrarGranjaController with ChangeNotifier {
   String? get descricao => _descricao;
 
   TipoGranjaModel? _tipoGranja;
-  void setTipoGranja(TipoGranjaModel? value) => _tipoGranja = value;
+  void setTipoGranja(TipoGranjaModel? value) {
+    _tipoGranja = value;
+    notifyListeners();
+  }
   TipoGranjaModel? get tipoGranja => _tipoGranja;
 
-  Future<bool> create(BuildContext context) async {
-
-    Dialogs.showLoading(context, message:'Aguarde, Criando Granja');
-
-    try {
-      GranjaModel novaGranja = await GranjaModel(
-        descricao: _descricao!,
-        tipoGranja: _tipoGranja!,
-      );
-
-      GranjaModel granjaCriada = await _granjaController.create(context, novaGranja);
-
-      Dialogs.hideLoading(context);
-
-      if (granjaCriada != null) {
-        Dialogs.successToast(context, 'Granja criada com sucesso!');
-      } else {
-        Dialogs.errorToast(context, 'Falha ao criar a Granja');
-      }
-    } catch (e) {
-      print(e);
-      Dialogs.hideLoading(context);
-      Dialogs.errorToast(context, 'Falha ao criar a Granja');
-    }
-
-    return true;
+  Future<GranjaModel> createGranja() async {
+    return GranjaModel(
+      descricao: _descricao!,
+      tipoGranja: _tipoGranja!,
+    );
   }
 
-  Future<bool> update(BuildContext context, GranjaModel granja) async {
+  Future<bool> create(BuildContext context) async {
+    final granjaCriada = await AsyncHandler.execute(
+      context: context,
+      action: () async {
+        final novaGranja = await createGranja();
+        return await _granjaController.create(novaGranja);
+      },
+      loadingMessage: 'Aguarde, Criando Granja',
+      successMessage: 'Granja criada com sucesso!',
+    );
 
-    Dialogs.showLoading(context, message:'Aguarde, Editando Granja');
+    return granjaCriada != null;
+  }
 
-    try {
-      GranjaModel novaGranja = await GranjaModel(
-        id: granja.id,
-        descricao: _descricao!,
-        tipoGranja: _tipoGranja!,
-      );
+  Future<bool> update(BuildContext context, int granjaId) async {
+    final granjaEditada = await AsyncHandler.execute(
+      context: context,
+      action: () async {
+        return await _granjaController.update(
+          GranjaModel(
+            id: granjaId,
+            descricao: _descricao!,
+            tipoGranja: _tipoGranja,
+          ),
+        );
+      },
+      loadingMessage: 'Aguarde, Editando Granja',
+      successMessage: 'Granja editada com sucesso!',
+    );
 
-      GranjaModel granjaEditada = await _granjaController.update(context, novaGranja);
-
-      Dialogs.hideLoading(context);
-
-      if (granjaEditada != null) {
-        Dialogs.successToast(context, 'Granja editada com sucesso!');
-      } else {
-        Dialogs.errorToast(context, 'Falha ao editada a Granja');
-      }
-    } catch (e) {
-      print(e);
-      Dialogs.hideLoading(context);
-      Dialogs.errorToast(context, 'Falha ao editar a Granja');
-    }
-
-    return true;
+    return granjaEditada != null;
   }
 
   Future<List<TipoGranjaModel>> getTipoGranjasFromRepository() async {
@@ -85,6 +74,15 @@ class CadastrarGranjaController with ChangeNotifier {
       print('Erro ao buscar os tipos granjas do repositório: $e');
       throw Exception('Erro ao buscar os tipos granjas');
     }
+  }
+
+  Future<GranjaModel?> fetchGranjaById(int granjaId) async {
+    return await AsyncFetcher.fetch(
+      action: () async {
+        return await _granjaController.fetchGranjaById(granjaId);
+      },
+      errorMessage: 'Erro ao buscar granja',
+    );
   }
 
 }

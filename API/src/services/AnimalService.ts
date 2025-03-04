@@ -1,10 +1,10 @@
 import { AppDataSource } from "../data-source";
 import { animalRepository } from "../repositories/animalRepository";
 import { Animal } from "../entities/Animal";
-import { Fazenda } from "../entities/Fazenda";
 import { ValidationService } from "./ValidationService";
 import { ValidationError } from "../utils/validationError";
 import { Usuario } from "../entities/Usuario";
+import { SexoAnimal, StatusAnimal } from "../constants/animalConstants";
 
 interface AnimalCreateOrUpdateData {
   numero_brinco: string;
@@ -12,6 +12,7 @@ interface AnimalCreateOrUpdateData {
   status: number;
   data_nascimento: Date;
   fazenda_id: number;
+  usuarioIdAcao: number;
 }
 
 export class AnimalService {
@@ -56,7 +57,7 @@ export class AnimalService {
     });
   }
 
-  async deleteAnimal(animal_id: number): Promise<void> {
+  async delete(animal_id: number): Promise<void> {
     if (!animal_id) {
       throw new ValidationError('Parâmetros não informados');
     }
@@ -77,16 +78,22 @@ export class AnimalService {
       throw new ValidationError('O número do brinco não pode ter mais de 500 caracteres.');
     }
 
-    if (animalData.sexo !== 'M' && animalData.sexo !== 'F') {
+    if (!Object.values(SexoAnimal).includes(animalData.sexo as SexoAnimal)) {
       throw new ValidationError('O sexo do animal deve ser M ou F.');
     }
 
-    if (animalData.status < 0 || animalData.status > 2) {
+    if (!Object.values(StatusAnimal).includes(animalData.status as StatusAnimal)) {
       throw new ValidationError('O status do animal deve ser Vivo, Morto ou Vendido.');
     }
 
     let createdBy: Usuario | null = null;
     let updatedBy: Usuario | null = null;
+
+    if (animal) {
+      updatedBy = await ValidationService.validateAndReturnUsuario(animalData.usuarioIdAcao);
+    } else {
+      createdBy = await ValidationService.validateAndReturnUsuario(animalData.usuarioIdAcao);
+    }
 
     return {
       fazenda,

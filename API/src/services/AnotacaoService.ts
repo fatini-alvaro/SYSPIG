@@ -21,7 +21,8 @@ export class AnotacaoService {
         fazenda: { 
           id: Number(fazenda_id) 
         } 
-      }
+      },
+      select: ['id', 'descricao'],
     });
   }
 

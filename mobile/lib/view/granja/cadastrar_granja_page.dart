@@ -8,15 +8,12 @@ import 'package:syspig/widgets/custom_dropdown_button_form_field_widget.dart';
 import 'package:syspig/widgets/custom_text_form_field_widget.dart';
 
 class CadastrarGranjaPage extends StatefulWidget {
+  final int? granjaId;
 
-  final GranjaModel? granjaParaEditar;
-
-  CadastrarGranjaPage({Key? key, this.granjaParaEditar}) : super(key: key);
+  CadastrarGranjaPage({Key? key, this.granjaId}) : super(key: key);
 
   @override
-  State<CadastrarGranjaPage> createState() {
-    return CadastrarGranjaPageState();
-  }
+  State<CadastrarGranjaPage> createState() => CadastrarGranjaPageState();
 }
 
 class CadastrarGranjaPageState extends State<CadastrarGranjaPage> {
@@ -25,21 +22,37 @@ class CadastrarGranjaPageState extends State<CadastrarGranjaPage> {
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
+  late TextEditingController _descricaoController;
+
   List<TipoGranjaModel> tipoGranjas = [];
 
   @override
   void initState() {
     super.initState();
+
+    _descricaoController = TextEditingController();
+
     _carregarTipoGranjas();
-    if (widget.granjaParaEditar != null) {
-      // Caso seja uma edição, preencha os campos com os dados da granja
-      _preencherCamposParaEdicao(widget.granjaParaEditar!);
+
+    if (widget.granjaId != null) {
+      _carregarDadosDaGranja(widget.granjaId!);
+    }
+  }
+
+  Future<void> _carregarDadosDaGranja(int granjaId) async {
+    final granja = await _cadastrarGranjaController.fetchGranjaById(granjaId);
+    if (granja != null) {
+      _preencherCamposParaEdicao(granja);
     }
   }
 
   void _preencherCamposParaEdicao(GranjaModel granja) {
-    _cadastrarGranjaController.setDescricao(granja.descricao);
-    _cadastrarGranjaController.setTipoGranja(granja.tipoGranja);
+    setState(() { 
+      _descricaoController.text = granja.descricao;
+
+      _cadastrarGranjaController.setDescricao(granja.descricao);
+      _cadastrarGranjaController.setTipoGranja(granja.tipoGranja);
+    });
   }
 
   Future<void> _carregarTipoGranjas() async {
@@ -49,11 +62,24 @@ class CadastrarGranjaPageState extends State<CadastrarGranjaPage> {
 
   @override
   Widget build(BuildContext context) {
+
+    if (widget.granjaId != null && _descricaoController.text == '') {
+      return Scaffold(
+        appBar: AppBar(
+          backgroundColor: AppThemes.lightTheme.primaryColor,
+          foregroundColor: Colors.white,
+          title: Text('Carregando...'),
+          centerTitle: true,
+        ),
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: AppThemes.lightTheme.primaryColor,
         foregroundColor: Colors.white,
-        title: Text(widget.granjaParaEditar == null
+        title: Text(widget.granjaId == null
             ? 'Cadastrar Granja'
             : 'Editar Granja'),
         centerTitle: true,
@@ -66,6 +92,7 @@ class CadastrarGranjaPageState extends State<CadastrarGranjaPage> {
             children: [
               SizedBox(height: 20),
               CustomTextFormFieldWidget(
+                controller: _descricaoController,
                 label: 'Descrição/Nome',
                 hintText: 'Digite uma identificação',
                 validator: (value) {
@@ -73,9 +100,8 @@ class CadastrarGranjaPageState extends State<CadastrarGranjaPage> {
                     return 'Campo Obrigatório';
                   }
                   return null;
-                },
+                },   
                 onChanged: _cadastrarGranjaController.setDescricao,
-                initialValue: _cadastrarGranjaController.descricao,
               ),
               SizedBox(height: 20),
               CustomDropdownButtonFormFieldWidget(
@@ -106,13 +132,13 @@ class CadastrarGranjaPageState extends State<CadastrarGranjaPage> {
                 ),
               ),
               CustomSalvarCadastroButtonComponent(
-                buttonText: widget.granjaParaEditar == null
+                buttonText: widget.granjaId == null
                     ? 'Salvar Granja'
                     : 'Salvar Alterações', 
                 rotaTelaAposSalvar:'selecionarGranja',
                 onPressed: () {    
                   if (_formKey.currentState!.validate()) {
-                    if (widget.granjaParaEditar == null) {
+                    if (widget.granjaId == null) {
                       _cadastrarGranjaController
                           .create(context)
                           .then((resultado) {
@@ -123,7 +149,7 @@ class CadastrarGranjaPageState extends State<CadastrarGranjaPage> {
                       });
                     } else {
                       _cadastrarGranjaController
-                          .update(context, widget.granjaParaEditar!)
+                          .update(context, widget.granjaId!)
                           .then((resultado) {
                         if (resultado) {
                           Navigator.pop(context);

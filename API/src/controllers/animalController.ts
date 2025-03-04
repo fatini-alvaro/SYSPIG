@@ -46,7 +46,7 @@ export class AnimalController {
       return res.status(400).json({ message: 'Parâmetros não informados' });
 
     try {
-      await this.animalService.deleteAnimal(Number(animal_id));
+      await this.animalService.delete(Number(animal_id));
 
       return res.status(200).json({ message: 'Animal excluído com sucesso' });
     } catch (error) {

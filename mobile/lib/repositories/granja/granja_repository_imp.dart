@@ -2,6 +2,7 @@ import 'package:logger/logger.dart';
 import 'package:syspig/api/api_client.dart';
 import 'package:syspig/model/granja_model.dart';
 import 'package:syspig/repositories/granja/granja_repository.dart';
+import 'package:syspig/utils/error_handler_util.dart';
 
 class GranjaRepositoryImp implements GranjaRepository {   
 
@@ -16,8 +17,9 @@ class GranjaRepositoryImp implements GranjaRepository {
       var response = await _apiClient.dio.get('/granjas/$fazendaId');
       return (response.data as List).map((e) => GranjaModel.fromJson(e)).toList();
     } catch (e) {
+      String errorMessage = ErrorHandlerUtil.handleDioError(e, 'Erro ao obter lista de granjas');
       Logger().e('Erro ao obter lista de granjas (lista - Granjas): $e');
-      throw Exception('Erro ao obter lista de granjas');
+      throw Exception(errorMessage);
     }
   }
 
@@ -32,8 +34,9 @@ class GranjaRepositoryImp implements GranjaRepository {
       var response = await _apiClient.dio.post('/granjas', data: granjaData);
       return GranjaModel.fromJson(response.data);
     } catch (e) {      
+      String errorMessage = ErrorHandlerUtil.handleDioError(e, 'Erro ao criar granja');
       Logger().e('Erro ao criar granja (create - Granjas): $e');
-      throw Exception('Erro ao criar granja');
+      throw Exception(errorMessage);
     }
   }
 
@@ -50,8 +53,9 @@ class GranjaRepositoryImp implements GranjaRepository {
       var response = await _apiClient.dio.put('/granjas/$granjId', data: granjaData);
       return GranjaModel.fromJson(response.data);
     } catch (e) {    
+      String errorMessage = ErrorHandlerUtil.handleDioError(e, 'Erro ao editar granja');
       Logger().e('Erro ao editar granja (update - Granjas): $e');
-      throw Exception('Erro ao editar granja');
+      throw Exception(errorMessage);
     }
   }
 
@@ -66,8 +70,21 @@ class GranjaRepositoryImp implements GranjaRepository {
         return false; // Exclusão falhou
       }
     } catch (e) {
+      String errorMessage = ErrorHandlerUtil.handleDioError(e, 'Erro ao excluir granja');
       Logger().e('Erro ao excluir granja (delete - Granjas): $e');
-      throw Exception('Erro ao excluir granja');
+      throw Exception(errorMessage);
+    }
+  }
+
+  @override
+  Future<GranjaModel> getById(int granjaId) async {
+    try {
+      var response = await _apiClient.dio.get('/granjas/granja/$granjaId');
+      return GranjaModel.fromJson(response.data);
+    } catch (e) {
+      String errorMessage = ErrorHandlerUtil.handleDioError(e, 'Erro ao obter dados da granja');
+      Logger().e('Erro ao obter dados da granja: $e');
+      throw Exception(errorMessage);
     }
   }
 }

@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import 'package:syspig/api/api_client.dart';
 import 'package:syspig/model/anotacao_model.dart';
 import 'package:syspig/repositories/anotacao/anotacao_repository.dart';

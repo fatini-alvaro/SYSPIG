@@ -5,6 +5,8 @@ import { Baia } from '../entities/Baia';
 import { Usuario } from '../entities/Usuario';
 import { ValidationError } from '../utils/validationError';
 import { Anotacao } from '../entities/Anotacao';
+import { Granja } from '../entities/Granja';
+import { TipoGranja } from '../entities/TipoGranja';
 
 export class ValidationService {
   static async validateAndReturnFazenda(fazendaId: number): Promise<Fazenda> {
@@ -78,5 +80,30 @@ export class ValidationService {
     }
 
     return anotacao;
+  }
+
+  static async validateAndReturnGranja(granjaId?: number): Promise<Granja | null> {
+    if (!granjaId) return null;
+
+    const granja = await AppDataSource.getRepository(Granja).findOneBy({ id: granjaId });
+    if (!granja) {
+      throw new ValidationError('Granja não encontrada.', 404);
+    }
+
+    return granja;
+  }
+
+  static async validateAndReturnTipoGranja(tipoGranjaId?: number): Promise<TipoGranja | null> {
+    if (!tipoGranjaId) return null;
+
+    const tipoGranja = await AppDataSource.getRepository(TipoGranja).findOne({
+      where: { id: tipoGranjaId }
+    });
+
+    if (!tipoGranja) {
+      throw new ValidationError('Tipo Granja não encontrado.', 404);
+    }
+
+    return tipoGranja;
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 import 'package:syspig/model/granja_model.dart';
 import 'package:syspig/repositories/granja/granja_repository.dart';
 
@@ -12,24 +13,33 @@ class GranjaController {
     granjas.value = await _granjaRepository.getList(fazendaId);
   }
 
-  Future<GranjaModel> create(BuildContext context, GranjaModel granjaNova) async {
+  Future<GranjaModel> create(GranjaModel granjaNova) async {
     
     GranjaModel novaGranja = await  _granjaRepository.create(granjaNova);
 
     return novaGranja;
   }
   
-  Future<GranjaModel> update(BuildContext context, GranjaModel granjaEdicao) async {
+  Future<GranjaModel> update(GranjaModel granjaEdicao) async {
     
     GranjaModel granjaEditada = await  _granjaRepository.update(granjaEdicao);
 
     return granjaEditada;
   }
 
-  Future<bool> delete(BuildContext context, int granjaExclusaoID) async {
-    
-    bool excluido = await  _granjaRepository.delete(granjaExclusaoID);
+  Future<bool> delete(int granjaExclusaoID) async {
+    try {
+      return await _granjaRepository.delete(granjaExclusaoID);
+    } catch (e) {
+      Logger().e('Erro ao excluir granja: $e');
+      rethrow;
+    }
+  }
 
-    return excluido;
+  Future<GranjaModel> fetchGranjaById(int granjaId) async {
+    
+    GranjaModel granja = await  _granjaRepository.getById(granjaId);
+
+    return granja;
   }
 }

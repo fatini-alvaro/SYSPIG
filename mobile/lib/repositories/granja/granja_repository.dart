@@ -9,4 +9,6 @@ abstract class GranjaRepository {
   Future<GranjaModel> update(GranjaModel granja);
 
   Future<bool> delete(int granjaId);
+
+  Future<GranjaModel> getById(int granjaId);
 }

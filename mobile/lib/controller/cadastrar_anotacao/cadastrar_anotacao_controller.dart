@@ -10,7 +10,6 @@ import 'package:syspig/repositories/baia/baia_repository_imp.dart';
 import 'package:syspig/services/prefs_service.dart';
 import 'package:syspig/utils/async_fetcher_util.dart';
 import 'package:syspig/utils/async_handler_util.dart';
-import 'package:syspig/utils/dialogs.dart';
 
 
 class CadastrarAnotacaoController with ChangeNotifier {
@@ -63,22 +62,22 @@ class CadastrarAnotacaoController with ChangeNotifier {
 
   Future<bool> update(BuildContext context, int anotacaoId) async {
     final anotacaoEditada = await AsyncHandler.execute(
-    context: context,
-    action: () async {
-      return await _anotacaoController.update(
-        AnotacaoModel(
-          id: anotacaoId,
-          descricao: _descricao,
-          animal: _animal,
-          baia: _baia,
-        ),
-      );
-    },
-    loadingMessage: 'Aguarde, Editando Anotação',
-    successMessage: 'Anotação editada com sucesso!',
-  );
+      context: context,
+      action: () async {
+        return await _anotacaoController.update(
+          AnotacaoModel(
+            id: anotacaoId,
+            descricao: _descricao,
+            animal: _animal,
+            baia: _baia,
+          ),
+        );
+      },
+      loadingMessage: 'Aguarde, Editando Anotação',
+      successMessage: 'Anotação editada com sucesso!',
+    );
 
-  return anotacaoEditada != null;
+    return anotacaoEditada != null;
   }
 
   Future<List<AnimalModel>> getAnimaisFromRepository() async {
