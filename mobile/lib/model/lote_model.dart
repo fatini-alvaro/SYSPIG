@@ -29,6 +29,17 @@ class LoteModel {
     );
   }
 
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'fazenda_id': fazenda?.id,
+      'numero_lote': numeroLote,
+      'descricao': descricao,
+      'data': data?.toIso8601String(),
+      'lote_animais': loteAnimais?.map((loteAnimal) => loteAnimal.toJson()).toList(),
+    };
+  }
+
   @override
   String toString() {
     return 'id: $id, fazenda: $fazenda, numero: $numeroLote, descricao: $descricao, data: $data, loteAnimais: $loteAnimais';

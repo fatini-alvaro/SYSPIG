@@ -32,6 +32,7 @@ export class GranjaService {
           nome: true,
         },
       },
+      order: { id: 'ASC' }
     });
   }
   
@@ -83,6 +84,18 @@ export class GranjaService {
 
     if (granjaData.descricao.length > 500) {
       throw new ValidationError('A descrição não pode ter mais de 500 caracteres.');
+    }
+
+    // Verificar se já existe uma granja com a mesma descrição na mesma fazenda
+    const granjaExistente = await granjaRepository.findOne({
+      where: { 
+        descricao: granjaData.descricao, 
+        fazenda: { id: granjaData.fazenda_id } 
+      }
+    });
+
+    if (granjaExistente && (!granja || granjaExistente.id !== granja.id)) {
+      throw new ValidationError('Já existe uma granja com essa descrição nesta fazenda.');
     }
 
     const tipoGranjaInstancia = await ValidationService.validateAndReturnTipoGranja(granjaData.tipo_granja_id);

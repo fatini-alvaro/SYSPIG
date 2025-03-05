@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 import 'package:syspig/controller/granja/granja_controller.dart';
 import 'package:syspig/model/granja_model.dart';
 import 'package:syspig/model/tipo_granja_model.dart';
@@ -71,7 +72,7 @@ class CadastrarGranjaController with ChangeNotifier {
     try {
       return await _tipoGranjaRepository.getList(); 
     } catch (e) {
-      print('Erro ao buscar os tipos granjas do repositório: $e');
+      Logger().e('Erro ao buscar os tipos granjas do repositório: $e');
       throw Exception('Erro ao buscar os tipos granjas');
     }
   }

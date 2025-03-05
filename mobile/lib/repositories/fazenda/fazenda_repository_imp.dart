@@ -16,7 +16,7 @@ class FazendaRepositoryImp implements FazendaRepository {
       var response = await _apiClient.dio.get('/usuariofazendas/$userId');
       return (response.data as List).map((e) => FazendaModel.fromJson(e)).toList();
     } catch (e) {
-      print(e);
+      Logger().e(e);
       throw Exception('Erro ao obter lista de fazendas');
     }
   }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 import 'package:syspig/model/animal_model.dart';
 import 'package:syspig/model/baia_model.dart';
 import 'package:syspig/model/ocupacao_model.dart';
@@ -55,7 +56,7 @@ class BaiaController {
       var idFazenda = await PrefsService.getFazendaId();
       return await _animalRepository.getList(idFazenda!); 
     } catch (e) {
-      print('Erro ao buscar as granjas do repositório: $e');
+      Logger().e('Erro ao buscar as granjas do repositório: $e');
       throw Exception('Erro ao buscar as granjas');
     }
   }

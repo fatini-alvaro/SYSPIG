@@ -89,7 +89,7 @@ class SelecionarLotePageState extends State<SelecionarLotePage> {
                         context,
                         MaterialPageRoute(
                           builder: (context) => CadastrarLotePage(
-                            loteParaEditar: list[idx],
+                            loteId: list[idx].id,
                           ),
                         ),
                       );
@@ -103,12 +103,21 @@ class SelecionarLotePageState extends State<SelecionarLotePage> {
                           actions: [
                             TextButton(
                               onPressed: () async {
-                                Navigator.pop(context); // Fechar o diálogo de confirmação
-                                await _loteController.delete(context, list[idx].id!);
+                                try {
+                                  Navigator.pop(context);
 
-                                 Dialogs.successToast(context, 'Lote excluído com sucesso!');
+                                  bool excluido = await _loteController.delete(list[idx].id!);
 
-                                 _carregarLotes();
+                                  if (excluido) {
+                                    Dialogs.successToast(context, 'Lote excluído com sucesso!');
+                                    _carregarLotes();
+                                  } else {
+                                    Dialogs.errorToast(context, 'Falha ao excluir lote');
+                                  }
+                                } catch (e) {
+                                  String errorMessage = e.toString().replaceFirst('Exception: ', '');
+                                  Dialogs.errorToast(context, errorMessage);
+                                }
                               },
                               child: Text('Confirmar'),
                             ),

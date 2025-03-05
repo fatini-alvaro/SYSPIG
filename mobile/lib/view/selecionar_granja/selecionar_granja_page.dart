@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 import 'package:syspig/components/buttons/custom_abrir_tela_adicionar_novo_button_component.dart';
 import 'package:syspig/components/cards/custom_registro_card.dart';
 import 'package:syspig/controller/granja/granja_controller.dart';
@@ -32,7 +33,7 @@ class SelecionarGranjaPageState extends State<SelecionarGranjaPage> {
     if (fazendaId != null) {
       _granjaController.fetch(fazendaId);
     } else {
-      print('ID da fazenda não encontrado');
+      Logger().e('ID da fazenda não encontrado');
     }
   }
 

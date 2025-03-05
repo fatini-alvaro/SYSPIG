@@ -7,6 +7,7 @@ import { ValidationError } from '../utils/validationError';
 import { Anotacao } from '../entities/Anotacao';
 import { Granja } from '../entities/Granja';
 import { TipoGranja } from '../entities/TipoGranja';
+import { Lote } from '../entities/Lote';
 
 export class ValidationService {
   static async validateAndReturnFazenda(fazendaId: number): Promise<Fazenda> {
@@ -105,5 +106,16 @@ export class ValidationService {
     }
 
     return tipoGranja;
+  }
+
+  static async validateAndReturnLote(loteId?: number): Promise<Lote | null> {
+    if (!loteId) return null;
+
+    const lote = await AppDataSource.getRepository(Lote).findOneBy({ id: loteId });
+    if (!lote) {
+      throw new ValidationError('Lote não encontrada.', 404);
+    }
+
+    return lote;
   }
 }

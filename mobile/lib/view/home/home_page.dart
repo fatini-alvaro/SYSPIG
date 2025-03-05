@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 import 'package:syspig/components/cards/custom_home_card.dart';
 import 'package:syspig/controller/app_controller.dart';
 import 'package:syspig/controller/home/home_controller.dart';
@@ -50,7 +51,7 @@ class HomePageState extends State<HomePage> {
         accountName: _user != null ? _user!.nome : 'nome',
         accountEmail: _user != null ? _user!.email : 'email',
         onHomeTap: () {
-          print('Home tapped');
+          Logger().e('Home tapped');
         },
         onSelecionarFazendaTap: () {
           Navigator.of(context).pushNamedAndRemoveUntil('/selecionarFazenda', (_) => true);

@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 import 'package:syspig/controller/baia/baia_controller.dart';
 import 'package:syspig/model/baia_model.dart';
 import 'package:syspig/model/granja_model.dart';
@@ -46,7 +47,7 @@ class CadastrarBaiaController with ChangeNotifier {
         Dialogs.errorToast(context, 'Falha ao criar a Baia');
       }
     } catch (e) {
-      print(e);
+      Logger().e(e);
       Dialogs.hideLoading(context);
       Dialogs.errorToast(context, 'Falha ao criar a Baia');
     }
@@ -61,7 +62,7 @@ class CadastrarBaiaController with ChangeNotifier {
 
       return await _granjaRepository.getList(idFazenda!); 
     } catch (e) {
-      print('Erro ao buscar as granjas do repositório: $e');
+      Logger().e('Erro ao buscar as granjas do repositório: $e');
       throw Exception('Erro ao buscar as granjas');
     }
   }
@@ -89,7 +90,7 @@ class CadastrarBaiaController with ChangeNotifier {
         Dialogs.errorToast(context, 'Falha ao editada a Baia');
       }
     } catch (e) {
-      print(e);
+      Logger().e(e);
       Dialogs.hideLoading(context);
       Dialogs.errorToast(context, 'Falha ao editar a Baia');
     }

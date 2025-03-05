@@ -1,3 +1,4 @@
+import 'package:logger/logger.dart';
 import 'package:syspig/api/api_client.dart';
 import 'package:syspig/model/inseminacao_model.dart';
 import 'package:syspig/repositories/iseminacao/inseminacao_repository.dart';
@@ -16,7 +17,7 @@ class InseminacaoRepositoryImp implements InseminacaoRepository {
       var response = await _apiClient.dio.get('/inseminacoes');
         return (response.data as List).map((e) => InseminacaoModel.fromJson(e)).toList();
     } catch (e) {
-      print(e);
+      Logger().e(e);
     }
 
     return [];

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 import 'package:syspig/components/buttons/custom_abrir_tela_adicionar_novo_button_component.dart';
 import 'package:syspig/components/cards/custom_fazenda_registro_card.dart';
 import 'package:syspig/controller/fazenda/fazenda_controller.dart';
@@ -30,7 +31,7 @@ class SelecionarFazendaPageState extends State<SelecionarFazendaPage> {
       _fazendaController.fetch(userId);
     } else {
       // Tratar caso em que o ID do usuário não foi encontrado
-      print('ID do usuário não encontrado');
+      Logger().e('ID do usuário não encontrado');
     }
   }
 

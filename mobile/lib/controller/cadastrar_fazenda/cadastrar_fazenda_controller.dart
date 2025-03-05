@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 import 'package:syspig/controller/fazenda/fazenda_controller.dart';
 import 'package:syspig/model/cidade_model.dart';
 import 'package:syspig/model/fazenda_model.dart';
@@ -43,7 +44,7 @@ class CadastrarFazendaController with ChangeNotifier {
         Dialogs.errorToast(context, 'Falha ao criar a fazenda');
       }
     } catch (e) {
-      print(e);
+      Logger().e(e);
       Dialogs.hideLoading(context);
       Dialogs.errorToast(context, 'Falha ao criar a fazenda');
     }
@@ -55,7 +56,7 @@ class CadastrarFazendaController with ChangeNotifier {
     try {
       return await _cidadeRepository.getList(); 
     } catch (e) {
-      print('Erro ao buscar as cidades do repositório: $e');
+      Logger().e('Erro ao buscar as cidades do repositório: $e');
       throw Exception('Erro ao buscar as cidades');
     }
   }

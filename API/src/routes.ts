@@ -87,10 +87,12 @@ routes.get('/anotacoes/getbybaia:baia_id', anotacaoController.listByBaia);
 routes.get('/anotacoes/anotacao/:anotacao_id', anotacaoController.getById);
 
 //Lote
-routes.post('/lotes', new LoteController().create);
-routes.get('/lotes/:fazenda_id', new LoteController().list);
-routes.delete('/lotes/:lote_id', new LoteController().delete);
-routes.put('/lotes/:lote_id', new LoteController().update); 
+const loteController = new LoteController();
+routes.post('/lotes', loteController.createOrUpdate);
+routes.get('/lotes/:fazenda_id', loteController.list);
+routes.delete('/lotes/:lote_id', loteController.delete);
+routes.put('/lotes/:lote_id', loteController.createOrUpdate);
+routes.get('/lotes/lote/:lote_id', loteController.getById); 
 
 //Ocupacao
 routes.post('/ocupacoes', new OcupacaoController().create);

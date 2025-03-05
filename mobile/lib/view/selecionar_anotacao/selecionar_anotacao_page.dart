@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 import 'package:syspig/components/buttons/custom_abrir_tela_adicionar_novo_button_component.dart';
 import 'package:syspig/components/cards/custom_registro_card.dart';
 import 'package:syspig/controller/anotacao/anotacao_controller.dart';
@@ -31,7 +32,7 @@ class SelecionarAnotacaoPageState extends State<SelecionarAnotacaoPage> {
     if (fazendaId != null) {
       _anotacaoController.fetch(fazendaId);
     } else {
-      print('ID da fazenda não encontrado');
+      Logger().e('ID da fazenda não encontrado');
     }
   }
 

@@ -1,3 +1,4 @@
+import 'package:logger/logger.dart';
 import 'package:syspig/api/api_client.dart';
 import 'package:syspig/model/cidade_model.dart';
 import 'package:syspig/repositories/cidade/cidade_repository.dart';
@@ -16,7 +17,7 @@ class CidadeRepositoryImp implements CidadeRepository {
       var response = await _apiClient.dio.get('/cidades');
       return (response.data as List).map((e) => CidadeModel.fromJson(e)).toList();
     } catch (e) {
-      print(e);
+      Logger().e(e);
     }
 
     return [];

@@ -20,6 +20,14 @@ class LoteAnimalModel {
     );
   }
 
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'lote_id': lote?.id,
+      'animal_id': animal?.id,
+    };
+  }
+
   @override
   String toString() {
     return 'id: $id, lote: $lote, animal: $animal';

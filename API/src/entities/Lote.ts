@@ -18,7 +18,7 @@ export class Lote{
   @Column({ type: 'text', nullable: true })
   numero_lote: string;
 
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', nullable: true })
   data: Date;
 
   @ManyToOne(() => Usuario, { eager: true, nullable: true })

@@ -1,3 +1,5 @@
+import 'package:logger/logger.dart';
+
 class AsyncFetcher {
   static Future<T?> fetch<T>({
     required Future<T> Function() action,
@@ -6,7 +8,7 @@ class AsyncFetcher {
     try {
       return await action();
     } catch (e) {
-      print('$errorMessage: $e');
+      Logger().e('$errorMessage: $e');
       return null;
     }
   }

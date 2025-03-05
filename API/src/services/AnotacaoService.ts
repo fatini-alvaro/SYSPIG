@@ -23,6 +23,7 @@ export class AnotacaoService {
         } 
       },
       select: ['id', 'descricao'],
+      order: { id: 'DESC' }
     });
   }
 
@@ -65,7 +66,7 @@ export class AnotacaoService {
     });
   }
 
-  async deleteAnotacao(anotacao_id: number): Promise<void> {
+  async delete(anotacao_id: number): Promise<void> {
     if (!anotacao_id) {
       throw new ValidationError('Parâmetros não informados');
     }

@@ -78,7 +78,7 @@ export class AnotacaoController {
       return res.status(400).json({ message: 'Parâmetros não informados' });
 
     try {
-      await this.anotacaoService.deleteAnotacao(Number(anotacao_id));
+      await this.anotacaoService.delete(Number(anotacao_id));
 
       return res.status(200).json({ message: 'Anotação excluído com sucesso' });
     } catch (error) {

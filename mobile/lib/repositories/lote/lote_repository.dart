@@ -7,8 +7,10 @@ abstract class LoteRepository {
 
   Future<bool> delete(int loteId);
 
-  Future<LoteModel> create(LoteModel anotacao);
+  Future<LoteModel> create(LoteModel lote);
 
-  Future<LoteModel> update(LoteModel anotacao);
+  Future<LoteModel> update(LoteModel lote);
+
+  Future<LoteModel> getById(int loteId);
 
 }

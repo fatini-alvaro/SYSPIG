@@ -81,7 +81,7 @@ class PrefsService {
         var userJson = userData['user'];
         return UsuarioModel.fromJson(userJson);
       } catch (e) {
-        print("Error decoding user data: $e");
+        Logger().e("Error decoding user data: $e");
         return null;
       }
     }
@@ -126,7 +126,7 @@ class PrefsService {
         var fazendaJson = userData['fazenda'];
         return FazendaModel.fromJson(fazendaJson);
       } catch (e) {
-        print("Error decoding user data: $e");
+        Logger().e("Error decoding user data: $e");
         return null;
       }
     }
@@ -168,7 +168,7 @@ class PrefsService {
       AppWidget.navigatorKey.currentState?.pushNamedAndRemoveUntil('/login', (_) => false);
     } catch (e) {
       // Log do erro para depuração
-      print('Erro ao realizar logout: $e');
+      Logger().e('Erro ao realizar logout: $e');
     }
   }
 

@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 import 'package:syspig/controller/lote/lote_controller.dart';
 import 'package:syspig/model/animal_model.dart';
 import 'package:syspig/model/lote_animal_model.dart';
@@ -7,8 +8,8 @@ import 'package:syspig/model/lote_model.dart';
 import 'package:syspig/repositories/animal/animal_repository_imp.dart';
 import 'package:syspig/repositories/lote/lote_repository_imp.dart';
 import 'package:syspig/services/prefs_service.dart';
-import 'package:syspig/utils/dialogs.dart';
-
+import 'package:syspig/utils/async_fetcher_util.dart';
+import 'package:syspig/utils/async_handler_util.dart';
 
 class CadastrarLoteController with ChangeNotifier {
   
@@ -25,6 +26,10 @@ class CadastrarLoteController with ChangeNotifier {
 
   final List<AnimalModel> _animaisSelecionados = [];
   List<AnimalModel> get animaisSelecionados => _animaisSelecionados;
+
+  DateTime? _dataCriacao;
+  setDataCriacao(DateTime? value) => _dataCriacao = value;
+  DateTime? get dataCriacao => _dataCriacao;
 
   void adicionarAnimal(AnimalModel animal) {
     if (!_animaisSelecionados.any((a) => a.id == animal.id)) {
@@ -48,83 +53,70 @@ class CadastrarLoteController with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<bool> create(BuildContext context) async {
-
-    Dialogs.showLoading(context, message:'Aguarde, Criando Lote');
-
-    try {
-
-      List<LoteAnimalModel> loteAnimais = _animaisSelecionados
+  Future<LoteModel> createLote() async {
+    return LoteModel(
+      descricao: _descricao,
+      numeroLote: _numero,
+      data: _dataCriacao,
+      loteAnimais: _animaisSelecionados
           .map((animal) => LoteAnimalModel(animal: animal))
-          .toList();
+          .toList(),
+    );
+  }
 
-      LoteModel novoLote = await LoteModel(
-        numeroLote: _numero,
-        descricao: _descricao,
-        loteAnimais: loteAnimais
-      );
+  Future<bool> create(BuildContext context) async {
+    final loteCriado = await AsyncHandler.execute(
+      context: context,
+      action: () async {
+        final novoLote = await createLote();
+        return await _loteController.create(novoLote);
+      },
+      loadingMessage: 'Aguarde, Criando Lote',
+      successMessage: 'Lote criado com sucesso!',
+    );
 
-      LoteModel loteCriado = await _loteController.create(context, novoLote);
-
-      Dialogs.hideLoading(context);
-
-      if (loteCriado != null) {
-        Dialogs.successToast(context, 'Lote criado com sucesso!');
-      } else {
-        Dialogs.errorToast(context, 'Falha ao criar Lote');
-      }
-    } catch (e) {
-      print(e);
-      Dialogs.hideLoading(context);
-      Dialogs.errorToast(context, 'Falha ao criar a Lote');
-    }
-
-    return true;
+    return loteCriado != null;
   }
 
   Future<List<AnimalModel>> getAnimaisFromRepository() async {
-    try {
-
-      var idFazenda = await PrefsService.getFazendaId();
-
-      return await _animalRepository.getList(idFazenda!); 
-    } catch (e) {
-      print('Erro ao buscar as animais do repositório: $e');
-      throw Exception('Erro ao buscar os animais');
-    }
+    return await AsyncFetcher.fetch(
+      action: () async {
+        var idFazenda = await PrefsService.getFazendaId();
+        return await _animalRepository.getList(idFazenda!);
+      },
+      errorMessage: 'Erro ao buscar os animais do repositório',
+    ) ?? [];
   }
 
-  Future<bool> update(BuildContext context, LoteModel lote) async {
+  Future<bool> update(BuildContext context, int loteId) async {
+    final loteEditado = await AsyncHandler.execute(
+      context: context,
+      action: () async {
+        return await _loteController.update(
+          LoteModel(
+            id: loteId,
+            descricao: _descricao,
+            numeroLote: _numero,
+            data: _dataCriacao,
+            loteAnimais: _animaisSelecionados
+                .map((animal) => LoteAnimalModel(animal: animal))
+                .toList(),
+          ),
+        );
+      },
+      loadingMessage: 'Aguarde, Editando Lote',
+      successMessage: 'Lote editado com sucesso!',
+    );
 
-    Dialogs.showLoading(context, message:'Aguarde, Criando Novo Lote');
+    return loteEditado != null;
+  }
 
-    try {
-
-      List<LoteAnimalModel> loteAnimais = _animaisSelecionados
-          .map((animal) => LoteAnimalModel(animal: animal))
-          .toList();
-
-      LoteModel loteEdicao = await LoteModel(
-        id: lote.id,
-        descricao: _descricao,
-        numeroLote: _numero,
-        loteAnimais: loteAnimais
-      );
-
-      LoteModel loteEditado = await _loteController.update(context, loteEdicao);
-
-      Dialogs.hideLoading(context);
-
-      if (loteEditado != null) {
-        Dialogs.successToast(context, 'Lote editada com sucesso!');
-      } else {
-        Dialogs.errorToast(context, 'Falha ao editar a Lote');
-      }
-    } catch (e) {
-      Dialogs.hideLoading(context);
-      Dialogs.errorToast(context, 'Falha ao editar a Lote');
-    }
-
-    return true;
+  Future<LoteModel?> fetchLoteById(int loteId) async {
+    return await AsyncFetcher.fetch(
+      action: () async {
+        return await _loteController.fetchLoteById(loteId);
+      },
+      errorMessage: 'Erro ao buscar lote',
+    );
   }
 }

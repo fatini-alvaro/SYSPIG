@@ -23,6 +23,7 @@ export class AnimalService {
         fazenda: { id: fazenda_id }
       },
       select: ['id', 'numero_brinco'],
+      order: { id: 'ASC' }
     });
   }
   
@@ -76,6 +77,17 @@ export class AnimalService {
 
     if (animalData.numero_brinco.length > 500) {
       throw new ValidationError('O número do brinco não pode ter mais de 500 caracteres.');
+    }
+
+    const animalExistente = await animalRepository.findOne({
+      where: {
+        numero_brinco: animalData.numero_brinco,
+        fazenda: { id: animalData.fazenda_id } 
+      }
+    });
+
+    if (animalExistente && (!animal || animalExistente.id !== animal.id)) {
+      throw new ValidationError('Já existe um animal com esse número de brinco nesta fazenda.');
     }
 
     if (!Object.values(SexoAnimal).includes(animalData.sexo as SexoAnimal)) {

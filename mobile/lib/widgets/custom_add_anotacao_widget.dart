@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 
 class CustomAddAnotacaoWidget extends StatefulWidget {
   final VoidCallback onClose;
@@ -47,7 +48,7 @@ class _CustomAddAnotacaoWidgetState extends State<CustomAddAnotacaoWidget> {
           ),
           onPressed: () {
             String description = _descriptionController.text;
-            print('Description: $description');
+            Logger().e('Description: $description');
             _descriptionController.clear();
             widget.onClose(); // Notify the parent to close the widget
           },

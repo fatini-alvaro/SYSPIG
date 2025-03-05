@@ -1,3 +1,4 @@
+import 'package:logger/logger.dart';
 import 'package:syspig/api/api_client.dart';
 import 'package:syspig/model/tipo_granja_model.dart';
 import 'package:syspig/repositories/tipo_granja/tipo_granja_repository.dart';
@@ -15,7 +16,7 @@ class TipoGranjaRepositoryImp implements TipoGranjaRepository {
       var response = await _apiClient.dio.get('/tipogranjas');
       return (response.data as List).map((e) => TipoGranjaModel.fromJson(e)).toList();
     } catch (e) {
-      print(e);
+      Logger().e(e);
     }
 
     return [];
