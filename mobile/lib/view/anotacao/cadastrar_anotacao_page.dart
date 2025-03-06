@@ -6,6 +6,7 @@ import 'package:syspig/model/anotacao_model.dart';
 import 'package:syspig/model/baia_model.dart';
 import 'package:syspig/themes/themes.dart';
 import 'package:syspig/view/selecionar_anotacao/selecionar_anotacao_page.dart';
+import 'package:syspig/widgets/custom_date_time_field_widget.dart';
 import 'package:syspig/widgets/custom_text_form_field_widget.dart';
 
 class CadastrarAnotacaoPage extends StatefulWidget {
@@ -34,6 +35,7 @@ class CadastrarAnotacaoPageState extends State<CadastrarAnotacaoPage> {
 
   final AnimalModel? animal;
   final BaiaModel? baia;
+  DateTime? _data;
 
   CadastrarAnotacaoPageState({this.animal, this.baia});
 
@@ -64,6 +66,7 @@ class CadastrarAnotacaoPageState extends State<CadastrarAnotacaoPage> {
       _searchControllerAnimal.text = anotacao.animal != null ? anotacao.animal!.numeroBrinco : '';
       _searchControllerBaia.text = anotacao.baia != null ? anotacao.baia!.numero! : '';
       _descricaoController.text = anotacao.descricao!;
+      _data = anotacao.data;
 
       //valores no controller
       _cadastrarAnotacaoController.setDescricao(anotacao.descricao!);
@@ -217,7 +220,27 @@ class CadastrarAnotacaoPageState extends State<CadastrarAnotacaoPage> {
                 },   
                 onChanged: _cadastrarAnotacaoController.setDescricao,
               ),
+              SizedBox(height: 20),    
+              const SizedBox(height: 20),
+              CustomDateTimeFieldWidget(
+                labelText: 'Data da Anotação',
+                initialValue: _data,
+                onChanged: (selectedDate) {
+                  setState(() {
+                    _data = selectedDate;
+                  });
+                  _cadastrarAnotacaoController.setData(selectedDate);
+                },
+              ),
               SizedBox(height: 20),            
+              Expanded(
+                child: ListView(
+                  children: [
+                    // Adicione outros widgets aqui se necessário
+                  ],
+                ),
+              ),
+              SizedBox(height: 20),
               Expanded(
                 child: ListView(
                   children: [

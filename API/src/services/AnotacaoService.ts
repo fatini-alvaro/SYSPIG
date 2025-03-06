@@ -11,6 +11,7 @@ interface AnotacaoCreateOrUpdateData {
   baia_id: number;
   fazenda_id: number;
   usuarioIdAcao: number;
+  data: Date;
 }
 
 export class AnotacaoService {
@@ -58,6 +59,7 @@ export class AnotacaoService {
       anotacao.descricao = anotacaoData.descricao;
       anotacao.animal = animalInstancia ?? null;
       anotacao.baia = baiaInstancia ?? null;
+      anotacao.data = anotacaoData.data;
       anotacao.createdBy = createdBy ?? anotacao.createdBy;
       anotacao.updatedBy = updatedBy ?? anotacao.updatedBy;
 

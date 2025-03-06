@@ -38,11 +38,16 @@ class CadastrarAnotacaoController with ChangeNotifier {
   setDescricao(String value) => _descricao = value;
   String? get descricao => _descricao;
 
+  DateTime? _data;
+  setData(DateTime? value) => _data = value;
+  DateTime? get data => _data;
+
   Future<AnotacaoModel> createAnotacao() async {
     return AnotacaoModel(
       descricao: _descricao,
       animal: _animal,
-      baia: _baia 
+      baia: _baia,
+      data: _data,
     );
   }
 
@@ -70,6 +75,7 @@ class CadastrarAnotacaoController with ChangeNotifier {
             descricao: _descricao,
             animal: _animal,
             baia: _baia,
+            data: _data,
           ),
         );
       },

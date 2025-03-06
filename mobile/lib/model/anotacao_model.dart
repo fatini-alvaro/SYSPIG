@@ -8,6 +8,7 @@ class AnotacaoModel {
   final String? descricao;
   final AnimalModel? animal;
   final BaiaModel? baia;
+  final DateTime? data;
   // final TipoGranjaModel matriz;
   // final TipoGranjaModel pai;
 
@@ -16,7 +17,8 @@ class AnotacaoModel {
     this.fazenda,
     this.descricao,
     this.animal,
-    this.baia
+    this.baia,
+    this.data,
   });
 
   factory AnotacaoModel.fromJson(Map<String, dynamic> json) {
@@ -26,6 +28,7 @@ class AnotacaoModel {
       descricao: json['descricao'],
       animal: json['animal'] != null ? AnimalModel.fromJson(json['animal']) : null,
       baia: json['baia'] != null ? BaiaModel.fromJson(json['baia']) : null,
+      data: json['data'] != null ? DateTime.parse(json['data']) : null,
     );
   }
 
@@ -36,11 +39,12 @@ class AnotacaoModel {
       'descricao': descricao,
       'animal_id': animal?.id,
       'baia_id': baia?.id,
+      'data': data?.toIso8601String(),
     };
   }
 
   @override
   String toString() {
-    return 'id: $id, fazenda: $fazenda, descricao: $descricao, animal: $animal, baia: $baia';
+    return 'id: $id, fazenda: $fazenda, descricao: $descricao, animal: $animal, baia: $baia, data: $data';
   }
 }
