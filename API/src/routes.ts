@@ -13,6 +13,7 @@ import { OcupacaoController } from "./controllers/ocupacaoController";
 import { AnotacaoController } from "./controllers/anotacaoController";
 import { LoteController } from "./controllers/loteController";
 import { verifyToken } from "./middleware/verifyToken";
+import { AuthController } from "./controllers/authController";
 const routes = Router();
 
 // Configuração do CORS
@@ -28,10 +29,15 @@ routes.use(cors(corsOptions));
 
 // Usuario Routes - Sem necessidade de autenticação
 //usuario rotas
-routes.post('/usuarios', new UsuarioController().create);
-routes.post('/auth', new UsuarioController().auth);
-routes.post('/auth/refresh', new UsuarioController().refreshToken);
-routes.post('/logout', new UsuarioController().logout);
+const usuarioController = new UsuarioController();
+routes.post('/usuarios', usuarioController.create);
+
+// Auth Routes - Sem necessidade de autenticação
+//auth rotas
+const authController = new AuthController();
+routes.post('/auth', authController.auth);
+routes.post('/auth/refresh', authController.refreshToken);
+routes.post('/auth/logout', authController.logout);
 
 // Middleware global para todas as rotas, exceto a de login
 routes.use(verifyToken);

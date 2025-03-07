@@ -5,7 +5,7 @@ class UsuarioModel {
   final String nome;
   final String email;
   final TipoUsuarioModel? tipoUsuario;
-  final String senha;
+  String? senha;
   String? accessToken;
   String? refreshToken;
 
@@ -14,7 +14,7 @@ class UsuarioModel {
     required this.nome,
     required this.email,
     this.tipoUsuario,
-    required this.senha,
+    this.senha,
     this.accessToken,
     this.refreshToken,
   });

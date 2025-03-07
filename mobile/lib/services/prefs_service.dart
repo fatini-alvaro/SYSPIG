@@ -156,7 +156,7 @@ class PrefsService {
       if (refreshToken != null) {
         // Chama a API de logout para invalidar o refresh token
         await apiClient.dio.post(
-          '/logout', // Endpoint relativo à baseUrl configurada no ApiClient
+          '/auth/logout', // Endpoint relativo à baseUrl configurada no ApiClient
           data: {'refreshToken': refreshToken},
         );
       }
