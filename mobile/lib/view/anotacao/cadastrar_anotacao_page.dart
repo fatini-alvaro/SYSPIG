@@ -115,7 +115,7 @@ class CadastrarAnotacaoPageState extends State<CadastrarAnotacaoPage> {
           key: _formKey,
           child: Column(
             children: [
-              SizedBox(height: 20),
+              const SizedBox(height: 10),
               CustomTextFormFieldWidget(
                 controller: _searchControllerBaia,
                 label: 'Baia',
@@ -132,7 +132,7 @@ class CadastrarAnotacaoPageState extends State<CadastrarAnotacaoPage> {
                       )
                     : Icon(Icons.search),
                 onChanged: (value) {
-                  //
+                  setState(() {});
                 },
                 onTap: () {
                   setState(() {
@@ -140,9 +140,10 @@ class CadastrarAnotacaoPageState extends State<CadastrarAnotacaoPage> {
                   });
                 },
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               if (_isBaiaSearchFocused)
-                Expanded(
+                SizedBox(
+                  height: 200,
                   child: ListView(
                     children: baias
                         .where((baia) =>
@@ -161,7 +162,7 @@ class CadastrarAnotacaoPageState extends State<CadastrarAnotacaoPage> {
                     }).toList(),
                   ),
                 ),
-              SizedBox(height: 20),
+              const SizedBox(height: 10),
               CustomTextFormFieldWidget(
                 controller: _searchControllerAnimal,
                 label: 'Animal',
@@ -178,7 +179,7 @@ class CadastrarAnotacaoPageState extends State<CadastrarAnotacaoPage> {
                       )
                     : Icon(Icons.search),
                 onChanged: (value) {
-                  //
+                  setState(() {});
                 },
                 onTap: () {
                   setState(() {
@@ -186,9 +187,10 @@ class CadastrarAnotacaoPageState extends State<CadastrarAnotacaoPage> {
                   });
                 },
               ),
-              SizedBox(height: 10),
-              if (_isAnimalSearchFocused) 
-                Expanded(
+              const SizedBox(height: 10),
+              if (_isAnimalSearchFocused)
+                SizedBox(
+                  height: 200,
                   child: ListView(
                     children: animais
                         .where((animal) =>
@@ -207,7 +209,7 @@ class CadastrarAnotacaoPageState extends State<CadastrarAnotacaoPage> {
                     }).toList(),
                   ),
                 ),
-              SizedBox(height: 20),
+              const SizedBox(height: 10),
               CustomTextFormFieldWidget(
                 controller: _descricaoController,
                 label: 'Descrição',
@@ -220,8 +222,7 @@ class CadastrarAnotacaoPageState extends State<CadastrarAnotacaoPage> {
                 },   
                 onChanged: _cadastrarAnotacaoController.setDescricao,
               ),
-              SizedBox(height: 20),    
-              const SizedBox(height: 20),
+              const SizedBox(height: 10),
               CustomDateTimeFieldWidget(
                 labelText: 'Data da Anotação',
                 initialValue: _data,
@@ -232,15 +233,7 @@ class CadastrarAnotacaoPageState extends State<CadastrarAnotacaoPage> {
                   _cadastrarAnotacaoController.setData(selectedDate);
                 },
               ),
-              SizedBox(height: 20),            
-              Expanded(
-                child: ListView(
-                  children: [
-                    // Adicione outros widgets aqui se necessário
-                  ],
-                ),
-              ),
-              SizedBox(height: 20),
+              const SizedBox(height: 10),           
               Expanded(
                 child: ListView(
                   children: [

@@ -17,11 +17,11 @@ export class Fazenda {
 
   @ManyToOne(() => Usuario, usuario => usuario.fazendas)
   @JoinColumn({name: 'usuario_id', referencedColumnName: 'id'})
-  usuario: Usuario;
+  usuario: Usuario | null;
 
   @ManyToOne(() => Cidade, { eager: true }) // Muitas fazendas podem pertencer a uma cidade
   @JoinColumn({ name: 'cidade_id', referencedColumnName: 'id' }) 
-  cidade: Cidade;
+  cidade: Cidade | null;
 
   @ManyToOne(() => Usuario, { eager: true, nullable: true })
   @JoinColumn({ name: 'created_by', referencedColumnName: 'id' }) 

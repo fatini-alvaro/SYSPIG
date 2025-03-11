@@ -2,11 +2,9 @@ import { Router } from "express";
 import cors from 'cors';
 import { FazendaController } from "./controllers/fazendaController";
 import { UsuarioController } from "./controllers/usuarioController";
-import { TipoUsuarioController } from "./controllers/tipoUsuarioController";
 import { UsuarioFazendaController } from "./controllers/usuarioFazendaController";
 import { GranjaController } from "./controllers/granjaController";
 import { TipoGranjaController } from "./controllers/tipoGranjaController";
-import { cidadeController } from "./controllers/cidadeController";
 import { BaiaController } from "./controllers/baiaController";
 import { AnimalController } from "./controllers/animalController";
 import { OcupacaoController } from "./controllers/ocupacaoController";
@@ -14,6 +12,7 @@ import { AnotacaoController } from "./controllers/anotacaoController";
 import { LoteController } from "./controllers/loteController";
 import { verifyToken } from "./middleware/verifyToken";
 import { AuthController } from "./controllers/authController";
+import { CidadeController } from "./controllers/cidadeController";
 const routes = Router();
 
 // Configuração do CORS
@@ -43,18 +42,16 @@ routes.post('/auth/logout', authController.logout);
 routes.use(verifyToken);
 
 //fazenda rotas
-routes.post('/fazendas', new FazendaController().create);
-
-//tipoUsuarios rotas
-routes.post('/tipousuarios', new TipoUsuarioController().create);
+const fazendaController = new FazendaController();
+routes.post('/fazendas', fazendaController.createOrUpdate);
 
 //usuarioFazenda rotas
-routes.post('/usuariofazendas', new UsuarioFazendaController().create);
-routes.get('/usuariofazendas/:usuario_id', new UsuarioFazendaController().list);
+const usuarioFazendaController = new UsuarioFazendaController();
+routes.get('/usuariofazendas/:usuario_id', usuarioFazendaController.listFazendas);
 
 //TipoGranja
-routes.get('/tipogranjas', new TipoGranjaController().listAll);
-routes.post('/tipogranjas', new TipoGranjaController().create);
+const tipoGranjaController = new TipoGranjaController();
+routes.get('/tipogranjas', tipoGranjaController.listAll);
 
 //Granja
 const granjaController = new GranjaController();
@@ -73,7 +70,8 @@ routes.get('/baias/byFazenda/:fazenda_id', new BaiaController().listByFazenda);
 routes.get('/baias/baia/:baia_id', new BaiaController().getById);
 
 //Cidade
-routes.get('/cidades', new cidadeController().list);
+const cidadeController = new CidadeController();
+routes.get('/cidades', cidadeController.list);
 
 //Animal
 const animalController = new AnimalController();

@@ -6,58 +6,57 @@ import 'package:syspig/model/cidade_model.dart';
 import 'package:syspig/model/fazenda_model.dart';
 import 'package:syspig/repositories/cidade/cidade_repository_imp.dart';
 import 'package:syspig/repositories/fazenda/fazenda_repository_imp.dart';
+import 'package:syspig/services/prefs_service.dart';
+import 'package:syspig/utils/async_fetcher_util.dart';
+import 'package:syspig/utils/async_handler_util.dart';
 import 'package:syspig/utils/dialogs.dart';
 
 
 class CadastrarFazendaController with ChangeNotifier {
 
-  final FazendaController _fazendaController = FazendaController(FazendaRepositoryImp());
+  final FazendaController _fazendaController 
+      = FazendaController(FazendaRepositoryImp());
   
   final CidadeRepositoryImp _cidadeRepository = CidadeRepositoryImp();
 
   String? _nome;
   setNome(String value) => _nome = value;
+  String? get nome => _nome;
 
   CidadeModel? _cidade;
-  void setCidade(CidadeModel? value) => _cidade = value;
+  void setCidade(CidadeModel? value) {
+    _cidade = value;
+    notifyListeners();
+  }
+  CidadeModel? get cidade => _cidade;
 
-  String getCidadeNome() {
-    return _cidade?.nome ?? '';
+  Future<FazendaModel> createFazenda() async {
+    return FazendaModel(
+      nome: _nome!,
+      cidade: _cidade,
+    );
   }
 
   Future<bool> create(BuildContext context) async {
-    Dialogs.showLoading(context, message: 'Aguarde, Criando Nova Fazenda');
+    final fazendaCriada = await AsyncHandler.execute(
+      context: context,
+      action: () async {
+        final novaFazenda = await createFazenda();
+        return await _fazendaController.create(novaFazenda);
+      },
+      loadingMessage: 'Aguarde, Criando nova Fazenda',
+      successMessage: 'Fazenda criada com sucesso!',
+    );
 
-    try {
-      FazendaModel novaFazenda = await FazendaModel(
-        nome: _nome!,
-        cidade: _cidade,
-      );
-
-      FazendaModel fazendaCriada = await _fazendaController.create(context, novaFazenda);
-
-      Dialogs.hideLoading(context);
-
-      if (fazendaCriada != null) {
-        Dialogs.successToast(context, 'Fazenda criada com sucesso!');
-      } else {
-        Dialogs.errorToast(context, 'Falha ao criar a fazenda');
-      }
-    } catch (e) {
-      Logger().e(e);
-      Dialogs.hideLoading(context);
-      Dialogs.errorToast(context, 'Falha ao criar a fazenda');
-    }
-
-    return true;
+    return fazendaCriada != null;
   }
 
   Future<List<CidadeModel>> getCidadesFromRepository() async {
-    try {
-      return await _cidadeRepository.getList(); 
-    } catch (e) {
-      Logger().e('Erro ao buscar as cidades do repositório: $e');
-      throw Exception('Erro ao buscar as cidades');
-    }
+    return await AsyncFetcher.fetch(
+      action: () async {
+        return await _cidadeRepository.getList(); 
+      },
+      errorMessage: 'Erro ao buscar as cidades do repositório',
+    ) ?? [];
   }
 }

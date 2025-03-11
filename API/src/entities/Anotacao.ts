@@ -27,8 +27,8 @@ export class Anotacao{
   @JoinColumn({ name: 'baia_id', referencedColumnName: 'id' }) 
   baia: Baia | null;
 
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-  data: Date;
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', nullable: true })
+  data: Date | null;
 
   @ManyToOne(() => Usuario, { eager: true, nullable: true })
   @JoinColumn({ name: 'created_by', referencedColumnName: 'id' }) 

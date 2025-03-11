@@ -1,35 +1,22 @@
 import { Request, Response } from "express";
-import { tipoGranjaRepository } from "../repositories/tipoGranjaRepository";
+import { TipoGranjaService } from "../services/TipoGranjaService";
+import { handleError } from "../utils/errorHandler";
 
 export class TipoGranjaController {
-  async create(req: Request, res: Response){
-    const { 
-      descricao,
-    } = req.body;
 
-    if (!descricao)
-      return res.status(400).json({ message: 'Parametros não informado'});    
+  private tipoGranjaService: TipoGranjaService;
+    
+  constructor() {
+    this.tipoGranjaService = new TipoGranjaService();
+  }
 
+  listAll = async (req: Request, res: Response) => {
     try {
-      const newTipoGranja = tipoGranjaRepository.create({
-        descricao: descricao,
-      });
-      await tipoGranjaRepository.save(newTipoGranja);
-      return res.status(201).json(newTipoGranja);
+      const fazendas = await this.tipoGranjaService.list();
+      return res.status(200).json(fazendas);
     } catch (error) {
-      console.log(error);
-      return res.status(500).json({ message: 'Erro ao criar fazenda'});
-    } 
-  }
-
-  async listAll(req: Request, res: Response){
-    try {            
-      const tiposGranja = await tipoGranjaRepository.find();
-
-      return res.status(200).json(tiposGranja);      
-    } catch (error) {
-      console.log(error);
-      return res.status(500).json({ message: ''});
+      console.error("Erro ao listar tipo de granjas:", error);
+      return handleError(error, res, "Erro ao listar tipo de granjas");
     }
-  }
+  };
 }

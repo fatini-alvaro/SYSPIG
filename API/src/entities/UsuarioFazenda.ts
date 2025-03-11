@@ -11,15 +11,15 @@ export class UsuarioFazenda {
 
   @ManyToOne(() => TipoUsuario, tipousuario => tipousuario.usuarios)
   @JoinColumn({name: 'tipo_usuario_id', referencedColumnName: 'id'})
-  tipoUsuario: TipoUsuario;
+  tipoUsuario: TipoUsuario | null;
 
   @ManyToOne(() => Usuario, { eager: true }) // Muitos UsuarioFazenda podem pertencer a um Usuario
   @JoinColumn({ name: 'usuario_id', referencedColumnName: 'id' }) // Nome da coluna que armazenará o id do usuário
-  usuario: Usuario;
+  usuario: Usuario | null;
 
   @ManyToOne(() => Fazenda, { eager: true }) // Muitos UsuarioFazenda podem pertencer a uma Fazenda
   @JoinColumn({ name: 'fazenda_id', referencedColumnName: 'id' }) // Nome da coluna que armazenará o id da fazenda
-  fazenda: Fazenda;
+  fazenda: Fazenda | null;
 
   @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Date;

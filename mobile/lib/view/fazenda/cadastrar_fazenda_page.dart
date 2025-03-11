@@ -19,39 +19,24 @@ class CadastrarFazendaPageState extends State<CadastrarFazendaPage> {
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
+  late TextEditingController _nomeController;
+
   List<CidadeModel> cidades = [];
-  List<CidadeModel> cidadesFiltradas = [];
-  TextEditingController _searchController = TextEditingController();
+  TextEditingController _searchControllerCidade = TextEditingController();
   bool _isCitySearchFocused = false;
 
   @override
   void initState() {
     super.initState();
+
+    _nomeController = TextEditingController();
+
     _carregarCidades();
-    _searchController.addListener(_filtrarCidades);
   }
 
   Future<void> _carregarCidades() async {
     cidades = await _cadastrarFazendaController.getCidadesFromRepository();
-    cidadesFiltradas = cidades; // Inicialmente, exibe todas as cidades
     setState(() {});
-  }
-
-  void _filtrarCidades() {
-    final query = _searchController.text.toLowerCase();
-    setState(() {
-      cidadesFiltradas = cidades
-          .where((cidade) => cidade.nome.toLowerCase().contains(query))
-          .toList();
-    });
-  }
-
-  void _selecionarCidade(CidadeModel cidade) {
-    _cadastrarFazendaController.setCidade(cidade);
-    _searchController.text = '${cidade.nome} - ${cidade.uf?.nome}';
-    setState(() {
-      _isCitySearchFocused = false;
-    });
   }
 
   @override
@@ -71,6 +56,7 @@ class CadastrarFazendaPageState extends State<CadastrarFazendaPage> {
             children: [
               SizedBox(height: 20),
               CustomTextFormFieldWidget(
+                controller: _nomeController,
                 label: 'Nome',
                 hintText: 'Digite o Nome da Fazenda',
                 validator: (value) {
@@ -78,36 +64,54 @@ class CadastrarFazendaPageState extends State<CadastrarFazendaPage> {
                     return 'Campo Obrigatório';
                   }
                   return null;
-                },
+                },   
                 onChanged: _cadastrarFazendaController.setNome,
               ),
               SizedBox(height: 20),
-              CustomTextFieldWidget(
-                controller: _searchController,
+              CustomTextFormFieldWidget(
+                controller: _searchControllerCidade,
                 label: 'Cidade',
                 hintText: 'Buscar Cidade',
-                suffixIcon: Icon(Icons.search),
+                suffixIcon: _searchControllerCidade.text.isNotEmpty
+                    ? IconButton(
+                        icon: Icon(Icons.clear),
+                        onPressed: () {
+                          setState(() {
+                            _searchControllerCidade.clear();
+                            _cadastrarFazendaController.setCidade(null);
+                          });
+                        },
+                      )
+                    : Icon(Icons.search),
                 onChanged: (value) {
-                  //
+                  setState(() {});
                 },
                 onTap: () {
                   setState(() {
-                    _isCitySearchFocused = true; // Set the flag to true when the search field is tapped
+                    _isCitySearchFocused = !_isCitySearchFocused;
                   });
                 },
               ),
               SizedBox(height: 10),
-              if (_isCitySearchFocused) 
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: cidadesFiltradas.length,
-                    itemBuilder: (context, index) {
-                      final cidade = cidadesFiltradas[index];
+              if (_isCitySearchFocused)
+                SizedBox(
+                  height: 200,
+                  child: ListView(
+                    children: cidades
+                        .where((cidade) =>
+                            cidade.nome.toLowerCase().contains(_searchControllerCidade.text.toLowerCase()))
+                        .map((cidade) {
                       return ListTile(
                         title: Text('${cidade.nome} - ${cidade.uf?.nome}'),
-                        onTap: () => _selecionarCidade(cidade),
+                        onTap: () {
+                          _cadastrarFazendaController.setCidade(cidade);
+                          setState(() {
+                            _searchControllerCidade.text = '${cidade.nome} - ${cidade.uf?.nome}';
+                            _isCitySearchFocused = false;
+                          });
+                        },
                       );
-                    },
+                    }).toList(),
                   ),
                 ),
               SizedBox(height: 20),
@@ -127,8 +131,8 @@ class CadastrarFazendaPageState extends State<CadastrarFazendaPage> {
                         .create(context)
                         .then((resultado) {
                           if (resultado) {
-                            Navigator.of(context)
-                                .pushReplacementNamed('/selecionarFazenda');
+                            Navigator.pop(context);
+                            Navigator.pushReplacementNamed(context, '/selecionarFazenda');
                           }
                         });
                   }                           

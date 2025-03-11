@@ -182,7 +182,7 @@ class CadastrarLotePageState extends State<CadastrarLotePage> {
                       )
                     : Icon(Icons.search),
                 onChanged: (value) {
-                  //
+                  setState(() {});
                 },
                 onTap: () {
                   setState(() {
@@ -192,7 +192,8 @@ class CadastrarLotePageState extends State<CadastrarLotePage> {
               ),
               SizedBox(height: 10),
               if (_isAnimalSearchFocused) 
-                Expanded(
+                SizedBox(
+                  height: 200,
                   child: ListView(
                     children: animais
                         .where((animal) =>

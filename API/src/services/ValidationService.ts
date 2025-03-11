@@ -8,6 +8,9 @@ import { Anotacao } from '../entities/Anotacao';
 import { Granja } from '../entities/Granja';
 import { TipoGranja } from '../entities/TipoGranja';
 import { Lote } from '../entities/Lote';
+import { Cidade } from '../entities/Cidade';
+import { UsuarioFazenda } from '../entities/UsuarioFazenda';
+import { TipoUsuario } from '../entities/TipoUsuario';
 
 export class ValidationService {
   static async validateAndReturnFazenda(fazendaId: number): Promise<Fazenda> {
@@ -64,7 +67,10 @@ export class ValidationService {
   static async validateAndReturnUsuario(usuarioId?: number): Promise<Usuario | null> {
     if (!usuarioId) return null;
 
-    const usuario = await AppDataSource.getRepository(Usuario).findOneBy({ id: usuarioId });
+    const usuario = await AppDataSource.getRepository(Usuario).findOne({
+      where: { id: usuarioId },
+      relations: ["tipoUsuario"],
+    });
     if (!usuario) {
       throw new ValidationError('Usuário não encontrado.', 404);
     }
@@ -118,4 +124,44 @@ export class ValidationService {
 
     return lote;
   }
+
+  static async validateAndReturnCidade(cidadeId?: number): Promise<Cidade | null> {
+    if (!cidadeId) return null;
+
+    const cidade = await AppDataSource.getRepository(Cidade).findOneBy({ id: cidadeId });
+    if (!cidade) {
+      throw new ValidationError('Cidade não encontrada.', 404);
+    }
+
+    return cidade;
+  }
+
+  static async validateAndReturnUsuarioFazenda(usuarioFazendaId?: number): Promise<UsuarioFazenda | null> {
+    if (!usuarioFazendaId) return null;
+
+    const usuarioFazenda = await AppDataSource.getRepository(UsuarioFazenda).findOne({
+      where: { id: usuarioFazendaId }
+    });
+
+    if (!usuarioFazenda) {
+      throw new ValidationError('Usuário Fazenda não encontrado.', 404);
+    }
+
+    return usuarioFazenda;
+  }
+
+  static async validateAndReturnTipoUsuario(tipoUsuarioId?: number): Promise<TipoUsuario | null> {
+    if (!tipoUsuarioId) return null;
+
+    const tipoUsuario = await AppDataSource.getRepository(TipoUsuario).findOne({
+      where: { id: tipoUsuarioId }
+    });
+
+    if (!tipoUsuario) {
+      throw new ValidationError('Tipo Usuário não encontrado.', 404);
+    }
+
+    return tipoUsuario;
+  }
+
 }
