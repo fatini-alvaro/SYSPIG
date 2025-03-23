@@ -68,11 +68,15 @@ export class AuthService {
       throw new ValidationError('Refresh token não fornecido.');
     }
 
+    // Busca o usuário pelo refreshToken
     const usuario = await usuarioRepository.findOneBy({ refreshToken });
+
+    // Se o usuário não for encontrado, apenas retorna uma mensagem de sucesso
     if (!usuario) {
-      throw new ValidationError('Usuário não encontrado.');
+      return 'Logout realizado com sucesso.'; // Evita lançar erro
     }
 
+    // Remove o refreshToken do usuário e salva no banco
     usuario.refreshToken = '';
     await usuarioRepository.save(usuario);
 

@@ -44,9 +44,9 @@ export class Baia{
   updated_at: Date;
   
   @OneToMany(() => Ocupacao, ocupacao => ocupacao.baia)
-  ocupacoes: Ocupacao[]; 
+  ocupacoes: Ocupacao[];
 
-  @ManyToOne(() => Ocupacao, (ocupacao) => ocupacao.baia, { nullable: true })
+  @ManyToOne(() => Ocupacao, { nullable: true })
   @JoinColumn({ name: 'ocupacao_id', referencedColumnName: 'id' })
   ocupacao: Ocupacao;
 }

@@ -26,12 +26,7 @@ class GranjaRepositoryImp implements GranjaRepository {
   @override
   Future<GranjaModel> create(GranjaModel granja) async {
     try {
-      Map<String, dynamic> granjaData = {
-        'descricao': granja.descricao,
-        'tipo_granja_id': granja.tipoGranja?.id
-      };
-
-      var response = await _apiClient.dio.post('/granjas', data: granjaData);
+      var response = await _apiClient.dio.post('/granjas', data: granja.toJson());
       return GranjaModel.fromJson(response.data);
     } catch (e) {      
       String errorMessage = ErrorHandlerUtil.handleDioError(e, 'Erro ao criar granja');
@@ -43,14 +38,8 @@ class GranjaRepositoryImp implements GranjaRepository {
   @override
   Future<GranjaModel> update(GranjaModel granja) async {
     try {
-      Map<String, dynamic> granjaData = {
-        'descricao': granja.descricao,
-        'tipo_granja_id': granja.tipoGranja?.id
-      };
-
-      var granjId = granja.id;
-
-      var response = await _apiClient.dio.put('/granjas/$granjId', data: granjaData);
+      var granjaId = granja.id;
+      var response = await _apiClient.dio.put('/granjas/$granjaId', data: granja.toJson());
       return GranjaModel.fromJson(response.data);
     } catch (e) {    
       String errorMessage = ErrorHandlerUtil.handleDioError(e, 'Erro ao editar granja');

@@ -5,4 +5,8 @@ abstract class OcupacaoRepository {
   Future<OcupacaoModel> create(OcupacaoModel ocupacao);
 
   Future<OcupacaoModel> getById(int ocupacaoId);
+
+  Future<OcupacaoModel> getByBaiaId(int baiaId);
+
+  Future<List<OcupacaoModel>> getList(int fazendaId);
 }

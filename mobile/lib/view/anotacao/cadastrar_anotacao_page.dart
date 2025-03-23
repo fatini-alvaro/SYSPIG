@@ -4,8 +4,8 @@ import 'package:syspig/controller/cadastrar_anotacao/cadastrar_anotacao_controll
 import 'package:syspig/model/animal_model.dart';
 import 'package:syspig/model/anotacao_model.dart';
 import 'package:syspig/model/baia_model.dart';
+import 'package:syspig/model/ocupacao_model.dart';
 import 'package:syspig/themes/themes.dart';
-import 'package:syspig/view/selecionar_anotacao/selecionar_anotacao_page.dart';
 import 'package:syspig/widgets/custom_date_time_field_widget.dart';
 import 'package:syspig/widgets/custom_text_form_field_widget.dart';
 
@@ -28,16 +28,20 @@ class CadastrarAnotacaoPageState extends State<CadastrarAnotacaoPage> {
 
   List<AnimalModel> animais = [];
   List<BaiaModel> baias = [];
+  List<OcupacaoModel> ocupacoes = [];
   TextEditingController _searchControllerAnimal = TextEditingController();
   TextEditingController _searchControllerBaia = TextEditingController();
+  TextEditingController _searchControllerOcupacao = TextEditingController();
   bool _isAnimalSearchFocused = false;
   bool _isBaiaSearchFocused = false;
+  bool _isOcupacaoSearchFocused = false;
 
   final AnimalModel? animal;
   final BaiaModel? baia;
+  final OcupacaoModel? ocupacao;
   DateTime? _data;
 
-  CadastrarAnotacaoPageState({this.animal, this.baia});
+  CadastrarAnotacaoPageState({this.animal, this.baia, this.ocupacao});
 
   @override
   void initState() {
@@ -47,6 +51,7 @@ class CadastrarAnotacaoPageState extends State<CadastrarAnotacaoPage> {
 
     _carregarAnimais();
     _carregarBaias();
+    _carregarOcupacoes();
 
     if (widget.anotacaoId != null) {
       _carregarDadosDaAnotacao(widget.anotacaoId!);
@@ -65,6 +70,7 @@ class CadastrarAnotacaoPageState extends State<CadastrarAnotacaoPage> {
       //valores em tela
       _searchControllerAnimal.text = anotacao.animal != null ? anotacao.animal!.numeroBrinco : '';
       _searchControllerBaia.text = anotacao.baia != null ? anotacao.baia!.numero! : '';
+      _searchControllerOcupacao.text = 'Código: ${anotacao.ocupacao?.codigo} - Baia ${anotacao.ocupacao?.baia!.numero}';
       _descricaoController.text = anotacao.descricao!;
       _data = anotacao.data;
 
@@ -72,6 +78,7 @@ class CadastrarAnotacaoPageState extends State<CadastrarAnotacaoPage> {
       _cadastrarAnotacaoController.setDescricao(anotacao.descricao!);
       _cadastrarAnotacaoController.setAnimal(anotacao.animal);    
       _cadastrarAnotacaoController.setBaia(anotacao.baia);
+      _cadastrarAnotacaoController.setOcupacao(anotacao.ocupacao);
     });
   }
 
@@ -82,6 +89,11 @@ class CadastrarAnotacaoPageState extends State<CadastrarAnotacaoPage> {
 
   Future<void> _carregarBaias() async {
     baias = await _cadastrarAnotacaoController.getBaiasFromRepository();
+    setState(() {});
+  }
+
+  Future<void> _carregarOcupacoes() async {
+    ocupacoes = await _cadastrarAnotacaoController.getOcupacoesFromRepository();
     setState(() {});
   }
 
@@ -115,7 +127,53 @@ class CadastrarAnotacaoPageState extends State<CadastrarAnotacaoPage> {
           key: _formKey,
           child: Column(
             children: [
-              const SizedBox(height: 10),
+              const SizedBox(height: 20),
+              CustomTextFormFieldWidget(
+                controller: _searchControllerOcupacao,
+                label: 'Ocupação',
+                hintText: 'Buscar Ocupação',
+                suffixIcon: _searchControllerOcupacao.text.isNotEmpty
+                    ? IconButton(
+                        icon: Icon(Icons.clear),
+                        onPressed: () {
+                          setState(() {
+                            _searchControllerOcupacao.clear();
+                            _cadastrarAnotacaoController.setOcupacao(null);
+                          });
+                        },
+                      )
+                    : Icon(Icons.search),
+                onChanged: (value) {
+                  setState(() {});
+                },
+                onTap: () {
+                  setState(() {
+                    _isOcupacaoSearchFocused = !_isOcupacaoSearchFocused;
+                  });
+                },
+              ),
+              if (_isOcupacaoSearchFocused)
+                SizedBox(
+                  height: 200,
+                  child: ListView(
+                    children: ocupacoes
+                        .where((ocupacao) =>
+                            ocupacao.codigo!.toString().contains(_searchControllerOcupacao.text.toLowerCase()))
+                        .map((ocupacao) {
+                      return ListTile(
+                        title: Text('Código: ${ocupacao.codigo} - Baia ${ocupacao.baia!.numero}'),
+                        onTap: () {
+                          _cadastrarAnotacaoController.setOcupacao(ocupacao);
+                          setState(() {
+                            _searchControllerOcupacao.text = '${ocupacao.codigo}';
+                            _isOcupacaoSearchFocused = false;
+                          });
+                        },
+                      );
+                    }).toList(),
+                  ),
+                ),
+              const SizedBox(height: 20),
               CustomTextFormFieldWidget(
                 controller: _searchControllerBaia,
                 label: 'Baia',
@@ -140,7 +198,6 @@ class CadastrarAnotacaoPageState extends State<CadastrarAnotacaoPage> {
                   });
                 },
               ),
-              const SizedBox(height: 10),
               if (_isBaiaSearchFocused)
                 SizedBox(
                   height: 200,
@@ -162,7 +219,7 @@ class CadastrarAnotacaoPageState extends State<CadastrarAnotacaoPage> {
                     }).toList(),
                   ),
                 ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 20),
               CustomTextFormFieldWidget(
                 controller: _searchControllerAnimal,
                 label: 'Animal',
@@ -187,7 +244,6 @@ class CadastrarAnotacaoPageState extends State<CadastrarAnotacaoPage> {
                   });
                 },
               ),
-              const SizedBox(height: 10),
               if (_isAnimalSearchFocused)
                 SizedBox(
                   height: 200,
@@ -201,7 +257,7 @@ class CadastrarAnotacaoPageState extends State<CadastrarAnotacaoPage> {
                         onTap: () {
                           _cadastrarAnotacaoController.setAnimal(animal);
                           setState(() {
-                            _searchControllerAnimal.text = '${animal.numeroBrinco}';
+                            _searchControllerAnimal.text = animal.numeroBrinco;
                             _isAnimalSearchFocused = false;
                           });
                         },
@@ -209,7 +265,7 @@ class CadastrarAnotacaoPageState extends State<CadastrarAnotacaoPage> {
                     }).toList(),
                   ),
                 ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 20),
               CustomTextFormFieldWidget(
                 controller: _descricaoController,
                 label: 'Descrição',
@@ -222,7 +278,7 @@ class CadastrarAnotacaoPageState extends State<CadastrarAnotacaoPage> {
                 },   
                 onChanged: _cadastrarAnotacaoController.setDescricao,
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 20),
               CustomDateTimeFieldWidget(
                 labelText: 'Data da Anotação',
                 initialValue: _data,
@@ -233,7 +289,7 @@ class CadastrarAnotacaoPageState extends State<CadastrarAnotacaoPage> {
                   _cadastrarAnotacaoController.setData(selectedDate);
                 },
               ),
-              const SizedBox(height: 10),           
+              const SizedBox(height: 20),           
               Expanded(
                 child: ListView(
                   children: [

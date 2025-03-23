@@ -69,12 +69,12 @@ class CadastrarGranjaController with ChangeNotifier {
   }
 
   Future<List<TipoGranjaModel>> getTipoGranjasFromRepository() async {
-    try {
-      return await _tipoGranjaRepository.getList(); 
-    } catch (e) {
-      Logger().e('Erro ao buscar os tipos granjas do repositório: $e');
-      throw Exception('Erro ao buscar os tipos granjas');
-    }
+    return await AsyncFetcher.fetch(
+      action: () async {
+        return await _tipoGranjaRepository.getList(); 
+      },
+      errorMessage: 'Erro ao buscar os tipos granjas',
+    ) ?? [];
   }
 
   Future<GranjaModel?> fetchGranjaById(int granjaId) async {

@@ -3,6 +3,7 @@ import { Fazenda } from "./Fazenda";
 import { Animal } from "./Animal";
 import { Usuario } from "./Usuario";
 import { Baia } from "./Baia";
+import { Ocupacao } from "./Ocupacao";
 
 @Entity('anotacao')
 export class Anotacao{
@@ -26,6 +27,10 @@ export class Anotacao{
   @ManyToOne(() => Baia, { eager: true, nullable: true})
   @JoinColumn({ name: 'baia_id', referencedColumnName: 'id' }) 
   baia: Baia | null;
+
+  @ManyToOne(() => Ocupacao, { eager: true, nullable: true})
+  @JoinColumn({ name: 'ocupacao_id', referencedColumnName: 'id' }) 
+  ocupacao: Ocupacao | null;
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', nullable: true })
   data: Date | null;

@@ -1,16 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:syspig/components/buttons/custom_abrir_tela_adicionar_novo_button_component.dart';
 import 'package:syspig/components/cards/custom_baia_card.dart';
-import 'package:syspig/controller/baia/baia_controller.dart';
+import 'package:syspig/controller/abrir_baia/abrir_baia_controller.dart';
 import 'package:syspig/model/animal_model.dart';
 import 'package:syspig/model/baia_model.dart';
 import 'package:syspig/model/granja_model.dart';
-import 'package:syspig/repositories/baia/baia_repository_imp.dart';
-import 'package:syspig/services/prefs_service.dart';
 import 'package:syspig/themes/themes.dart';
 import 'package:syspig/utils/dialogs.dart';
 import 'package:syspig/view/baia/baia_page.dart';
-import 'package:syspig/view/baia/cadastrar_baia_page.dart';
+import 'package:syspig/widgets/custom_data_table.dart';
 import 'package:syspig/widgets/custom_text_form_field_widget.dart';
 
 class SelecionarBaiaPage extends StatefulWidget {
@@ -26,10 +24,12 @@ class SelecionarBaiaPage extends StatefulWidget {
 
 class SelecionarBaiaPageState extends State<SelecionarBaiaPage> {
   final GranjaModel? granja;
-  final BaiaController _baiaController = BaiaController(BaiaRepositoryImp());
+
+  final AbrirBaiaController _abrirbaiaController =
+      AbrirBaiaController();
 
   List<AnimalModel> animais = [];
-  TextEditingController _searchController = TextEditingController();
+  TextEditingController _searchControllerAnimal = TextEditingController();
   bool _isAnimalSearchFocused = false;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -44,17 +44,28 @@ class SelecionarBaiaPageState extends State<SelecionarBaiaPage> {
 
   Future<void> _carregarBaias() async {
     if (granja != null) {
-      _baiaController.fetchByGranja(granja!.id!);
+      _abrirbaiaController.fetchByGranja(granja!.id!);
     } else {
-      int? fazendaId = await PrefsService.getFazendaId();
-      _baiaController.fetch(fazendaId!);
+      _abrirbaiaController.fetch();
     }
   }
 
   Future<void> _carregarAnimais() async {
-    animais = await _baiaController.getAnimaisFromRepository();
+    animais = await _abrirbaiaController.getAnimaisFromRepository();
     setState(() {});
-  }  
+  }
+
+  void _toggleSelecaoAnimal(AnimalModel animal) {
+    if (_abrirbaiaController.animaisSelecionados.any((a) => a.id == animal.id)) {
+      Dialogs.infoToast(context, 'Animal já selecionado');
+    } else {
+      _abrirbaiaController.adicionarAnimal(animal);
+    }
+  }
+
+  void _removerAnimal(AnimalModel animal) {
+    _abrirbaiaController.removerAnimal(animal);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -73,23 +84,22 @@ class SelecionarBaiaPageState extends State<SelecionarBaiaPage> {
             child: CustomAbrirTelaAdicionarNovoButtonComponent(
               buttonText: 'Cadastrar Nova Baia', 
               onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => CadastrarBaiaPage(granja: granja),
-                  ),
-                );
+                Navigator.of(context).pushNamed('/abrirTelaCadastroBaia');     
               },
             ),
           ),
           SizedBox(height: 15),
           Expanded(
             child: ValueListenableBuilder<List<BaiaModel>>(
-              valueListenable: _baiaController.baias,
+              valueListenable: _abrirbaiaController.baias,
               builder: (_, list, __) {
                 return GridView.builder(
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
+                    childAspectRatio: 1.2,
+                    crossAxisSpacing: 1,
+                    mainAxisSpacing: 2,
+                    mainAxisExtent: 140,
                   ),
                   itemCount: list.length,
                   itemBuilder: (_, idx) => CustomBaiaCard(
@@ -104,135 +114,197 @@ class SelecionarBaiaPageState extends State<SelecionarBaiaPage> {
                         ),
                       );
                     },
-                    onTapVazia: () => showModalBottomSheet(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return StatefulBuilder(
-                          builder: (BuildContext context, StateSetter setStateModal) {
-                            return SingleChildScrollView(
-                              child: Container(
-                                height: 300,
-                                padding: EdgeInsets.all(16),
-                                child: Form(
-                                  key: _formKey,
-                                  child: Column(
-                                    children: [
-                                      SizedBox(height: 10),
-                                      Text(
-                                        'Abrir Baia: ${list[idx].numero}',
-                                        style: TextStyle(
-                                          color: Colors.orange,
-                                          fontSize: 25,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                      SizedBox(height: 15),
-                                      CustomTextFormFieldWidget(
-                                        controller: _searchController,
-                                        label: 'Animal',
-                                        hintText: 'Buscar Animal',
-                                        suffixIcon: Icon(Icons.search),
-                                        onChanged: (value) {
-                                        },
-                                        onTap: () {
-                                          setStateModal(() {
-                                            _isAnimalSearchFocused = !_isAnimalSearchFocused;
-                                          });
-                                        },
-                                        validator: (animal) {
-                                          if (animal == "") {
-                                            return 'Selecione o animal';
-                                          }
-                                          return null;
-                                        },
-                                      ),
-                                      SizedBox(height: 10),
-                                      if (_isAnimalSearchFocused)
-                                        Expanded(
-                                          child: ListView(
-                                            children: animais
-                                                .where((animal) =>
-                                                    animal.numeroBrinco.toLowerCase().contains(_searchController.text.toLowerCase()))
-                                                .map((animal) {
-                                              return ListTile(
-                                                title: Text('${animal.numeroBrinco}'),
-                                                onTap: () {
-                                                  _baiaController.setAnimal(animal);
-                                                  setStateModal(() {
-                                                    _searchController.text = '${animal.numeroBrinco}';
-                                                    _isAnimalSearchFocused = false;
-                                                  });
-                                                },
-                                              );
-                                            }).toList(),
+                    onTapVazia: (){
+                      _abrirbaiaController.setBaiaSelecionada(list[idx]);
+                      _abrirbaiaController.animaisSelecionados.clear();
+                      showModalBottomSheet(
+                        context: context,
+                        isScrollControlled: true,
+                        builder: (BuildContext context) {
+                          return StatefulBuilder(
+                            builder: (BuildContext context, StateSetter setStateModal) {
+                              return SingleChildScrollView(
+                                child: Container(
+                                  height: 585,
+                                  padding: EdgeInsets.all(16),
+                                  child: Form(
+                                    key: _formKey,
+                                    child: Column(
+                                      children: [
+                                        SizedBox(height: 10),
+                                        Text(
+                                          'Abrir Baia: ${list[idx].numero}',
+                                          style: TextStyle(
+                                            color: Colors.orange,
+                                            fontSize: 25,
+                                            fontWeight: FontWeight.bold,
                                           ),
                                         ),
-                                      SizedBox(height: 20),
-                                      Expanded(
-                                        child: ListView(
-                                          children: [
-                                            // Adicione outros widgets aqui se necessário
-                                          ],
+                                        SizedBox(height: 15),
+                                        CustomTextFormFieldWidget(
+                                          controller: _searchControllerAnimal,
+                                          label: 'Animal',
+                                          hintText: 'Buscar Animal',
+                                          suffixIcon: _searchControllerAnimal.text.isNotEmpty
+                                              ? IconButton(
+                                                  icon: Icon(Icons.clear),
+                                                  onPressed: () {
+                                                    setStateModal(() {
+                                                      _searchControllerAnimal.clear();
+                                                    });
+                                                  },
+                                                )
+                                              : Icon(Icons.search),
+                                          onChanged: (value) {
+                                            setStateModal(() {});
+                                          },
+                                          onTap: () {
+                                            setStateModal(() {
+                                              _isAnimalSearchFocused = !_isAnimalSearchFocused;
+                                            });
+                                          },
                                         ),
-                                      ),
-                                      ButtonBar(
-                                        alignment: MainAxisAlignment.center,
-                                        children: [
-                                          ElevatedButton.icon(
-                                            onPressed: () {
-                                              if (_formKey.currentState!.validate()) {
-                                                _baiaController
-                                                    .callCriarOcupacao(list[idx], _baiaController.animal!)
-                                                    .then((ocupacaoCriada) {
-                                                  if (ocupacaoCriada.id != null) {
-                                                    Dialogs.successToast(context, 'Ocupação aberta com sucesso');
-                                                    Navigator.push(
-                                                      context,
-                                                      MaterialPageRoute(
-                                                        builder: (context) => BaiaPage(
-                                                          baiaId: list[idx].id,
+                                        if (_isAnimalSearchFocused) 
+                                          SizedBox(
+                                            height: 200,
+                                            child: ListView(
+                                              children: animais
+                                                  .where((animal) =>
+                                                      animal.numeroBrinco.toLowerCase().contains(_searchControllerAnimal.text.toLowerCase()))
+                                                  .map((animal) {
+                                                return ListTile(
+                                                  title: Text('${animal.numeroBrinco}'),
+                                                  onTap: () {
+                                                    setStateModal(() {                            
+                                                    _toggleSelecaoAnimal(animal);
+                                                    _isAnimalSearchFocused = !_isAnimalSearchFocused;
+                                                    });
+                                                  },
+                                                );
+                                              }).toList(),
+                                            ),
+                                          ),
+                                        SizedBox(height: 20),
+                                        Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            CustomDataTable(
+                                              title: 'Animais adicionados ao lote',
+                                              columns: const [
+                                                DataColumn(
+                                                  label: Text(
+                                                    'Nº Brinco',
+                                                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                                                  ),
+                                                ),
+                                                DataColumn(label: Text(
+                                                    'Ações',
+                                                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                                                  ),
+                                                ),
+                                              ],
+                                              data: _abrirbaiaController.animaisSelecionados,
+                                              generateRows: (animais) {
+                                                return animais.map((animal) {
+                                                  return DataRow(
+                                                    cells: [
+                                                      DataCell(Text(animal.numeroBrinco)),
+                                                      DataCell(
+                                                        ElevatedButton.icon(
+                                                          onPressed: () {
+                                                            setState(() {                                      
+                                                            _removerAnimal(animal);
+                                                            });
+                                                          },
+                                                          icon: Icon(Icons.delete, color: Colors.white),
+                                                          label: Text(
+                                                            'Excluir',
+                                                            style: TextStyle(color: Colors.white),
+                                                          ),
+                                                          style: ElevatedButton.styleFrom(
+                                                            backgroundColor: Colors.red,
+                                                          ),
                                                         ),
                                                       ),
-                                                    );
-                                                  }
-                                                });
-                                              }
-                                            },
-                                            icon: Icon(Icons.open_in_browser),
-                                            label: Text(
-                                              'Abrir Baia ${list[idx].numero}',
-                                              style: TextStyle(fontSize: 16),
-                                            ),
-                                            style: ElevatedButton.styleFrom(
-                                              backgroundColor: AppThemes.lightTheme.primaryColor,
-                                              foregroundColor: Colors.white,
-                                            ),
+                                                    ],
+                                                  );
+                                                }).toList();
+                                              },
+                                            ),                                            
+                                          ],
+                                        ),      
+                                        Expanded(
+                                          child: ListView(
+                                            children: [
+                                              // Adicione outros widgets aqui se necessário
+                                            ],
                                           ),
-                                          ElevatedButton.icon(
-                                            onPressed: () {
-                                              Navigator.of(context).pop(); // Fechar o modal
-                                            },
-                                            icon: Icon(Icons.cancel),
-                                            label: Text(
-                                              'Cancelar',
-                                              style: TextStyle(fontSize: 16),
+                                        ),
+                                        ButtonBar(
+                                          alignment: MainAxisAlignment.center,
+                                          children: [
+                                            ElevatedButton.icon(
+                                              onPressed: () {
+
+                                                if (_abrirbaiaController.animaisSelecionados.isEmpty) {
+                                                  Dialogs.errorToast(context, 'Selecione pelo menos um animal antes de abrir a baia.');
+                                                  return;
+                                                }
+
+                                                if (_formKey.currentState!.validate()) {
+                                                  _abrirbaiaController
+                                                      .abrirBaia(context)
+                                                      .then((ocupacaoCriada) {
+                                                    if (ocupacaoCriada.id != null) {
+                                                      Dialogs.successToast(context, 'Ocupação aberta com sucesso');
+                                                      Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                          builder: (context) => BaiaPage(
+                                                            baiaId: list[idx].id,
+                                                          ),
+                                                        ),
+                                                      );
+                                                    }
+                                                  });
+                                                }
+                                              },
+                                              icon: Icon(Icons.open_in_browser),
+                                              label: Text(
+                                                'Abrir Baia ${list[idx].numero}',
+                                                style: TextStyle(fontSize: 16),
+                                              ),
+                                              style: ElevatedButton.styleFrom(
+                                                backgroundColor: AppThemes.lightTheme.primaryColor,
+                                                foregroundColor: Colors.white,
+                                              ),
                                             ),
-                                            style: ElevatedButton.styleFrom(
-                                              backgroundColor: Colors.red,
-                                              foregroundColor: Colors.white,
+                                            ElevatedButton.icon(
+                                              onPressed: () {
+                                                Navigator.of(context).pop(); // Fechar o modal
+                                              },
+                                              icon: Icon(Icons.cancel),
+                                              label: Text(
+                                                'Cancelar',
+                                                style: TextStyle(fontSize: 16),
+                                              ),
+                                              style: ElevatedButton.styleFrom(
+                                                backgroundColor: Colors.red,
+                                                foregroundColor: Colors.white,
+                                              ),
                                             ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
+                                          ],
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
-                              ),
-                            );
-                          },
-                        );
-                      },
-                    ),
+                              );
+                            },
+                          );
+                        },
+                      );
+                    } 
                   ),
                 );
               },

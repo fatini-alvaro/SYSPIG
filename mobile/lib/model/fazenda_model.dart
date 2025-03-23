@@ -28,7 +28,7 @@ class FazendaModel {
     return {
       'id': id,
       'nome': nome,
-      'cidade': cidade != null ? cidade!.toJson() : null,
+      'cidade_id': cidade?.id,
     };
   }
 }

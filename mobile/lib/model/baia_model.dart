@@ -36,9 +36,9 @@ class BaiaModel {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'fazenda': fazenda?.toJson(),
-      'granja': granja?.toJson(),
-      'ocupacao': ocupacao?.toJson(),
+      'fazenda_id': fazenda?.id,
+      'granja_id': granja?.id,
+      'ocupacao_id': ocupacao?.id,
       'numero': numero,
       'capacidade': capacidade,
       'vazia': vazia,

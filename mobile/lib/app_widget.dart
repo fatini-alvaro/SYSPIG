@@ -4,7 +4,6 @@ import 'package:syspig/controller/app_controller.dart';
 import 'package:syspig/themes/themes.dart';
 import 'package:syspig/view/animal/cadastrar_animal_page.dart';
 import 'package:syspig/view/anotacao/cadastrar_anotacao_page.dart';
-import 'package:syspig/view/baia/baia_gestacao_page.dart';
 import 'package:syspig/view/baia/baia_page.dart';
 import 'package:syspig/view/baia/cadastrar_baia_page.dart';
 import 'package:syspig/view/baiasGestacaoOcupadas/baias_gestacao_ocupadas_page.dart';
@@ -70,7 +69,6 @@ class AppWidget extends StatelessWidget {
           '/abrirTelaCadastroBaia': (context) => CadastrarBaiaPage(),
           '/baia': (context) => BaiaPage(),
           '/baiasGestacaoOcupadas': (context) => BaiasGestacaoOcupadasPage(),
-          '/baiaGestacao': (context) => BaiaGestacaoPage(),
           //Movimentação
           '/selecionarMovimentacao': (context) => SelecionarMovimentacaoPage(),
           '/abrirTelaCadastroMovimentacao': (context) => CadastrarMovimentacaoPage(),

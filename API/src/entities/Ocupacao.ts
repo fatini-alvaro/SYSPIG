@@ -1,9 +1,11 @@
-import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Fazenda } from "./Fazenda";
 import { Animal } from "./Animal";
 import { Granja } from "./Granja";
 import { Usuario } from "./Usuario";
 import { Baia } from "./Baia";
+import { OcupacaoAnimal } from "./OcupacaoAnimal";
+import { Anotacao } from "./Anotacao";
 
 @Entity('ocupacao')
 export class Ocupacao{
@@ -31,6 +33,12 @@ export class Ocupacao{
   @ManyToOne(() => Baia, { eager: true, nullable: true })
   @JoinColumn({ name: 'baia_id', referencedColumnName: 'id' }) 
   baia: Baia;
+
+  @OneToMany(() => OcupacaoAnimal, ocupacaoAnimal => ocupacaoAnimal.ocupacao)
+  ocupacaoAnimais: OcupacaoAnimal[];
+
+  @OneToMany(() => Anotacao, anotacao => anotacao.ocupacao)
+  anotacoes: Anotacao[];
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', nullable: true })
   data_abertura: Date;

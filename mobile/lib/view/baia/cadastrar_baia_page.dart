@@ -4,19 +4,15 @@ import 'package:syspig/controller/cadastrar_baia/cadastrar_baia_controller.dart'
 import 'package:syspig/model/baia_model.dart';
 import 'package:syspig/model/granja_model.dart';
 import 'package:syspig/themes/themes.dart';
-import 'package:syspig/view/selecionar_baia/selecionar_baia_page.dart';
 import 'package:syspig/widgets/custom_text_form_field_widget.dart';
 
 class CadastrarBaiaPage extends StatefulWidget {
-  final BaiaModel? baiaParaEditar;
-  final GranjaModel? granja;
+  final int? baiaId;
 
-  CadastrarBaiaPage({Key? key, this.baiaParaEditar, this.granja}) : super(key: key);
+  CadastrarBaiaPage({Key? key, this.baiaId}) : super(key: key);
 
   @override
-  State<CadastrarBaiaPage> createState() {
-    return CadastrarBaiaPageState(granja: granja);
-  }
+  State<CadastrarBaiaPage> createState() => CadastrarBaiaPageState();
 }
 
 class CadastrarBaiaPageState extends State<CadastrarBaiaPage> {
@@ -25,8 +21,10 @@ class CadastrarBaiaPageState extends State<CadastrarBaiaPage> {
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
+  late TextEditingController _numeroController;
+
   List<GranjaModel> granjas = [];
-  TextEditingController _searchController = TextEditingController();
+  TextEditingController _searchControllerGranja = TextEditingController();
   bool _isGranjaSearchFocused = false;
 
   final GranjaModel? granja;
@@ -36,20 +34,30 @@ class CadastrarBaiaPageState extends State<CadastrarBaiaPage> {
   @override
   void initState() {
     super.initState();
+
+    _numeroController = TextEditingController();
+
     _carregarGranjas();
-    if (granja != null) {
-      _cadastrarBaiaController.setGranja(granja);
-      _searchController.text = granja!.descricao;
+
+    if (widget.baiaId != null) {
+      _carregarDadosDaBaia(widget.baiaId!);
     }
-    if (widget.baiaParaEditar != null) {
-      // Caso seja uma edição, preencha os campos com os dados da granja
-      _preencherCamposParaEdicao(widget.baiaParaEditar!);
+  }
+
+  Future<void> _carregarDadosDaBaia(int baiaId) async {
+    final baia = await _cadastrarBaiaController.fetchBaiaById(baiaId);
+    if (baia != null) {
+      _preencherCamposParaEdicao(baia);
     }
   }
 
   void _preencherCamposParaEdicao(BaiaModel baia) {
-    _cadastrarBaiaController.setNumero(baia.numero!);
-    _cadastrarBaiaController.setGranja(baia.granja);
+    setState(() {
+      _searchControllerGranja.text = baia.granja != null ? baia.granja!.descricao : '';
+      _numeroController.text = baia.numero!;
+
+      _cadastrarBaiaController.setGranja(baia.granja); 
+    });
   }
 
   Future<void> _carregarGranjas() async {
@@ -59,11 +67,26 @@ class CadastrarBaiaPageState extends State<CadastrarBaiaPage> {
 
   @override
   Widget build(BuildContext context) {
+
+    if (widget.baiaId != null && _numeroController.text == '') {
+      return Scaffold(
+        appBar: AppBar(
+          backgroundColor: AppThemes.lightTheme.primaryColor,
+          foregroundColor: Colors.white,
+          title: Text('Carregando...'),
+          centerTitle: true,
+        ),
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: AppThemes.lightTheme.primaryColor,
         foregroundColor: Colors.white,
-        title: Text('Cadastrar Baia'),
+        title: Text(widget.baiaId == null
+            ? 'Cadastrar Baia'
+            : 'Editar Baia'),
         centerTitle: true,
       ),
       body: Padding(
@@ -74,51 +97,56 @@ class CadastrarBaiaPageState extends State<CadastrarBaiaPage> {
             children: [
               SizedBox(height: 20),
               CustomTextFormFieldWidget(
+                controller: _numeroController,
                 label: 'Baia',
-                hintText: 'Numero da Baia',
-                onChanged: _cadastrarBaiaController.setNumero,  
+                hintText: 'Número da Baia',
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Campo Obrigatório';
                   }
                   return null;
-                },            
+                },   
+                onChanged: _cadastrarBaiaController.setNumero,
               ),
               SizedBox(height: 20),
               CustomTextFormFieldWidget(
-                controller: _searchController,
+                controller: _searchControllerGranja,
                 label: 'Granja',
                 hintText: 'Buscar Granja',
-                suffixIcon: Icon(Icons.search),
+                suffixIcon: _searchControllerGranja.text.isNotEmpty
+                    ? IconButton(
+                        icon: Icon(Icons.clear),
+                        onPressed: () {
+                          setState(() {
+                            _searchControllerGranja.clear();
+                            _cadastrarBaiaController.setGranja(null);
+                          });
+                        },
+                      )
+                    : Icon(Icons.search),
                 onChanged: (value) {
-                  //
+                  setState(() {});
                 },
                 onTap: () {
                   setState(() {
                     _isGranjaSearchFocused = !_isGranjaSearchFocused;
                   });
                 },
-                validator: (granja) {
-                  if (granja == "") {
-                    return 'Selecione o tipo de granja';
-                  }
-                  return null;
-                },
               ),
-              SizedBox(height: 10),
-              if (_isGranjaSearchFocused) 
-                Expanded(
+              if (_isGranjaSearchFocused)
+                SizedBox(
+                  height: 200,
                   child: ListView(
                     children: granjas
                         .where((granja) =>
-                            granja.descricao.toLowerCase().contains(_searchController.text.toLowerCase()))
+                            granja.descricao.toLowerCase().contains(_searchControllerGranja.text.toLowerCase()))
                         .map((granja) {
                       return ListTile(
-                        title: Text('${granja.descricao}'),
+                        title: Text(granja.descricao),
                         onTap: () {
                           _cadastrarBaiaController.setGranja(granja);
                           setState(() {
-                            _searchController.text = '${granja.descricao}';
+                            _searchControllerGranja.text = granja.descricao;
                             _isGranjaSearchFocused = false;
                           });
                         },
@@ -135,28 +163,28 @@ class CadastrarBaiaPageState extends State<CadastrarBaiaPage> {
                 ),
               ),
               CustomSalvarCadastroButtonComponent(
-                buttonText: widget.baiaParaEditar == null
+                buttonText: widget.baiaId == null
                     ? 'Salvar Baia'
                     : 'Salvar Alterações', 
                 rotaTelaAposSalvar:'selecionarBaia',
                 onPressed: () {    
                   if (_formKey.currentState!.validate()) {
-                    if (widget.baiaParaEditar == null) {
+                    if (widget.baiaId == null) {
                       _cadastrarBaiaController
                           .create(context)
                           .then((resultado) {
                         if (resultado) {
                           Navigator.pop(context);
-                          Navigator.pushReplacementNamed(context, '/selecionarBaia', arguments: granja);
+                          Navigator.pushReplacementNamed(context, '/selecionarBaia');
                         }
                       });
                     } else {
                       _cadastrarBaiaController
-                          .update(context, widget.baiaParaEditar!)
+                          .update(context, widget.baiaId!)
                           .then((resultado) {
                         if (resultado) {
                           Navigator.pop(context);
-                          Navigator.pushReplacementNamed(context, '/selecionarBaia', arguments: granja);
+                          Navigator.pushReplacementNamed(context, '/selecionarBaia');
                         }
                       });
                     }

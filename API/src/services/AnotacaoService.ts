@@ -10,6 +10,7 @@ interface AnotacaoCreateOrUpdateData {
   animal_id: number;
   baia_id: number;
   fazenda_id: number;
+  ocupacao_id: number;
   usuarioIdAcao: number;
   data: Date;
 }
@@ -49,7 +50,7 @@ export class AnotacaoService {
         anotacao = await ValidationService.validateAndReturnAnotacao(anotacao_id);
       }
 
-      const { fazenda, animalInstancia, baiaInstancia, createdBy, updatedBy } =
+      const { fazenda, animalInstancia, baiaInstancia, createdBy, updatedBy, ocupacaoInstancia } =
         await this.validateAnotacao(anotacaoData, anotacao);
 
       if (!anotacao) {
@@ -59,6 +60,7 @@ export class AnotacaoService {
       anotacao.descricao = anotacaoData.descricao;
       anotacao.animal = animalInstancia ?? null;
       anotacao.baia = baiaInstancia ?? null;
+      anotacao.ocupacao = ocupacaoInstancia ?? null;
       anotacao.data = anotacaoData.data;
       anotacao.createdBy = createdBy ?? anotacao.createdBy;
       anotacao.updatedBy = updatedBy ?? anotacao.updatedBy;
@@ -95,6 +97,7 @@ export class AnotacaoService {
 
     const animalInstancia = await ValidationService.validateAndReturnAnimal(anotacaoData.animal_id, fazenda);
     const baiaInstancia = await ValidationService.validateAndReturnBaia(anotacaoData.baia_id, fazenda);
+    const ocupacaoInstancia = await ValidationService.validateAndReturnOcupacao(anotacaoData.ocupacao_id);
 
     let createdBy: Usuario | null = null;
     let updatedBy: Usuario | null = null;
@@ -109,6 +112,7 @@ export class AnotacaoService {
       fazenda,
       animalInstancia,
       baiaInstancia,
+      ocupacaoInstancia,
       createdBy,
       updatedBy,
     };

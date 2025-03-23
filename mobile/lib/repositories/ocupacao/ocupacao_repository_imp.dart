@@ -3,6 +3,7 @@ import 'package:logger/logger.dart';
 import 'package:syspig/api/api_client.dart';
 import 'package:syspig/model/ocupacao_model.dart';
 import 'package:syspig/repositories/ocupacao/ocupacao_repository.dart';
+import 'package:syspig/utils/error_handler_util.dart';
 
 class OcupacaoRepositoryImp implements OcupacaoRepository {   
 
@@ -11,21 +12,16 @@ class OcupacaoRepositoryImp implements OcupacaoRepository {
   OcupacaoRepositoryImp() {
     _apiClient = ApiClient();
   }  
-  
+
   @override
   Future<OcupacaoModel> create(OcupacaoModel ocupacao) async {
     try {
-      Map<String, dynamic> ocupacaoData = {
-        'animal_id': ocupacao.animal!.id,
-        'baia_id': ocupacao.baia!.id,
-        'granja_id': ocupacao.granja!.id,
-      };
-
-      var response = await _apiClient.dio.post('/ocupacoes', data: ocupacaoData);
+      var response = await _apiClient.dio.post('/ocupacoes', data: ocupacao.toJson());
       return OcupacaoModel.fromJson(response.data);
     } catch (e) {      
-      Logger().e('Erro ao criar ocupacao (create - Ocupacoes): $e');
-      throw Exception('Erro ao criar ocupacao');
+      String errorMessage = ErrorHandlerUtil.handleDioError(e, 'Erro ao criar ocupação');
+      Logger().e('Erro ao criar ocupações (create - ocupações): $e');
+      throw Exception(errorMessage);
     }
   }
 
@@ -35,8 +31,32 @@ class OcupacaoRepositoryImp implements OcupacaoRepository {
       var response = await _apiClient.dio.get('/ocupacoes/ocupacao/$ocupacaoId');
       return OcupacaoModel.fromJson(response.data);
     } catch (e) {
-      Logger().e('Erro ao obter dados da ocupacao: $e');
-      throw Exception('Erro ao obter dados da ocupacao');
+      String errorMessage = ErrorHandlerUtil.handleDioError(e, 'Erro ao obter dados da ocupação');
+      Logger().e('Erro ao obter dados da ocupação: $e');
+      throw Exception(errorMessage);
+    }
+  }
+
+  @override
+  Future<OcupacaoModel> getByBaiaId(int baiaId) async {
+    try {
+      var response = await _apiClient.dio.get('/ocupacoes/getbybaia/$baiaId');
+      return OcupacaoModel.fromJson(response.data);
+    } catch (e) {
+      String errorMessage = ErrorHandlerUtil.handleDioError(e, 'Erro ao obter dados da ocupação');
+      Logger().e('Erro ao obter dados da ocupação: $e');
+      throw Exception(errorMessage);
+    }
+  }
+
+  Future<List<OcupacaoModel>> getList(int fazendaId) async {
+    try {
+      var response = await _apiClient.dio.get('/ocupacoes/$fazendaId');
+      return (response.data as List).map((e) => OcupacaoModel.fromJson(e)).toList();
+    } catch (e) {
+      String errorMessage = ErrorHandlerUtil.handleDioError(e, 'Erro ao obter lista de ocupações');
+      Logger().e('Erro ao obter lista de ocupações (lista - Ocupações): $e');
+      throw Exception(errorMessage);
     }
   }
 

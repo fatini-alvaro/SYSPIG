@@ -92,7 +92,6 @@ class CadastrarFazendaPageState extends State<CadastrarFazendaPage> {
                   });
                 },
               ),
-              SizedBox(height: 10),
               if (_isCitySearchFocused)
                 SizedBox(
                   height: 200,

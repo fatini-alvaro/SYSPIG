@@ -62,12 +62,13 @@ routes.get('/granjas/:fazenda_id', granjaController.list);
 routes.get('/granjas/granja/:granja_id', granjaController.getById);
 
 //Baia
-routes.post('/baias', new BaiaController().create);
-routes.put('/baias/:baia_id', new BaiaController().update); 
-routes.delete('/baias/:baia_id', new BaiaController().delete); 
-routes.get('/baias/:granja_id', new BaiaController().list);
-routes.get('/baias/byFazenda/:fazenda_id', new BaiaController().listByFazenda);
-routes.get('/baias/baia/:baia_id', new BaiaController().getById);
+const baiaController = new BaiaController();
+routes.post('/baias', baiaController.createOrUpdate);
+routes.put('/baias/:baia_id', baiaController.createOrUpdate); 
+routes.delete('/baias/:baia_id',baiaController.delete); 
+routes.get('/baias/:granja_id', baiaController.listByGranja);
+routes.get('/baias/byFazenda/:fazenda_id', baiaController.listByFazenda);
+routes.get('/baias/baia/:baia_id', baiaController.getById);
 
 //Cidade
 const cidadeController = new CidadeController();
@@ -87,7 +88,7 @@ routes.post('/anotacoes', anotacaoController.createOrUpdate);
 routes.put('/anotacoes/:anotacao_id', anotacaoController.createOrUpdate); 
 routes.delete('/anotacoes/:anotacao_id', anotacaoController.delete); 
 routes.get('/anotacoes/:fazenda_id', anotacaoController.list);
-routes.get('/anotacoes/getbybaia:baia_id', anotacaoController.listByBaia);
+routes.get('/anotacoes/getbybaia/:baia_id', anotacaoController.listByBaia);
 routes.get('/anotacoes/anotacao/:anotacao_id', anotacaoController.getById);
 
 //Lote
@@ -99,7 +100,10 @@ routes.put('/lotes/:lote_id', loteController.createOrUpdate);
 routes.get('/lotes/lote/:lote_id', loteController.getById); 
 
 //Ocupacao
-routes.post('/ocupacoes', new OcupacaoController().create);
-routes.get('/ocupacoes/ocupacao/:ocupacao_id', new OcupacaoController().getById);
+const ocupacaoController = new OcupacaoController();
+routes.post('/ocupacoes', ocupacaoController.createOrUpdate);
+routes.get('/ocupacoes/ocupacao/:ocupacao_id', ocupacaoController.getById);
+routes.get('/ocupacoes/getbybaia/:baia_id', ocupacaoController.getByBaiaId);
+routes.get('/ocupacoes/:fazenda_id', ocupacaoController.list);
 
 export default routes

@@ -1,14 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:syspig/components/cards/custom_baia_acoes_tab_card.dart';
 import 'package:syspig/components/cards/custom_baia_informacoes_tab_card.dart';
-import 'package:syspig/controller/anotacao/anotacao_controller.dart';
-import 'package:syspig/controller/baia/baia_controller.dart';
-import 'package:syspig/controller/ocupacao/ocupacao_controller.dart';
+import 'package:syspig/controller/ocupacao_baia_tela/ocupacao_baia_tela_controller.dart';
 import 'package:syspig/model/baia_model.dart';
 import 'package:syspig/model/ocupacao_model.dart';
-import 'package:syspig/repositories/anotacao/anotacao_repository_imp.dart';
-import 'package:syspig/repositories/baia/baia_repository_imp.dart';
-import 'package:syspig/repositories/ocupacao/ocupacao_repository_imp.dart';
 import 'package:syspig/themes/themes.dart';
 
 class BaiaPage extends StatefulWidget {
@@ -20,12 +15,11 @@ class BaiaPage extends StatefulWidget {
   State<BaiaPage> createState() => BaiaPageState();
 }
 
-
 class BaiaPageState extends State<BaiaPage> {
-  final AnotacaoController _anotacaoController = AnotacaoController(AnotacaoRepositoryImp());
-  final BaiaController _baiaController = BaiaController(BaiaRepositoryImp());
+  final OcupacaoBaiaTelaController _ocupacaoBaiaTelaController = OcupacaoBaiaTelaController();
 
   BaiaModel? _baia;
+  OcupacaoModel? _ocupacao;
   
   @override
   void initState() {
@@ -35,18 +29,27 @@ class BaiaPageState extends State<BaiaPage> {
 
   Future<void> _carregarDados() async {
     await _carregarBaia();
+    await _carregarOcupacao();
   }
 
   Future<void> _carregarBaia() async {   
-    final baia = await _baiaController.fetchBaiaById(widget.baiaId!);  
+    final baia = await _ocupacaoBaiaTelaController.fetchBaiaById(widget.baiaId!);  
 
     setState(() {
       _baia = baia;
     }); 
   }
 
-  Future<void> _carregarAnotacoes() async {   
-    _anotacaoController.getAnotacoesByBaia(widget.baiaId!);   
+  Future<void> _carregarOcupacao() async {   
+    final ocupacao = await _ocupacaoBaiaTelaController.fetchLoteById(widget.baiaId!);
+    
+    setState(() {
+      _ocupacao = ocupacao;
+    }); 
+  }
+
+  void recarregarDados() async {
+    await _carregarOcupacao();
   }
 
   @override
@@ -70,7 +73,7 @@ class BaiaPageState extends State<BaiaPage> {
         appBar: AppBar(
           backgroundColor: AppThemes.lightTheme.primaryColor,
           foregroundColor: Colors.white,
-          title: Text('Baia - ${_baia!.numero}   Animal - ${_baia!.ocupacao!.animal!.numeroBrinco}'),
+          title: Text('Nº: ${_baia!.numero} - Código Ocupação: ${_ocupacao!.codigo}'),
           centerTitle: true,
           bottom: TabBar(
             labelColor: Colors.white,            
@@ -95,8 +98,8 @@ class BaiaPageState extends State<BaiaPage> {
         ),
         body: TabBarView(
           children: [            
-            CustomBaiaAcoesTabCard(),                    
-            CustomBaiaInformacoesTabCard(ocupacao: _baia!.ocupacao),
+            CustomBaiaAcoesTabCard(baia: _baia!, ocupacao: _ocupacao, recarregarDados: recarregarDados),                    
+            CustomBaiaInformacoesTabCard(ocupacao: _ocupacao),
           ],
         ),
       ),

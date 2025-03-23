@@ -41,7 +41,7 @@ class UsuarioModel {
       'id': id,
       'nome': nome,
       'email': email,
-      'tipoUsuario': tipoUsuario != null ? tipoUsuario!.toJson() : null,
+      'tipo_usuario_id': tipoUsuario?.id,
       'senha': senha,
       'accessToken': accessToken,
       'refreshToken': refreshToken,

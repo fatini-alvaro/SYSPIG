@@ -11,6 +11,7 @@ import { Lote } from '../entities/Lote';
 import { Cidade } from '../entities/Cidade';
 import { UsuarioFazenda } from '../entities/UsuarioFazenda';
 import { TipoUsuario } from '../entities/TipoUsuario';
+import { Ocupacao } from '../entities/Ocupacao';
 
 export class ValidationService {
   static async validateAndReturnFazenda(fazendaId: number): Promise<Fazenda> {
@@ -89,12 +90,16 @@ export class ValidationService {
     return anotacao;
   }
 
-  static async validateAndReturnGranja(granjaId?: number): Promise<Granja | null> {
+  static async validateAndReturnGranja(granjaId?: number, fazenda?: Fazenda): Promise<Granja | null> {
     if (!granjaId) return null;
 
     const granja = await AppDataSource.getRepository(Granja).findOneBy({ id: granjaId });
     if (!granja) {
       throw new ValidationError('Granja não encontrada.', 404);
+    }
+
+    if (fazenda && granja.fazenda.id !== fazenda.id) {
+      throw new ValidationError('A Granja informada não pertence à mesma fazenda.');
     }
 
     return granja;
@@ -123,6 +128,21 @@ export class ValidationService {
     }
 
     return lote;
+  }
+
+  static async validateAndReturnOcupacao(ocupacaoId?: number, fazenda?: Fazenda): Promise<Ocupacao | null> {
+    if (!ocupacaoId) return null;
+
+    const ocupacao = await AppDataSource.getRepository(Ocupacao).findOneBy({ id: ocupacaoId });
+    if (!ocupacao) {
+      throw new ValidationError('Ocupação não encontrada.', 404);
+    }
+
+    if (fazenda && ocupacao.fazenda.id !== fazenda.id) {
+      throw new ValidationError('A Ocupação informada não pertence à mesma fazenda.');
+    }
+
+    return ocupacao;
   }
 
   static async validateAndReturnCidade(cidadeId?: number): Promise<Cidade | null> {

@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:syspig/components/buttons/custom_salvar_cadastro_button_component.dart';
 import 'package:syspig/controller/cadastrar_lote/cadastrar_lote_controller.dart';
+import 'package:syspig/enums/animal_constants.dart';
 import 'package:syspig/model/animal_model.dart';
 import 'package:syspig/model/lote_model.dart';
 import 'package:syspig/themes/themes.dart';
 import 'package:syspig/utils/dialogs.dart';
 import 'package:syspig/view/selecionar_lote/selecionar_lote_page.dart';
+import 'package:syspig/widgets/custom_data_table.dart';
 import 'package:syspig/widgets/custom_date_time_field_widget.dart';
 import 'package:syspig/widgets/custom_text_form_field_widget.dart';
 
@@ -190,7 +192,6 @@ class CadastrarLotePageState extends State<CadastrarLotePage> {
                   });
                 },
               ),
-              SizedBox(height: 10),
               if (_isAnimalSearchFocused) 
                 SizedBox(
                   height: 200,
@@ -212,64 +213,49 @@ class CadastrarLotePageState extends State<CadastrarLotePage> {
                   ),
                 ),
               SizedBox(height: 20),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Center(
-                    child: Text(
-                      'Animais adicionados ao lote',
+              CustomDataTable(
+                title: 'Animais adicionados ao lote',
+                columns: const [
+                  DataColumn(
+                    label: Text(
+                      'Nº Brinco',
+                      style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  DataColumn(label: Text(
+                      'Ações',
                       style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
                   ),
-                  SizedBox(height: 10),
-                  Container(
-                    width: double.infinity,
-                    constraints: BoxConstraints(
-                      maxHeight: 315,
-                    ),
-                    child: SingleChildScrollView(
-                      child: DataTable(
-                        columns: [
-                          DataColumn(label: Text(
-                              'Nº Brinco',
-                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                          DataColumn(label: Text(
-                              'Ações',
-                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                        ],
-                        rows: _cadastrarLoteController.animaisSelecionados.map((animal) {
-                          return DataRow(
-                            cells: [
-                              DataCell(Text(animal.numeroBrinco)),
-                              DataCell(
-                                ElevatedButton.icon(
-                                  onPressed: () {
-                                    setState(() {                                      
-                                    _removerAnimal(animal);
-                                    });
-                                  },
-                                  icon: Icon(Icons.delete, color: Colors.white),
-                                  label: Text(
-                                    'Excluir',
-                                    style: TextStyle(color: Colors.white),
-                                  ),
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.red,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          );
-                        }).toList(),
-                      ),
-                    ),
-                  ),
                 ],
-              ),           
+                data: _cadastrarLoteController.animaisSelecionados,
+                generateRows: (animais) {
+                  return animais.map((animal) {
+                    return DataRow(
+                      cells: [
+                        DataCell(Text(animal.numeroBrinco)),
+                        DataCell(
+                          ElevatedButton.icon(
+                            onPressed: () {
+                              setState(() {                                      
+                              _removerAnimal(animal);
+                              });
+                            },
+                            icon: Icon(Icons.delete, color: Colors.white),
+                            label: Text(
+                              'Excluir',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.red,
+                            ),
+                          ),
+                        ),
+                      ],
+                    );
+                  }).toList();
+                },
+              ),
               Expanded(
                 child: ListView(
                   children: [

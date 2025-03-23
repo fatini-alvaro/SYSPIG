@@ -15,100 +15,64 @@ class CustomBaiaCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 5, vertical: 8),
-      height: 50,
-      child: GestureDetector(
-        onTap: baia.vazia! ? onTapVazia : onTapOcupada,
+    double cardWidth = MediaQuery.of(context).size.width * 0.4; // 40% da tela
+    double cardHeight = 130; // Altura fixa
+
+    return GestureDetector(
+      onTap: baia.vazia! ? onTapVazia : onTapOcupada,
+      child: SizedBox(
+        width: cardWidth,
+        height: cardHeight,
         child: Card(
           color: baia.vazia! ? Colors.grey : Colors.orange,
-          elevation: 7,
-          child: Container(
-            width: 170,
-            height: 170,
-            child: Stack(
+          elevation: 5,
+          child: Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Positioned(
-                  top: 20,
-                  left: 10,
-                  child: Container(
-                    width: 150, // Ajuste este valor conforme necessário
-                    height: 40,
-                    child: Text(
-                        'Nº - ${baia.numero}',
+                Text(
+                  'Nº - ${baia.numero}',
+                  maxLines: 2, // Limita a uma linha
+                  overflow: TextOverflow.ellipsis, // Adiciona "..." se o texto for longo
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),                
+                if (!baia.vazia!)
+                  Text(
+                    'Ocupação - ${baia.ocupacao?.codigo ?? "N/A"}',
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 15,
+                    ),
+                  ),
+                if (baia.vazia!)
+                  const Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Vazia",
                         style: TextStyle(
                           color: Colors.white,
-                          fontSize: 25,
+                          fontSize: 15,
                           fontWeight: FontWeight.bold,
                         ),
-                    ),                    
-                  ),
-                ),
-                Positioned(
-                  top: 60,
-                  left: 10,
-                  child: Container(
-                    width: 150, // Ajuste este valor conforme necessário
-                    height: 40,
-                    child: Text(
-                        'Granja - ${baia.granja?.descricao}',
+                      ),
+                      Text(
+                        "Clique para abrir",
                         style: TextStyle(
                           color: Colors.white,
-                          fontSize: 20,
+                          fontSize: 15,
                         ),
-                    ),                    
+                      ),
+                    ],
                   ),
-                ),
-                if (!baia.vazia!) 
-                  Positioned(
-                    bottom: 10,
-                    left: 10,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "Brinco:",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Text(
-                          "- ${baia.ocupacao?.animal!.numeroBrinco}",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 20,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                 if (baia.vazia!)  
-                  const Positioned(
-                    bottom: 50,
-                    left: 10,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "Vazia",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 25,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Text(
-                          "Clique para abrir",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 20,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),                
               ],
             ),
           ),

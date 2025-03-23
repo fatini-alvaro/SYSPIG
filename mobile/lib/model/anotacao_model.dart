@@ -1,6 +1,8 @@
 import 'package:syspig/model/animal_model.dart';
 import 'package:syspig/model/baia_model.dart';
 import 'package:syspig/model/fazenda_model.dart';
+import 'package:syspig/model/ocupacao_model.dart';
+import 'package:syspig/model/usuario_model.dart';
 
 class AnotacaoModel {
   final int? id;
@@ -9,8 +11,8 @@ class AnotacaoModel {
   final AnimalModel? animal;
   final BaiaModel? baia;
   final DateTime? data;
-  // final TipoGranjaModel matriz;
-  // final TipoGranjaModel pai;
+  final OcupacaoModel? ocupacao;
+  final UsuarioModel? createdBy;
 
   AnotacaoModel({
     this.id,
@@ -19,6 +21,8 @@ class AnotacaoModel {
     this.animal,
     this.baia,
     this.data,
+    this.ocupacao,
+    this.createdBy,
   });
 
   factory AnotacaoModel.fromJson(Map<String, dynamic> json) {
@@ -29,6 +33,8 @@ class AnotacaoModel {
       animal: json['animal'] != null ? AnimalModel.fromJson(json['animal']) : null,
       baia: json['baia'] != null ? BaiaModel.fromJson(json['baia']) : null,
       data: json['data'] != null ? DateTime.parse(json['data']) : null,
+      ocupacao: json['ocupacao'] != null ? OcupacaoModel.fromJson(json['ocupacao']) : null,
+      createdBy: json['createdBy'] != null ? UsuarioModel.fromJson(json['createdBy']) : null,
     );
   }
 
@@ -39,12 +45,14 @@ class AnotacaoModel {
       'descricao': descricao,
       'animal_id': animal?.id,
       'baia_id': baia?.id,
+      'ocupacao_id': ocupacao?.id,
       'data': data?.toIso8601String(),
+      'created_by': createdBy?.id,
     };
   }
 
   @override
   String toString() {
-    return 'id: $id, fazenda: $fazenda, descricao: $descricao, animal: $animal, baia: $baia, data: $data';
+    return 'id: $id, fazenda: $fazenda, descricao: $descricao, animal: $animal, baia: $baia, data: $data, ocupacao: $ocupacao, createdBy: $createdBy';
   }
 }

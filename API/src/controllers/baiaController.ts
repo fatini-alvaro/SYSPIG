@@ -1,183 +1,125 @@
 import { Request, Response } from "express";
-import { AppDataSource } from "../data-source";
-import { Granja } from "../entities/Granja";
-import { Fazenda } from "../entities/Fazenda";
-import { TipoGranja } from "../entities/TipoGranja";
-import { baiaRepository } from "../repositories/baiaRepository";
-import { Baia } from "../entities/Baia";
-import { StatusOcupacao } from "../constants/ocupacaoConstants";
+import { BaiaService } from "../services/BaiaService";
+import { handleError } from "../utils/errorHandler";
 
 export class BaiaController {
-  async create(req: Request, res: Response){
-    const { 
-      numero,
-      granja_id,
-    } = req.body;
 
+  private baiaService: BaiaService;
+  
+  constructor() {
+    this.baiaService = new BaiaService();
+  }
+
+  createOrUpdate = async (req: Request, res: Response) => {
+    const { numero, granja_id } = req.body;
     const fazenda_id = req.headers['fazenda-id'];
+    const usuario_id = req.headers['user-id'];
+    const baia_id = req.params.baia_id ? Number(req.params.baia_id) : undefined;
 
-    if (!fazenda_id || !numero || !granja_id)
-      return res.status(400).json({ message: 'Parametros não informado'});    
+    if (!fazenda_id || !numero || !usuario_id || !granja_id) {
+      return res.status(400).json({ message: 'Parâmetros não informados' });
+    }
 
     try {
+      const baiaData = {
+        numero,
+        granja_id: Number(granja_id),
+        fazenda_id: Number(fazenda_id),
+        usuarioIdAcao :  Number(usuario_id)
+      };
 
-      var newBaia = await AppDataSource.transaction(async (transactionalEntityManager) => {
+      const baia = await this.baiaService.createOrUpdate(baiaData, baia_id);
 
-        const fazendaInstancia = await transactionalEntityManager.findOneBy( Fazenda, { id: Number(fazenda_id)});
-        const granjaInstancia = await transactionalEntityManager.findOneBy(Granja, { id: Number(granja_id)});
-  
-        if (!fazendaInstancia)
-          return res.status(404).json({ message: 'Fazenda não encontrado.' });
-  
-        if (!granjaInstancia)
-          return res.status(404).json({ message: 'Granja não encontrado.' });
-        
-        const newBaia = baiaRepository.create({
-          fazenda: fazendaInstancia,
-          numero: numero,
-          granja: granjaInstancia
-        });
+      if (baia_id) {
+        return res.status(200).json(baia); // Atualizado
+      } else {
+        return res.status(201).json(baia); // Criado
+      }
 
-        await transactionalEntityManager.save(newBaia);
-
-        const savedBaia = await transactionalEntityManager.findOneBy(
-          Baia, 
-          { id: newBaia.id },
-        );
-  
-        return savedBaia;
-      });
-      
-      return res.status(201).json(newBaia);
     } catch (error) {
-      console.log(error);
-      return res.status(500).json({ message: 'Erro ao criar baia'});
-    } 
-  }
+      console.error("Erro ao criar/atualizar baia:", error);
+      return handleError(error, res, "Erro interno ao processar baia");
+    }
+  };
 
-  async list(req: Request, res: Response){
-    try {      
+  listByGranja = async (req: Request, res: Response) => {
+    try {
       const { granja_id } = req.params;
 
-      const baias = await baiaRepository
-        .createQueryBuilder("baia")
-        .leftJoinAndSelect("baia.granja", "granja")
-        .leftJoinAndSelect("baia.ocupacao", "ocupacao")
-        .leftJoinAndSelect("ocupacao.animal", "animal")
-        .select([
-          "baia.id",
-          "baia.numero",
-          "baia.vazia",
-          "granja.descricao",
-          "ocupacao.id",
-          "animal.numero_brinco"
-        ])
-        .where("baia.granja = :granja_id", { granja_id: Number(granja_id) })
-        .orderBy("baia.numero", "DESC")
-        .getMany();
+      if (!granja_id)
+        return res.status(400).json({ message: 'Parametros não informado'});
 
-      return res.status(200).json(baias);      
+      const baias = await this.baiaService.listByGranja(Number(granja_id));
+      return res.status(200).json(baias);
     } catch (error) {
-      console.log(error);
-      return res.status(500).json({ message: ''});
+      console.error("Erro ao listar baias:", error);
+      return handleError(error, res, "Erro ao listar baias");
     }
-  }
+  };
 
-  async listByFazenda(req: Request, res: Response){
-    try {      
+  listByFazenda = async (req: Request, res: Response) => {
+    try {
       const { fazenda_id } = req.params;
 
-      const baias = await baiaRepository
-        .createQueryBuilder("baia")
-        .leftJoinAndSelect("baia.granja", "granja")
-        .leftJoinAndSelect("baia.ocupacao", "ocupacao")
-        .leftJoinAndSelect("ocupacao.animal", "animal")
-        .select([
-          "baia.id",
-          "baia.numero",
-          "baia.vazia",
-          "granja.descricao",
-          "ocupacao.id",
-          "animal.numero_brinco"
-        ])
-        .where("baia.fazenda_id = :fazenda_id", { fazenda_id: Number(fazenda_id) })
-        .orderBy("baia.numero", "DESC")
-        .getMany();
+      if (!fazenda_id)
+        return res.status(400).json({ message: 'Parametros não informado'});
 
-      return res.status(200).json(baias);       
+      const baias = await this.baiaService.listByFazenda(Number(fazenda_id));
+      return res.status(200).json(baias);
     } catch (error) {
-      console.log(error);
-      return res.status(500).json({ message: ''});
+      console.error("Erro ao listar baias:", error);
+      return handleError(error, res, "Erro ao listar baias");
     }
-  }
+  };
 
-  async getById(req: Request, res: Response){
+  getById = async (req: Request, res: Response) => {
     try {      
       const { baia_id } = req.params;
 
-      const baia = await baiaRepository
-        .createQueryBuilder("baia")
-        .leftJoinAndSelect("baia.ocupacao", "ocupacao")
-        .leftJoinAndSelect("ocupacao.animal", "animal")
-        .select([
-          "baia.id",
-          "baia.numero",
-          "baia.vazia",
-          "ocupacao",
-          "animal"
-        ])
-        .where("baia.id = :baia_id", { baia_id: Number(baia_id) })  // Corrigido para baia.id
-        .getOne();
+      const baia = await this.baiaService.getById(Number(baia_id));
 
       if (!baia) {
-        return res.status(404).json({ message: 'Baia não encontrada' });
+        return res.status(404).json({ message: 'baia não encontrada' });
       }
 
-      return res.status(200).json(baia);      
+      return res.status(200).json(baia);
+      
     } catch (error) {
-      console.log(error);
-      return res.status(500).json({ message: 'Erro ao buscar a baia'});
+      console.error("Erro ao buscar baia:", error);
+      return handleError(error, res, "Erro ao buscar baia");
     }
   }
 
-  async listAllOcupacoes(req: Request, res: Response){
+  listAllOcupacoes = async (req: Request, res: Response) => {
     try {      
       const { granja_id } = req.params;
 
-      const baias = await baiaRepository.find({ 
-        where: { 
-          granja: { 
-            id: Number(granja_id) 
-          } 
-        }, 
-        relations: ['granja', 'fazenda', 'fazenda.cidade', 'fazenda.cidade.uf', 'ocupacoes']
-      });
+      if (!granja_id)
+        return res.status(400).json({ message: 'Parametros não informado'});      
 
-      return res.status(200).json(baias);      
+      const anotacoes = await this.baiaService.listAllOcupacoes(Number(granja_id));
+
+      return res.status(200).json(anotacoes);
+      
     } catch (error) {
-      console.log(error);
-      return res.status(500).json({ message: ''});
+      console.error("Erro ao buscar o Anotação:", error);
+      return handleError(error, res, "Erro ao buscar o Anotação");
     }
   }
 
-  async update(req: Request, res: Response) {
+  delete = async (req: Request, res: Response) => {
+    const baia_id = req.params.baia_id;
+
+    if (!baia_id)
+      return res.status(400).json({ message: 'Parâmetros não informados' });
+
     try {
+      await this.baiaService.delete(Number(baia_id));
 
-      return res.status(200).json();
+      return res.status(200).json({ message: 'Baia excluído com sucesso' });
     } catch (error) {
-      console.log(error);
-      return res.status(500).json({ message: 'Erro ao atualizar baia' });
-    }
-  }
-
-  async delete(req: Request, res: Response) {
-    try {
-
-      return res.status(200).json({ message: 'Baia excluída com sucesso' });
-
-    } catch (error) {
-      console.log(error);
-      return res.status(500).json({ message: 'Erro ao excluir baia' });
+      console.error("Erro ao excluir baia:", error);
+      return handleError(error, res, "Erro ao excluir baia");
     }
   }
 

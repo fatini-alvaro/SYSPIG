@@ -1,7 +1,9 @@
 import 'package:dio/dio.dart';
+import 'package:logger/logger.dart';
 import 'package:syspig/api/api_client.dart';
 import 'package:syspig/model/usuario_model.dart';
 import 'package:syspig/repositories/usuario/usuario_repository.dart';
+import 'package:syspig/utils/error_handler_util.dart';
 
 class UsuarioRepositoryImp implements UsuarioRepository {
 
@@ -48,24 +50,12 @@ class UsuarioRepositoryImp implements UsuarioRepository {
   @override
   Future<UsuarioModel> create(UsuarioModel usuario) async {
     try {
-      Map<String, dynamic> usuarioData = {
-        'nome': usuario.nome,
-        'email': usuario.email,
-        'senha': usuario.senha
-      };
-
-      var response = await _apiClient.dio.post('/usuarios', data: usuarioData);
+      var response = await _apiClient.dio.post('/usuarios', data: usuario.toJson());
       return UsuarioModel.fromJson(response.data);
-    } catch (e) {
-      if (e is DioException) {
-        throw DioException(
-          requestOptions: e.requestOptions,
-          response: e.response, 
-          type: e.type,
-        );
-      } else {
-        throw Exception('Erro ao criar usuário');
-      }
+    } catch (e) {      
+      String errorMessage = ErrorHandlerUtil.handleDioError(e, 'Erro ao criar usuário');
+      Logger().e('Erro ao criar usuário (create - Usuário): $e');
+      throw Exception(errorMessage);
     }
   }
 }

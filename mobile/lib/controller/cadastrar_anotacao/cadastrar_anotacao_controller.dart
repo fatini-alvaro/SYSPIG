@@ -4,9 +4,11 @@ import 'package:syspig/controller/anotacao/anotacao_controller.dart';
 import 'package:syspig/model/animal_model.dart';
 import 'package:syspig/model/anotacao_model.dart';
 import 'package:syspig/model/baia_model.dart';
+import 'package:syspig/model/ocupacao_model.dart';
 import 'package:syspig/repositories/animal/animal_repository_imp.dart';
 import 'package:syspig/repositories/anotacao/anotacao_repository_imp.dart';
 import 'package:syspig/repositories/baia/baia_repository_imp.dart';
+import 'package:syspig/repositories/ocupacao/ocupacao_repository_imp.dart';
 import 'package:syspig/services/prefs_service.dart';
 import 'package:syspig/utils/async_fetcher_util.dart';
 import 'package:syspig/utils/async_handler_util.dart';
@@ -19,6 +21,7 @@ class CadastrarAnotacaoController with ChangeNotifier {
   
   final AnimalRepositoryImp _animalRepository = AnimalRepositoryImp();
   final BaiaRepositoryImp _baiaRepository = BaiaRepositoryImp();
+  final OcupacaoRepositoryImp _ocupacaoRepository = OcupacaoRepositoryImp();
 
   BaiaModel? _baia;
    void setBaia(BaiaModel? value) {
@@ -34,6 +37,13 @@ class CadastrarAnotacaoController with ChangeNotifier {
   }
   AnimalModel? get animal => _animal;
 
+  OcupacaoModel? _ocupacao;
+   void setOcupacao(OcupacaoModel? value) {
+    _ocupacao = value;
+    notifyListeners();
+  }
+  OcupacaoModel? get ocupacao => _ocupacao;
+
   String? _descricao;
   setDescricao(String value) => _descricao = value;
   String? get descricao => _descricao;
@@ -47,6 +57,7 @@ class CadastrarAnotacaoController with ChangeNotifier {
       descricao: _descricao,
       animal: _animal,
       baia: _baia,
+      ocupacao: _ocupacao,
       data: _data,
     );
   }
@@ -75,6 +86,7 @@ class CadastrarAnotacaoController with ChangeNotifier {
             descricao: _descricao,
             animal: _animal,
             baia: _baia,
+            ocupacao: _ocupacao,
             data: _data,
           ),
         );
@@ -103,6 +115,16 @@ class CadastrarAnotacaoController with ChangeNotifier {
         return await _baiaRepository.getListAll(idFazenda!);
       },
       errorMessage: 'Erro ao buscar as baias do repositório',
+    ) ?? [];
+  }
+
+  Future<List<OcupacaoModel>> getOcupacoesFromRepository() async {
+    return await AsyncFetcher.fetch(
+      action: () async {
+        var idFazenda = await PrefsService.getFazendaId();
+        return await _ocupacaoRepository.getList(idFazenda!);
+      },
+      errorMessage: 'Erro ao buscar as ocupações do repositório',
     ) ?? [];
   }
 

@@ -28,7 +28,7 @@ class CidadeModel {
     return {
       'id': id,
       'nome': nome,
-      'uf': uf != null ? uf!.toJson() : null,
+      'uf_id': uf?.id,
     };
   }
 }

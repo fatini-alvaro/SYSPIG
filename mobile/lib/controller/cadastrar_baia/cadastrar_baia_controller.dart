@@ -7,12 +7,16 @@ import 'package:syspig/model/granja_model.dart';
 import 'package:syspig/repositories/baia/baia_repository_imp.dart';
 import 'package:syspig/repositories/granja/granja_repository_imp.dart';
 import 'package:syspig/services/prefs_service.dart';
-import 'package:syspig/utils/dialogs.dart';
+import 'package:syspig/utils/async_fetcher_util.dart';
+import 'package:syspig/utils/async_handler_util.dart';
 
 
 class CadastrarBaiaController with ChangeNotifier {
 
-  final BaiaController _baiaController = BaiaController(BaiaRepositoryImp());
+  final BaiaController _baiaController = 
+      BaiaController(BaiaRepositoryImp());
+
+
   final GranjaRepositoryImp _granjaRepository = GranjaRepositoryImp();
 
   String? _numero;
@@ -20,81 +24,70 @@ class CadastrarBaiaController with ChangeNotifier {
   String? get numero => _numero;
 
   GranjaModel? _granja;
-  void setGranja(GranjaModel? value) => _granja = value;
+  void setGranja(GranjaModel? value) {
+    _granja = value;
+    notifyListeners();
+  }
   GranjaModel? get granja => _granja;
 
-  String? _capacidade;
-  setCapacidade(String value) => _capacidade = value;
+  Future<BaiaModel> createBaia() async {
+    return BaiaModel(
+      numero: _numero,
+      granja: _granja,
+      vazia: true
+    );
+  }
 
   Future<bool> create(BuildContext context) async {
+    final baiaCriada = await AsyncHandler.execute(
+      context: context,
+      action: () async {
+        final novaBaia = await createBaia();
+        return await _baiaController.create(novaBaia);
+      },
+      loadingMessage: 'Aguarde, Criando baia',
+      successMessage: 'Baia criada com sucesso!',
+    );
 
-    Dialogs.showLoading(context, message:'Aguarde, Criando Baia');
+    return baiaCriada != null;
+  }
 
-    try {
-      BaiaModel novaBaia = await BaiaModel(
-        numero: _numero!,
-        granja: _granja!,
-        vazia: true
-      );
+  Future<bool> update(BuildContext context, int baiaId) async {
+    final baiaEditada = await AsyncHandler.execute(
+      context: context,
+      action: () async {
+        return await _baiaController.update(
+          BaiaModel(
+            id: baiaId,
+            numero: _numero,
+            granja: _granja,
+            vazia: true
+          ),
+        );
+      },
+      loadingMessage: 'Aguarde, Editando Baia',
+      successMessage: 'Baia editada com sucesso!',
+    );
 
-      BaiaModel baiaCriada = await _baiaController.create(context, novaBaia);
-
-      Dialogs.hideLoading(context);
-
-      if (baiaCriada != null) {
-        Dialogs.successToast(context, 'Baia criada com sucesso!');
-      } else {
-        Dialogs.errorToast(context, 'Falha ao criar a Baia');
-      }
-    } catch (e) {
-      Logger().e(e);
-      Dialogs.hideLoading(context);
-      Dialogs.errorToast(context, 'Falha ao criar a Baia');
-    }
-
-    return true;
+    return baiaEditada != null;
   }
 
   Future<List<GranjaModel>> getGranjasFromRepository() async {
-    try {
-
-      var idFazenda = await PrefsService.getFazendaId();
-
-      return await _granjaRepository.getList(idFazenda!); 
-    } catch (e) {
-      Logger().e('Erro ao buscar as granjas do repositório: $e');
-      throw Exception('Erro ao buscar as granjas');
-    }
+    return await AsyncFetcher.fetch(
+      action: () async {
+        var idFazenda = await PrefsService.getFazendaId();
+        return await _granjaRepository.getList(idFazenda!);
+      },
+      errorMessage: 'Erro ao buscar os granjas do repositório',
+    ) ?? [];
   }
 
-  Future<bool> update(BuildContext context, BaiaModel baia) async {
-
-    Dialogs.showLoading(context, message:'Aguarde, Criando Nova Granja');
-
-    try {
-      BaiaModel baiaEdicao = await BaiaModel(
-        id: baia.id,
-        numero: _numero!,
-        granja: _granja!,
-        fazenda: baia.fazenda,
-        vazia: true
-      );
-
-      BaiaModel baiaEditada = await _baiaController.update(context, baiaEdicao);
-
-      Dialogs.hideLoading(context);
-
-      if (baiaEditada != null) {
-        Dialogs.successToast(context, 'Baia editada com sucesso!');
-      } else {
-        Dialogs.errorToast(context, 'Falha ao editada a Baia');
-      }
-    } catch (e) {
-      Logger().e(e);
-      Dialogs.hideLoading(context);
-      Dialogs.errorToast(context, 'Falha ao editar a Baia');
-    }
-
-    return true;
+  Future<BaiaModel?> fetchBaiaById(int baiaId) async {
+    return await AsyncFetcher.fetch(
+      action: () async {
+        return await _baiaController.fetchBaiaById(baiaId);
+      },
+      errorMessage: 'Erro ao buscar baia',
+    );
   }
 }

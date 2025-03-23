@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:syspig/components/cards/custom_pre_visualizacao_anotacao_card.dart';
+import 'package:syspig/enums/animal_constants.dart';
 import 'package:syspig/model/ocupacao_model.dart';
 import 'package:syspig/utils/date_format_util.dart';
 import 'package:syspig/view/animal/cadastrar_animal_page.dart';
+import 'package:syspig/widgets/custom_data_table.dart';
 
 class CustomBaiaInformacoesTabCard extends StatefulWidget {
 
@@ -18,8 +20,8 @@ class _CustomBaiaInformacoesTabCardState extends State<CustomBaiaInformacoesTabC
   @override
   Widget build(BuildContext context) {
     return Card(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: ListView(
+        shrinkWrap: true, // Faz com que o ListView ocupe apenas o espaço necessário
         children: [
           const SizedBox(height: 20),
           Padding(
@@ -35,7 +37,7 @@ class _CustomBaiaInformacoesTabCardState extends State<CustomBaiaInformacoesTabC
               ),
             ),
           ),
-          const SizedBox(height: 7), 
+          const SizedBox(height: 7),
           Padding(
             padding: EdgeInsets.only(left: 16),
             child: Align(
@@ -49,93 +51,60 @@ class _CustomBaiaInformacoesTabCardState extends State<CustomBaiaInformacoesTabC
               ),
             ),
           ),
-          const SizedBox(height: 7), 
+          SizedBox(height: 10),
           Padding(
-            padding: EdgeInsets.only(left: 16),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                'Animal: ${widget.ocupacao!.animal!.numeroBrinco}',
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
+            padding: EdgeInsets.all(16),
+            child: CustomDataTable(
+              title: 'Animais na baia',
+              columns: const [
+                DataColumn(
+                  label: Text(
+                    'Nº Brinco',
+                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                  ),
                 ),
-              ),
+                DataColumn(
+                  label: Text(
+                    'Sexo',
+                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ],
+              data: widget.ocupacao?.ocupacaoAnimais ?? [],
+              generateRows: (animais) {
+                return animais.map((ocupacaoAnimal) {
+                  return DataRow(
+                    cells: [
+                      DataCell(Text(ocupacaoAnimal.animal!.numeroBrinco)),
+                      DataCell(Text(ocupacaoAnimal.animal!.sexo == SexoAnimal.macho ? 'Macho' : 'Fêmea')),
+                    ],
+                  );
+                }).toList();
+              },
             ),
           ),
-          const SizedBox(height: 22), 
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.orange,
-                foregroundColor: Colors.white,    
-                elevation: 5,    
-                minimumSize: Size(MediaQuery.of(context).size.width, 50),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(5),
-                ),
-              ),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => CadastrarAnimalPage(
-                      animalId: widget.ocupacao!.animal!.id,
-                    ),
-                  )
-                );
-              }, 
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.info_outline,
-                    color: Colors.white,
-                  ),
-                  SizedBox(width: 8),
-                  Text(
-                    'Abrir Cadastro do animal',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          SizedBox(height: 25),
-          Padding(
-            padding: EdgeInsets.only(left: 16),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                'Anotações',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
+         SizedBox(height: 15),
+          Center( // Centraliza o texto horizontalmente
+            child: Text(
+              'Anotações',
+              style: TextStyle(
+                fontSize: 19,
+                fontWeight: FontWeight.bold,
               ),
             ),
           ),
           SizedBox(height: 5),
-          Expanded(
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: 
-                Column(
-                  children: [
-                    CustomPreVisualizacaoAnotacaoCard(),                     
-                    SizedBox(height: 15),
-                    CustomPreVisualizacaoAnotacaoCard(),                     
-                    SizedBox(height: 15),
-                    CustomPreVisualizacaoAnotacaoCard(),                     
-                    SizedBox(height: 15),
-                  ],
-                )
-              ),
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              children: [
+                if (widget.ocupacao?.anotacoes != null && widget.ocupacao!.anotacoes!.isNotEmpty)
+                  ...widget.ocupacao!.anotacoes!.map((anotacao) => CustomPreVisualizacaoAnotacaoCard(anotacao: anotacao)).toList()
+                else
+                  Text("Nenhuma anotação disponível"),
+              ],
             ),
-          ),
-          //fim tab1
+          ),          // Fim tab1
         ],
       ),
     );

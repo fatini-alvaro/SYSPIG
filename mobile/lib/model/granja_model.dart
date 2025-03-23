@@ -32,8 +32,8 @@ class GranjaModel {
       'id': id,
       'descricao': descricao,
       'codigo': codigo,
-      'fazenda': fazenda?.toJson(),
-      'tipoGranja': tipoGranja?.toJson(),
+      'fazenda_id': fazenda?.id,
+      'tipo_granja_id': tipoGranja?.id,
     };
   }
 

@@ -1,105 +1,91 @@
 import { Request, Response } from "express";
-import { AppDataSource } from "../data-source";
-import { Granja } from "../entities/Granja";
-import { Fazenda } from "../entities/Fazenda";
-import { Baia } from "../entities/Baia";
-import { Usuario } from "../entities/Usuario";
-import { Animal } from "../entities/Animal";
-import { Ocupacao } from "../entities/Ocupacao";
-import { StatusOcupacao } from "../constants/ocupacaoConstants";
-import { ocupacaoRepository } from "../repositories/ocupacaoRepository";
+import { OcupacaoService } from "../services/OcupacaoService";
+import { handleError } from "../utils/errorHandler";
 
 export class OcupacaoController {
-  async create(req: Request, res: Response){
-    const { 
-      animal_id,
-      baia_id,
-      granja_id
-    } = req.body;
 
-    const fazenda_id = req.headers['fazenda-id'];
-    const usuario_id = req.headers['user-id'];
-
-    if (!fazenda_id || !usuario_id)
-      return res.status(400).json({ message: 'Parametros não informado'});    
-
-    try {
-
-      var newOcupacao = await AppDataSource.transaction(async (transactionalEntityManager) => {
-
-        const fazendaInstancia = await transactionalEntityManager.findOneBy( Fazenda, { id: Number(fazenda_id)});
-        const usuarioInstancia = await transactionalEntityManager.findOneBy( Usuario, { id: Number(usuario_id)});
-        const animalInstancia = await transactionalEntityManager.findOneBy( Animal, { id: Number(animal_id)});
-        const baiaInstancia = await transactionalEntityManager.findOneBy( Baia, { id: Number(baia_id)});
-        const granjaInstancia = await transactionalEntityManager.findOneBy( Granja, { id: Number(granja_id)});
-
-        if (!fazendaInstancia)
-          return res.status(404).json({ message: 'Fazenda não encontrado.' });
-  
-        if (!granjaInstancia)
-          return res.status(404).json({ message: 'Granja não encontrado.' });
-
-        if (!animalInstancia)
-          return res.status(404).json({ message: 'Animal não encontrado.' });
-
-        if (!usuarioInstancia)
-          return res.status(404).json({ message: 'Usuário não encontrado.' });
-
-        if (!baiaInstancia)
-          return res.status(404).json({ message: 'Baia não encontrado.' });
-        
-        const newOcupacao = transactionalEntityManager.create(Ocupacao, {
-          fazenda: fazendaInstancia,
-          granja: granjaInstancia,
-          animal: animalInstancia,
-          baia: baiaInstancia,
-          createdBy: usuarioInstancia,
-          status: StatusOcupacao.ABERTA,
-          dataInicio: new Date()
-        });
-
-        await transactionalEntityManager.save(newOcupacao);
-        
-        const savedOcupacao = await transactionalEntityManager.findOneBy(
-          Ocupacao, 
-          { id: newOcupacao.id },
-        );
-          
-        //Atualiza baia
-        baiaInstancia.vazia = false;
-        baiaInstancia.ocupacao = savedOcupacao!;
-
-        await transactionalEntityManager.save(baiaInstancia);
-
-        return savedOcupacao;
-      });
-      
-      return res.status(201).json(newOcupacao);
-    } catch (error) {
-      console.log(error);
-      return res.status(500).json({ message: 'Erro ao criar ocupação'});
-    } 
+  private ocupacaoService: OcupacaoService;
+    
+  constructor() {
+    this.ocupacaoService = new OcupacaoService();
   }
 
-  async getById(req: Request, res: Response){
+  list = async (req: Request, res: Response) => {
+    try {
+      const { fazenda_id } = req.params;
+      const ocupacoes = await this.ocupacaoService.list(Number(fazenda_id));
+      return res.status(200).json(ocupacoes);
+    } catch (error) {
+      console.error("Erro ao listar ocupacoes:", error);
+      return handleError(error, res, "Erro ao listar ocupacoes");
+    }
+  };
+
+  createOrUpdate = async (req: Request, res: Response) => {
+    const { baia_id, status, ocupacao_animais } = req.body;
+    const fazenda_id = req.headers['fazenda-id'];
+    const usuario_id = req.headers['user-id'];
+    const ocupacao_id = req.params.ocupacao_id ? Number(req.params.ocupacao_id) : undefined;
+
+    if (!fazenda_id || !baia_id || !status || !usuario_id) {
+      return res.status(400).json({ message: 'Parâmetros não informados' });
+    }
+
+    try {
+      const ocupacaoData = { 
+        fazenda_id: Number(fazenda_id),
+        baia_id: Number(baia_id),
+        status: Number(status),
+        ocupacao_animais,
+        usuarioIdAcao: Number(usuario_id)
+      };
+
+      const ocupacao = await this.ocupacaoService.createOrUpdate(ocupacaoData, ocupacao_id);
+
+      if (ocupacao_id) {
+        return res.status(200).json(ocupacao); // Atualizado
+      } else {
+        return res.status(201).json(ocupacao); // Criado
+      }
+
+    } catch (error) {
+      console.error("Erro ao criar/atualizar Ocupação:", error);
+      return handleError(error, res, "Erro interno ao processar Ocupação");
+    }
+  }
+
+  getById = async (req: Request, res: Response) => {
     try {      
       const { ocupacao_id } = req.params;
 
-      const ocupacao = await ocupacaoRepository.findOne({
-        where: { id: Number(ocupacao_id) }
-      });
+      const ocupacao = await this.ocupacaoService.getById(Number(ocupacao_id));
 
       if (!ocupacao) {
         return res.status(404).json({ message: 'Ocupação não encontrado' });
       }
 
-      return res.status(200).json(ocupacao);
-      
+      return res.status(200).json(ocupacao);      
     } catch (error) {
-      console.log(error);
-      return res.status(500).json({ message: 'Erro ao buscar o ocupação'});
+      console.error("Erro ao buscar Ocupação:", error);
+      return handleError(error, res, "Erro ao buscar Ocupação");
     }
   }
 
+  getByBaiaId = async (req: Request, res: Response) => {
+    try {      
+      const { baia_id } = req.params;
+
+      const ocupacao = await this.ocupacaoService.getByBaiaId(Number(baia_id));
+
+      if (!ocupacao) {
+        return res.status(404).json({ message: 'Ocupação não encontrado' });
+      }
+
+      return res.status(200).json(ocupacao);      
+    } catch (error) {
+      console.error("Erro ao buscar Ocupação:", error);
+      return handleError(error, res, "Erro ao buscar Ocupação");
+    }
+  }
 
 }

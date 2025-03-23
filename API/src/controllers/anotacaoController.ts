@@ -11,7 +11,7 @@ export class AnotacaoController {
   }
 
   createOrUpdate = async (req: Request, res: Response) => {
-    const { descricao, animal_id, baia_id, data } = req.body;
+    const { descricao, animal_id, baia_id, data, ocupacao_id } = req.body;
     const fazenda_id = req.headers['fazenda-id'];
     const usuario_id = req.headers['user-id'];
     const anotacao_id = req.params.anotacao_id ? Number(req.params.anotacao_id) : undefined;
@@ -26,6 +26,7 @@ export class AnotacaoController {
         animal_id, 
         baia_id, 
         data,
+        ocupacao_id,
         fazenda_id: Number(fazenda_id),
         usuarioIdAcao :  Number(usuario_id)
       };

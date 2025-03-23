@@ -37,8 +37,8 @@ export class AuthController {
       const message = await this.authService.logout(refreshToken);
       return res.status(200).json({ message });
     } catch (error) {
-      console.error("Erro ao dar fazer logout:", error);
-      return handleError(error, res, "Erro ao dar fazer logout");
+      console.error("Erro ao fazer logout:", error);
+      return handleError(error, res, "Erro ao fazer logout");
     }
   };
   
