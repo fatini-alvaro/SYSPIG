@@ -43,7 +43,7 @@ class _CustomBaiaInformacoesTabCardState extends State<CustomBaiaInformacoesTabC
             child: Align(
               alignment: Alignment.centerLeft,
               child: Text(
-                'Aberta por: ${widget.ocupacao?.createdBy != null ? widget.ocupacao!.createdBy!.nome : "Informção não disponivel"}',
+                'Aberta por: ${widget.ocupacao?.createdBy != null ? widget.ocupacao!.createdBy!.nome : "Informação não disponivel"}',
                 style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.bold,

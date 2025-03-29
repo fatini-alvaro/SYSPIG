@@ -1,5 +1,7 @@
 import 'package:logger/logger.dart';
 import 'package:syspig/api/api_client.dart';
+import 'package:syspig/enums/ocupacao_animal_constants.dart';
+import 'package:syspig/model/ocupacao_animal_model.dart';
 import 'package:syspig/model/ocupacao_model.dart';
 import 'package:syspig/repositories/ocupacao/ocupacao_repository.dart';
 import 'package:syspig/utils/error_handler_util.dart';
@@ -60,17 +62,22 @@ class OcupacaoRepositoryImp implements OcupacaoRepository {
     }
   }
 
-  @override
-  Future<OcupacaoModel> addAnimalToOcupacao(int ocupacaoId, int animalId) async {
+  Future<Map<String, dynamic>> movimentarAnimal({
+    required int animalId,
+    required int baiaDestinoId,
+  }) async {
     try {
-      var response = await _apiClient.dio.post('/ocupacoes/$ocupacaoId/animais', data: {
-        'animal_id': animalId
-      });
-      return OcupacaoModel.fromJson(response.data);
+      final response = await _apiClient.dio.post(
+        '/ocupacoes/movimentar-animal',
+        data: {
+          'animal_id': animalId,
+          'baia_destino_id': baiaDestinoId,
+        },
+      );
+      return response.data;
     } catch (e) {
-      String errorMessage = ErrorHandlerUtil.handleDioError(e, 'Erro ao adicionar animal à ocupação');
-      Logger().e('Erro ao adicionar animal à ocupação: $e');
-      throw Exception(errorMessage);
+      Logger().e('Erro ao movimentar animal: $e');
+      rethrow;
     }
   }
 }

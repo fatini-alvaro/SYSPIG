@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:syspig/components/buttons/custom_abrir_tela_adicionar_novo_button_component.dart';
+import 'package:syspig/components/cards/custom_movimentacao_card.dart';
 import 'package:syspig/components/cards/custom_registro_card.dart';
 import 'package:syspig/controller/animal/animal_controller.dart';
+import 'package:syspig/controller/movimentacao/movimentacao_controller.dart';
 import 'package:syspig/controller/ocupacao/ocupacao_controller.dart';
 import 'package:syspig/model/animal_model.dart';
+import 'package:syspig/model/movimentacao_model.dart';
 import 'package:syspig/repositories/animal/animal_repository_imp.dart';
+import 'package:syspig/repositories/movimentacao/movimentacao_repository_imp.dart';
 import 'package:syspig/repositories/ocupacao/ocupacao_repository_imp.dart';
 import 'package:syspig/services/prefs_service.dart';
 import 'package:syspig/themes/themes.dart';
@@ -21,22 +25,22 @@ class SelecionarMovimentacaoPage extends StatefulWidget {
 
 class SelecionarMovimentacaoPageState extends State<SelecionarMovimentacaoPage> {
   
-  final OcupacaoController _ocupacaoController = OcupacaoController(OcupacaoRepositoryImp());
+  final MovimentacaoController _movimentacaoController = MovimentacaoController(MovimentacaoRepositoryImp());
    
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   _carregarMovimentacoes();
-  // }
+  @override
+  void initState() {
+    super.initState();
+    _carregarMovimentacoes();
+  }
 
-  // Future<void> _carregarMovimentacoes() async {
-  //   int? fazendaId = await PrefsService.getFazendaId();
-  //   if (fazendaId != null) {
-  //     _ocupacaoController.fetchMovimentacoes(fazendaId);
-  //   } else {
-  //     Logger().e('ID da fazenda não encontrado');
-  //   }
-  // }
+  Future<void> _carregarMovimentacoes() async {
+    int? fazendaId = await PrefsService.getFazendaId();
+    if (fazendaId != null) {
+      _movimentacaoController.fetch(fazendaId);
+    } else {
+      Logger().e('ID da fazenda não encontrado');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -60,75 +64,19 @@ class SelecionarMovimentacaoPageState extends State<SelecionarMovimentacaoPage> 
             ),
           ),
           SizedBox(height: 15),
-          // Expanded(
-          //   child: ValueListenableBuilder<List<AnimalModel>>(
-          //     valueListenable: _animalController.animais,
-          //     builder: (_, list, __) {
-          //       return ListView.builder(
-          //         itemCount: list.length,
-          //         itemBuilder: (_, idx) => CustomRegistroCard(
-          //           descricao: Column(
-          //             crossAxisAlignment: CrossAxisAlignment.start,
-          //             children: [
-          //               Text(
-          //                 'Brinco: ${list[idx].numeroBrinco}',
-          //                 style: TextStyle(
-          //                   fontWeight: FontWeight.bold,
-          //                   fontSize: 20,
-          //                 ),
-          //               ),
-          //             ],
-          //           ),
-          //           onEditarPressed: () {
-          //             Navigator.push(
-          //               context,
-          //               MaterialPageRoute(
-          //                 builder: (context) => CadastrarAnimalPage(
-          //                   animalId: list[idx].id,
-          //                 ),
-          //               ),
-          //             );
-          //           },
-          //           onExcluirPressed: () {
-          //             showDialog(
-          //               context: context,
-          //               builder: (_) => AlertDialog(
-          //                 title: Text('Confirmar exclusão'),
-          //                 content: Text('Tem certeza de que deseja excluir o animal ${list[idx].numeroBrinco}?'),
-          //                 actions: [
-          //                   TextButton(
-          //                     onPressed: () async {
-          //                       try {
-          //                         Navigator.pop(context);
-
-          //                         bool excluido = await _animalController.delete(list[idx].id!);
-
-          //                         if (excluido) {
-          //                           Dialogs.successToast(context, 'Animal excluído com sucesso!');
-          //                           _carregarAnimais();
-          //                         }
-          //                       } catch (e) {
-          //                         String errorMessage = e.toString().replaceFirst('Exception: ', ''); // Removendo duplicação
-          //                         Dialogs.errorToast(context, errorMessage);
-          //                       }
-          //                     },
-          //                     child: Text('Confirmar'),
-          //                   ),
-          //                   TextButton(
-          //                     onPressed: () {
-          //                       Navigator.pop(context); // Fechar o diálogo de confirmação
-          //                     },
-          //                     child: Text('Cancelar'),
-          //                   ),
-          //                 ],
-          //               ),
-          //             );
-          //           },   
-          //         ),
-          //       );
-          //     },
-          //   ),
-          // )
+          Expanded(
+            child: ValueListenableBuilder<List<MovimentacaoModel>>(
+              valueListenable: _movimentacaoController.movimentacoes,
+              builder: (_, list, __) {
+                return ListView.builder(
+                  itemCount: list.length,
+                  itemBuilder: (_, idx) => CustomMovimentacaoCard(
+                    movimentacao: list[idx],      
+                  ),
+                );
+              },
+            ),
+          )
         ],
       ),
     );

@@ -89,27 +89,27 @@ export class OcupacaoController {
     }
   }
 
-  addAnimalToOcupacao = async (req: Request, res: Response) => {
+  movimentarAnimal = async (req: Request, res: Response) => {
     try {
-      const { ocupacao_id } = req.params;
-      const { animal_id } = req.body;
+      const { animal_id, baia_destino_id } = req.body;
       const usuario_id = req.headers['user-id'];
+      const fazenda_id = req.headers['fazenda-id'];
 
-      if (!ocupacao_id || !animal_id || !usuario_id) {
+      if (!fazenda_id || !animal_id || !baia_destino_id || !usuario_id) {
         return res.status(400).json({ message: 'Parâmetros não informados' });
       }
 
-      const ocupacao = await this.ocupacaoService.addAnimalToOcupacao({
-        ocupacao_id: Number(ocupacao_id),
+      const resultado = await this.ocupacaoService.movimentarAnimal({
+        fazenda_id: Number(fazenda_id),
         animal_id: Number(animal_id),
+        baia_destino_id: Number(baia_destino_id),
         usuarioIdAcao: Number(usuario_id)
       });
 
-      return res.status(200).json(ocupacao);
+      return res.status(200).json(resultado);
     } catch (error) {
-      console.error("Erro ao adicionar animal à ocupação:", error);
-      return handleError(error, res, "Erro ao adicionar animal à ocupação");
+      console.error("Erro ao movimentar animal:", error);
+      return handleError(error, res, "Erro ao movimentar animal");
     }
   }
-
 }

@@ -13,6 +13,7 @@ import { LoteController } from "./controllers/loteController";
 import { verifyToken } from "./middleware/verifyToken";
 import { AuthController } from "./controllers/authController";
 import { CidadeController } from "./controllers/cidadeController";
+import { MovimentacaoController } from "./controllers/movimentacaoController";
 const routes = Router();
 
 // Configuração do CORS
@@ -102,9 +103,13 @@ routes.get('/lotes/lote/:lote_id', loteController.getById);
 //Ocupacao
 const ocupacaoController = new OcupacaoController();
 routes.post('/ocupacoes', ocupacaoController.createOrUpdate);
-routes.post('/ocupacoes/:ocupacao_id/animais', ocupacaoController.addAnimalToOcupacao);
 routes.get('/ocupacoes/ocupacao/:ocupacao_id', ocupacaoController.getById);
 routes.get('/ocupacoes/getbybaia/:baia_id', ocupacaoController.getByBaiaId);
 routes.get('/ocupacoes/:fazenda_id', ocupacaoController.list);
+routes.post('/ocupacoes/movimentar-animal', ocupacaoController.movimentarAnimal);
+
+//Movimentacao
+const movimentacaoController = new MovimentacaoController();
+routes.get('/movimentacoes/:fazenda_id', movimentacaoController.listByFazenda);
 
 export default routes

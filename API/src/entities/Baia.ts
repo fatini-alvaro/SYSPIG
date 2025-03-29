@@ -51,5 +51,5 @@ export class Baia{
   @ManyToOne(() => Ocupacao, { nullable: true })
   @JoinColumn({ name: 'ocupacao_id', referencedColumnName: 'id' })
   @Exclude()
-  ocupacao: Ocupacao;
+  ocupacao: Ocupacao | null;
 }

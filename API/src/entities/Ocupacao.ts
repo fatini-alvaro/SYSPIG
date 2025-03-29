@@ -8,6 +8,7 @@ import { OcupacaoAnimal } from "./OcupacaoAnimal";
 import { Anotacao } from "./Anotacao";
 import { StatusOcupacao } from "../constants/ocupacaoConstants";
 import { Exclude } from "class-transformer";
+import { StatusOcupacaoAnimal } from "../constants/ocupacaoAnimalConstants";
 
 @Entity('ocupacao')
 export class Ocupacao {
@@ -37,8 +38,14 @@ export class Ocupacao {
   @Exclude()
   baia: Baia;
 
+  // Todas as ocupações animais (histórico completo)
   @OneToMany(() => OcupacaoAnimal, ocupacaoAnimal => ocupacaoAnimal.ocupacao)
   ocupacaoAnimais: OcupacaoAnimal[];
+
+  // Método para obter apenas as ocupações ativas
+  get ocupacaoAnimaisAtivas(): OcupacaoAnimal[] {
+    return this.ocupacaoAnimais?.filter(oa => oa.status === StatusOcupacaoAnimal.ATIVO) || [];
+  }
 
   @OneToMany(() => Anotacao, anotacao => anotacao.ocupacao)
   anotacoes: Anotacao[];

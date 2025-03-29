@@ -73,71 +73,21 @@ class CadastrarMovimentacaoController with ChangeNotifier {
   }
 
   Future<bool> movimentarAnimal(BuildContext context) async {
-    try {
-      if (_animal == null || _baiaDestino == null) {
-        Dialogs.errorToast(context, 'Selecione um animal e uma baia de destino');
-        return false;
-      }
-
-      // Verifica se a baia está vazia
-      if (_baiaDestino!.vazia == true) {
-        // Cria uma nova ocupação
-        final novaOcupacao = OcupacaoModel(
-          fazenda: _baiaDestino!.fazenda,
-          baia: BaiaModel(
-            id: _baiaDestino!.id,
-            fazenda: _baiaDestino!.fazenda,
-            numero: _baiaDestino!.numero,
-            capacidade: _baiaDestino!.capacidade,
-            vazia: _baiaDestino!.vazia,
-          ),
-          status: StatusOcupacao.aberto,
-          ocupacaoAnimais: [
-            OcupacaoAnimalModel(
-              animal: AnimalModel(
-                id: _animal!.id,
-                fazenda: _animal!.fazenda,
-                numeroBrinco: _animal!.numeroBrinco,
-                sexo: _animal!.sexo,
-                status: _animal!.status,
-              ),
-              dataEntrada: DateTime.now(),
-              status: StatusOcupacaoAnimal.ativo,
-            )
-          ],
+    final movimentacaoRealizada = await AsyncHandler.execute(
+      context: context,
+      action: () async {
+        if (_animal == null || _baiaDestino == null) {
+          throw Exception('Selecione um animal e uma baia de destino');
+        }
+        return await _ocupacaoRepository.movimentarAnimal(
+          animalId: _animal!.id!,
+          baiaDestinoId: _baiaDestino!.id!,
         );
-        
-        final ocupacao = await _ocupacaoController.create(novaOcupacao);
-        if (ocupacao != null) {
-          Dialogs.successToast(context, 'Animal movido com sucesso!');
-          return true;
-        } else {
-          throw Exception('Erro ao criar ocupação.');
-        }
-      } else {
-        // Verifica se já existe uma ocupação na baia
-        final ocupacaoExistente = await getOcupacaoByBaia(_baiaDestino!.id!);
-        
-        if (ocupacaoExistente != null) {
-          // Adiciona o animal à ocupação existente
-          final ocupacaoAtualizada = await _ocupacaoRepository.addAnimalToOcupacao(
-            ocupacaoExistente.id!,
-            _animal!.id!
-          );
+      },
+      loadingMessage: 'Aguarde, realiazando movimentação',
+      successMessage: 'Movimentação criada com sucesso!',
+    );
 
-          if (ocupacaoAtualizada != null) {
-            Dialogs.successToast(context, 'Animal movido com sucesso!');
-            return true;
-          } else {
-            throw Exception('Erro ao adicionar animal à ocupação.');
-          }
-        } else {
-          throw Exception('Erro ao buscar ocupação da baia.');
-        }
-      }
-    } catch (e) {
-      Dialogs.errorToast(context, e.toString());
-      return false;
-    }
+    return movimentacaoRealizada != null;
   }
 }

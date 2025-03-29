@@ -8,6 +8,12 @@ import { Ocupacao } from "../entities/Ocupacao";
 import { Usuario } from "../entities/Usuario";
 import { StatusOcupacao } from "../constants/ocupacaoConstants";
 import { StatusOcupacaoAnimal } from "../constants/ocupacaoAnimalConstants";
+import { Baia } from "../entities/Baia";
+import { EntityManager } from "typeorm";
+import { classToPlain } from "class-transformer";
+import { Fazenda } from "../entities/Fazenda";
+import { Movimentacao } from "../entities/movimentacao";
+import { StatusMovimentacao, TipoMovimentacao } from "../constants/movimentacaoConstants";
 
 interface OcupacaoCreateOrUpdateData {
   fazenda_id: number;
@@ -17,9 +23,10 @@ interface OcupacaoCreateOrUpdateData {
   usuarioIdAcao: number;
 }
 
-interface AddAnimalToOcupacaoData {
-  ocupacao_id: number;
+interface MovimentarAnimalData {
+  fazenda_id: number;
   animal_id: number;
+  baia_destino_id: number;
   usuarioIdAcao: number;
 }
 
@@ -39,28 +46,28 @@ export class OcupacaoService {
   }
 
   async getById(ocupacao_id: number) {
-    return await ocupacaoRepository.findOne({
-      where: { id: ocupacao_id },
-      relations: ['ocupacaoAnimais'],
-    });
+    return await ocupacaoRepository
+      .createQueryBuilder("ocupacao")
+      .leftJoinAndSelect("ocupacao.ocupacaoAnimais", "ocupacaoAnimais", "ocupacaoAnimais.status = :status", { status: StatusOcupacaoAnimal.ATIVO })
+      .leftJoinAndSelect("ocupacaoAnimais.animal", "animal")
+      .leftJoinAndSelect("ocupacao.baia", "baia")
+      .leftJoinAndSelect("ocupacao.anotacoes", "anotacoes")
+      .where("ocupacao.id = :id", { id: ocupacao_id })
+      .getOne();
   }
 
   async getByBaiaId(baia_id: number) {
-    return await ocupacaoRepository.findOne({ 
-      where: { 
-        baia: { 
-          id: Number(baia_id) 
-        },
-        status: StatusOcupacao.ABERTA
-      },
-      relations: [
-        'baia',
-        'anotacoes',
-        'ocupacaoAnimais',
-        'ocupacaoAnimais.animal'
-      ],
-      order: { id: 'DESC' }
-    });
+    return await ocupacaoRepository
+      .createQueryBuilder("ocupacao")
+      .leftJoinAndSelect("ocupacao.baia", "baia")
+      .leftJoinAndSelect("ocupacao.anotacoes", "anotacoes")
+      .leftJoinAndSelect("ocupacao.ocupacaoAnimais", "ocupacaoAnimais")
+      .leftJoinAndSelect("ocupacaoAnimais.animal", "animal")
+      .where("ocupacao.baia.id = :baia_id", { baia_id: Number(baia_id) })
+      .andWhere("ocupacao.status = :status", { status: StatusOcupacao.ABERTA })
+      .andWhere("ocupacaoAnimais.status = :animalStatus", { animalStatus: StatusOcupacaoAnimal.ATIVO })
+      .orderBy("ocupacao.id", "DESC")
+      .getOne();
   }
 
   async createOrUpdate(ocupacaoData: OcupacaoCreateOrUpdateData, ocupacao_id?: number) {
@@ -71,13 +78,8 @@ export class OcupacaoService {
         ocupacao = await ValidationService.validateAndReturnOcupacao(ocupacao_id);
       }
 
-      const { fazenda, 
-        baiaInstancia,
-        createdBy,
-        updatedBy, } = await this.validateOcupacao(
-        ocupacaoData,
-        ocupacao
-      );
+      const { fazenda, baiaInstancia, createdBy, updatedBy } = 
+        await this.validateOcupacao(ocupacaoData, ocupacao);
 
       if (!ocupacao) {
         ocupacao = transactionalEntityManager.create(Ocupacao, { fazenda });
@@ -90,54 +92,66 @@ export class OcupacaoService {
       ocupacao.updatedBy = updatedBy ?? ocupacao.updatedBy;
       await transactionalEntityManager.save(ocupacao);
 
-      // Gerenciar associações de ocupacaoAnimais
-      const existingOcupacaoAnimais = await transactionalEntityManager.find(OcupacaoAnimal, {
-        where: { ocupacao: { id: ocupacao.id } },
-      });
-      const existingAnimalIds = existingOcupacaoAnimais.map((la) => la.animal.id);
-      const newAnimalIds = ocupacaoData.ocupacao_animais.map((la) => la.animal_id);
-
-      // Animais a serem removidos
-      const animalsToRemove = existingOcupacaoAnimais.filter((la) => !newAnimalIds.includes(la.animal.id));
-      if (animalsToRemove.length > 0) {
-        await transactionalEntityManager.remove(OcupacaoAnimal, animalsToRemove);
-      }
-
-      // Animais a serem adicionados
-      const animalsToAdd = ocupacaoData.ocupacao_animais.filter((la) => !existingAnimalIds.includes(la.animal_id));
-      for (const ocupacaoAnimalData of animalsToAdd) {
-        const animal = await transactionalEntityManager.findOneBy(Animal, { id: Number(ocupacaoAnimalData.animal_id) });
-        if (animal) {
-          const newOcupacaoAnimal = new OcupacaoAnimal();
-          newOcupacaoAnimal.ocupacao = ocupacao;
-          newOcupacaoAnimal.animal = animal;
-          newOcupacaoAnimal.createdBy = createdBy ?? ocupacao.createdBy;
-          await transactionalEntityManager.save(newOcupacaoAnimal);
-        }
-      }
+      await this.processarOcupacaoAnimais(
+        transactionalEntityManager,
+        ocupacao,
+        ocupacaoData.ocupacao_animais,
+        createdBy ?? ocupacao.createdBy
+      );
 
       baiaInstancia!.ocupacao = ocupacao;
       baiaInstancia!.vazia = false;
-      
       await transactionalEntityManager.save(baiaInstancia);
 
       return ocupacao;
     });
   }
 
+  private async processarOcupacaoAnimais(
+    manager: EntityManager,
+    ocupacao: Ocupacao,
+    ocupacaoAnimais: { animal_id: number }[],
+    usuario: Usuario
+  ) {
+    const existingOcupacaoAnimais = await manager.find(OcupacaoAnimal, {
+      where: { ocupacao: { id: ocupacao.id } },
+    });
+    
+    const existingAnimalIds = existingOcupacaoAnimais.map(oa => oa.animal.id);
+    const newAnimalIds = ocupacaoAnimais.map(oa => oa.animal_id);
+
+    // Remover animais não mais presentes
+    const toRemove = existingOcupacaoAnimais.filter(oa => !newAnimalIds.includes(oa.animal.id));
+    if (toRemove.length > 0) {
+      await manager.remove(OcupacaoAnimal, toRemove);
+    }
+
+    // Adicionar novos animais
+    const toAdd = ocupacaoAnimais.filter(oa => !existingAnimalIds.includes(oa.animal_id));
+    for (const oaData of toAdd) {
+      const animal = await manager.findOneBy(Animal, { id: Number(oaData.animal_id) });
+      if (animal) {
+        const newOcupacaoAnimal = manager.create(OcupacaoAnimal, {
+          ocupacao,
+          animal,
+          createdBy: usuario
+        });
+        await manager.save(newOcupacaoAnimal);
+      }
+    }
+  }
+
   async validateOcupacao(ocupacaoData: OcupacaoCreateOrUpdateData, ocupacao?: Ocupacao | null) {
-    const fazenda = await ValidationService.validateAndReturnFazenda(
-      ocupacaoData.fazenda_id
-    );
+    const fazenda = await ValidationService.validateAndReturnFazenda(ocupacaoData.fazenda_id);
 
     if (!Object.values(StatusOcupacao).includes(ocupacaoData.status as StatusOcupacao)) {
-      throw new ValidationError('O status da ocupação não foi informado.');
+      throw new ValidationError('Status da ocupação inválido');
     }
 
     const baiaInstancia = await ValidationService.validateAndReturnBaia(ocupacaoData.baia_id, fazenda);
 
     if (!ocupacaoData.ocupacao_animais || ocupacaoData.ocupacao_animais.length === 0) {
-      throw new ValidationError('A ocupação deve ter pelo menos um animal.');
+      throw new ValidationError('A ocupação deve ter pelo menos um animal');
     }
 
     let createdBy: Usuario | null = null;
@@ -149,47 +163,220 @@ export class OcupacaoService {
       createdBy = await ValidationService.validateAndReturnUsuario(ocupacaoData.usuarioIdAcao);
     }
 
-    return {
-      fazenda,
-      baiaInstancia,
-      createdBy,
-      updatedBy,
-    };
+    return { fazenda, baiaInstancia, createdBy, updatedBy };
   }
 
-  async addAnimalToOcupacao(data: AddAnimalToOcupacaoData) {
+  async movimentarAnimal(data: MovimentarAnimalData) {
     return await AppDataSource.transaction(async (transactionalEntityManager) => {
-      const ocupacao = await ValidationService.validateAndReturnOcupacao(data.ocupacao_id);
-      const animal = await ValidationService.validateAndReturnAnimal(data.animal_id);
-      const usuario = await ValidationService.validateAndReturnUsuario(data.usuarioIdAcao);
+      const {fazenda_id, animal_id, baia_destino_id, usuarioIdAcao } = data;
+      
+      // Validações iniciais
+      const animal = await ValidationService.validateAndReturnAnimal(animal_id);
+      const baiaDestino = await ValidationService.validateAndReturnBaia(baia_destino_id);
+      const usuario = await ValidationService.validateAndReturnUsuario(usuarioIdAcao);
+      const fazenda = await ValidationService.validateAndReturnFazenda(fazenda_id);
 
-      if (!ocupacao || !animal || !usuario) {
-        throw new ValidationError('Ocupação, animal ou usuário não encontrado.');
+      if (!fazenda || !animal || !baiaDestino || !usuario) {
+        throw new ValidationError('Dados inválidos para movimentação');
       }
 
-      // Verifica se o animal já está na ocupação
-      const existingOcupacaoAnimal = await transactionalEntityManager.findOne(OcupacaoAnimal, {
-        where: {
-          ocupacao: { id: ocupacao.id },
+      // Verificar se o animal já está ATIVO na baia de destino
+      const ocupacaoAtiva = await transactionalEntityManager.findOne(OcupacaoAnimal, {
+        where: { 
           animal: { id: animal.id },
+          ocupacao: { baia: { id: baiaDestino.id } },
           status: StatusOcupacaoAnimal.ATIVO
         }
       });
 
-      if (existingOcupacaoAnimal) {
-        throw new ValidationError('O animal já está nesta ocupação.');
+      if (ocupacaoAtiva) {
+        throw new ValidationError('O animal já está na baia de destino');
       }
 
-      const novaOcupacaoAnimal = new OcupacaoAnimal();
-      novaOcupacaoAnimal.ocupacao = ocupacao;
-      novaOcupacaoAnimal.animal = animal;
-      novaOcupacaoAnimal.data_entrada = new Date();
-      novaOcupacaoAnimal.status = StatusOcupacaoAnimal.ATIVO;
-      novaOcupacaoAnimal.createdBy = usuario;
+      // Processar ocupação atual do animal
+      const ocupacaoAtual = await this.tratarOcupacaoAtual(
+        transactionalEntityManager, 
+        animal.id, 
+        usuario
+      );
 
-      await transactionalEntityManager.save(novaOcupacaoAnimal);
+      // Processar baia de destino
+      const ocupacaoDestino = await this.processarBaiaDestino(
+        transactionalEntityManager,
+        fazenda,
+        baiaDestino.id,
+        usuario
+      );
 
-      return await this.getById(ocupacao.id);
+      // Criar nova associação
+      await this.criarNovaOcupacaoAnimal(
+        transactionalEntityManager,
+        ocupacaoDestino,
+        animal,
+        usuario
+      );
+
+      //Registrar movimentacao
+      await this.registrarMovimentacao(
+        transactionalEntityManager,
+        animal,
+        ocupacaoAtual?.ocupacao?.baia, // baia de origem (pode ser null se o animal não estava em nenhuma baia)
+        baiaDestino, // baia de destino
+        usuario
+      );
+
+      return {
+        success: true,
+        message: 'Animal movimentado com sucesso',
+        animal: classToPlain(animal),
+        baiaOrigem: ocupacaoAtual?.ocupacao?.baia,
+        baiaDestino: classToPlain(baiaDestino)
+      };
     });
+  }
+
+  private async tratarOcupacaoAtual(
+      manager: EntityManager,
+      animalId: number,
+      usuario: Usuario
+  ): Promise<OcupacaoAnimal | null> {
+    const ocupacaoAtual = await manager.findOne(OcupacaoAnimal, {
+        where: { 
+            animal: { id: animalId },
+            status: StatusOcupacaoAnimal.ATIVO
+        },
+        relations: ['ocupacao', 'ocupacao.baia']
+    });
+
+    if (!ocupacaoAtual) return null;
+
+    // Atualizar ocupação atual do animal
+    ocupacaoAtual.data_saida = new Date();
+    ocupacaoAtual.status = StatusOcupacaoAnimal.REMOVIDO;
+    ocupacaoAtual.updatedBy = usuario;
+    await manager.save(ocupacaoAtual);
+
+    // Verificar se a baia de origem ficou vazia
+    const animaisAtivos = await manager.count(OcupacaoAnimal, {
+        where: { 
+            ocupacao: { id: ocupacaoAtual.ocupacao.id },
+            status: StatusOcupacaoAnimal.ATIVO
+        }
+    });
+
+    if (animaisAtivos === 0) {
+        // Atualizar a ocupação
+        ocupacaoAtual.ocupacao.status = StatusOcupacao.FINALIZADA;
+        await manager.save(ocupacaoAtual.ocupacao);
+
+        // Atualizar a baia - remover vínculo e marcar como vazia
+        const baia = ocupacaoAtual.ocupacao.baia;
+        baia.vazia = true;
+        baia.ocupacao = null; // Remove o vínculo com a ocupação
+        await manager.save(baia);
+    }
+
+    return ocupacaoAtual;
+  }
+
+  private async processarBaiaDestino(
+    manager: EntityManager,
+    fazenda: Fazenda,
+    baiaDestinoId: number,
+    usuario: Usuario
+  ): Promise<Ocupacao> {
+    let ocupacaoDestino = await manager.findOne(Ocupacao, {
+      where: { 
+        baia: { id: baiaDestinoId },
+        status: StatusOcupacao.ABERTA
+      },
+      relations: ['baia']
+    });
+
+    if (!ocupacaoDestino) {
+      // Criar nova ocupação seguindo o mesmo padrão do createOrUpdate
+      ocupacaoDestino = manager.create(Ocupacao, {
+        fazenda,
+        baia: { id: baiaDestinoId },
+        status: StatusOcupacao.ABERTA,
+        data_abertura: new Date(),
+        createdBy: usuario
+      });
+      
+      ocupacaoDestino = await manager.save(ocupacaoDestino);
+      
+      // Atualizar status da baia
+      await manager.update(Baia, baiaDestinoId, { 
+        vazia: false,
+        ocupacao: ocupacaoDestino
+      });
+    }
+
+    return ocupacaoDestino;
+  }
+
+  private async criarNovaOcupacaoAnimal(
+    manager: EntityManager,
+    ocupacao: Ocupacao,
+    animal: Animal,
+    usuario: Usuario
+  ): Promise<OcupacaoAnimal> {
+    const novaOcupacaoAnimal = manager.create(OcupacaoAnimal, {
+      ocupacao,
+      animal,
+      data_entrada: new Date(),
+      status: StatusOcupacaoAnimal.ATIVO,
+      createdBy: usuario
+    });
+
+    return await manager.save(novaOcupacaoAnimal);
+  }
+
+  private async registrarMovimentacao(
+    manager: EntityManager,
+    animal: Animal,
+    baiaOrigem: Baia | null | undefined,
+    baiaDestino: Baia,
+    usuario: Usuario
+  ): Promise<Movimentacao> {
+
+    await manager.update(
+      Movimentacao,
+      { 
+        animal: { id: animal.id },
+        status: StatusMovimentacao.ATIVA 
+      },
+      { 
+        status: StatusMovimentacao.HISTORICO,
+        updated_at: new Date()
+      }
+    );
+
+    let tipo: TipoMovimentacao;
+    let observacoes: string;
+
+    if (!baiaOrigem) {
+        tipo = TipoMovimentacao.ENTRADA;
+        observacoes = `Animal alocado na baia ${baiaDestino.codigo}`;
+    } else if (baiaDestino) {
+        tipo = TipoMovimentacao.TRANSFERENCIA;
+        observacoes = `Animal transferido da baia ${baiaOrigem.codigo} para ${baiaDestino.codigo}`;
+    } else {
+        tipo = TipoMovimentacao.SAIDA;
+        observacoes = `Animal removido do sistema (baia ${baiaOrigem.codigo})`;
+    }
+
+    const movimentacao = manager.create(Movimentacao, {
+        animal,
+        baiaOrigem: baiaOrigem || null,
+        baiaDestino,
+        dataMovimentacao: new Date(),
+        tipo,
+        status: StatusMovimentacao.ATIVA,
+        usuario,
+        observacoes
+    });
+
+    return await manager.save(movimentacao);
   }
 }
