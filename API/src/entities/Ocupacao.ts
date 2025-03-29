@@ -7,6 +7,7 @@ import { Baia } from "./Baia";
 import { OcupacaoAnimal } from "./OcupacaoAnimal";
 import { Anotacao } from "./Anotacao";
 import { StatusOcupacao } from "../constants/ocupacaoConstants";
+import { Exclude } from "class-transformer";
 
 @Entity('ocupacao')
 export class Ocupacao {
@@ -33,6 +34,7 @@ export class Ocupacao {
   
   @ManyToOne(() => Baia, { eager: true, nullable: true })
   @JoinColumn({ name: 'baia_id', referencedColumnName: 'id' }) 
+  @Exclude()
   baia: Baia;
 
   @OneToMany(() => OcupacaoAnimal, ocupacaoAnimal => ocupacaoAnimal.ocupacao)

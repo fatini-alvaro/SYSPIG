@@ -102,6 +102,7 @@ routes.get('/lotes/lote/:lote_id', loteController.getById);
 //Ocupacao
 const ocupacaoController = new OcupacaoController();
 routes.post('/ocupacoes', ocupacaoController.createOrUpdate);
+routes.post('/ocupacoes/:ocupacao_id/animais', ocupacaoController.addAnimalToOcupacao);
 routes.get('/ocupacoes/ocupacao/:ocupacao_id', ocupacaoController.getById);
 routes.get('/ocupacoes/getbybaia/:baia_id', ocupacaoController.getByBaiaId);
 routes.get('/ocupacoes/:fazenda_id', ocupacaoController.list);

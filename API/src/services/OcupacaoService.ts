@@ -7,12 +7,19 @@ import { Animal } from "../entities/Animal";
 import { Ocupacao } from "../entities/Ocupacao";
 import { Usuario } from "../entities/Usuario";
 import { StatusOcupacao } from "../constants/ocupacaoConstants";
+import { StatusOcupacaoAnimal } from "../constants/ocupacaoAnimalConstants";
 
 interface OcupacaoCreateOrUpdateData {
   fazenda_id: number;
   baia_id: number;
   status: number;
   ocupacao_animais: { animal_id: number }[];
+  usuarioIdAcao: number;
+}
+
+interface AddAnimalToOcupacaoData {
+  ocupacao_id: number;
+  animal_id: number;
   usuarioIdAcao: number;
 }
 
@@ -109,8 +116,9 @@ export class OcupacaoService {
         }
       }
 
+      baiaInstancia!.ocupacao = ocupacao;
       baiaInstancia!.vazia = false;
-
+      
       await transactionalEntityManager.save(baiaInstancia);
 
       return ocupacao;
@@ -147,5 +155,41 @@ export class OcupacaoService {
       createdBy,
       updatedBy,
     };
+  }
+
+  async addAnimalToOcupacao(data: AddAnimalToOcupacaoData) {
+    return await AppDataSource.transaction(async (transactionalEntityManager) => {
+      const ocupacao = await ValidationService.validateAndReturnOcupacao(data.ocupacao_id);
+      const animal = await ValidationService.validateAndReturnAnimal(data.animal_id);
+      const usuario = await ValidationService.validateAndReturnUsuario(data.usuarioIdAcao);
+
+      if (!ocupacao || !animal || !usuario) {
+        throw new ValidationError('Ocupação, animal ou usuário não encontrado.');
+      }
+
+      // Verifica se o animal já está na ocupação
+      const existingOcupacaoAnimal = await transactionalEntityManager.findOne(OcupacaoAnimal, {
+        where: {
+          ocupacao: { id: ocupacao.id },
+          animal: { id: animal.id },
+          status: StatusOcupacaoAnimal.ATIVO
+        }
+      });
+
+      if (existingOcupacaoAnimal) {
+        throw new ValidationError('O animal já está nesta ocupação.');
+      }
+
+      const novaOcupacaoAnimal = new OcupacaoAnimal();
+      novaOcupacaoAnimal.ocupacao = ocupacao;
+      novaOcupacaoAnimal.animal = animal;
+      novaOcupacaoAnimal.data_entrada = new Date();
+      novaOcupacaoAnimal.status = StatusOcupacaoAnimal.ATIVO;
+      novaOcupacaoAnimal.createdBy = usuario;
+
+      await transactionalEntityManager.save(novaOcupacaoAnimal);
+
+      return await this.getById(ocupacao.id);
+    });
   }
 }

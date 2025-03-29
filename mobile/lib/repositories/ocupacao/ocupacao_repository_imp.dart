@@ -1,4 +1,3 @@
-
 import 'package:logger/logger.dart';
 import 'package:syspig/api/api_client.dart';
 import 'package:syspig/model/ocupacao_model.dart';
@@ -49,6 +48,7 @@ class OcupacaoRepositoryImp implements OcupacaoRepository {
     }
   }
 
+  @override
   Future<List<OcupacaoModel>> getList(int fazendaId) async {
     try {
       var response = await _apiClient.dio.get('/ocupacoes/$fazendaId');
@@ -60,4 +60,17 @@ class OcupacaoRepositoryImp implements OcupacaoRepository {
     }
   }
 
+  @override
+  Future<OcupacaoModel> addAnimalToOcupacao(int ocupacaoId, int animalId) async {
+    try {
+      var response = await _apiClient.dio.post('/ocupacoes/$ocupacaoId/animais', data: {
+        'animal_id': animalId
+      });
+      return OcupacaoModel.fromJson(response.data);
+    } catch (e) {
+      String errorMessage = ErrorHandlerUtil.handleDioError(e, 'Erro ao adicionar animal à ocupação');
+      Logger().e('Erro ao adicionar animal à ocupação: $e');
+      throw Exception(errorMessage);
+    }
+  }
 }

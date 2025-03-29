@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { OcupacaoService } from "../services/OcupacaoService";
 import { handleError } from "../utils/errorHandler";
+import { classToPlain } from "class-transformer";
 
 export class OcupacaoController {
 
@@ -43,9 +44,9 @@ export class OcupacaoController {
       const ocupacao = await this.ocupacaoService.createOrUpdate(ocupacaoData, ocupacao_id);
 
       if (ocupacao_id) {
-        return res.status(200).json(ocupacao); // Atualizado
+        return res.status(200).json(classToPlain(ocupacao)); // Atualizado
       } else {
-        return res.status(201).json(ocupacao); // Criado
+        return res.status(201).json(classToPlain(ocupacao)); // Criado
       }
 
     } catch (error) {
@@ -85,6 +86,29 @@ export class OcupacaoController {
     } catch (error) {
       console.error("Erro ao buscar Ocupação:", error);
       return handleError(error, res, "Erro ao buscar Ocupação");
+    }
+  }
+
+  addAnimalToOcupacao = async (req: Request, res: Response) => {
+    try {
+      const { ocupacao_id } = req.params;
+      const { animal_id } = req.body;
+      const usuario_id = req.headers['user-id'];
+
+      if (!ocupacao_id || !animal_id || !usuario_id) {
+        return res.status(400).json({ message: 'Parâmetros não informados' });
+      }
+
+      const ocupacao = await this.ocupacaoService.addAnimalToOcupacao({
+        ocupacao_id: Number(ocupacao_id),
+        animal_id: Number(animal_id),
+        usuarioIdAcao: Number(usuario_id)
+      });
+
+      return res.status(200).json(ocupacao);
+    } catch (error) {
+      console.error("Erro ao adicionar animal à ocupação:", error);
+      return handleError(error, res, "Erro ao adicionar animal à ocupação");
     }
   }
 

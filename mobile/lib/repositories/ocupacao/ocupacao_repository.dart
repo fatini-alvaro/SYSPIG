@@ -9,4 +9,6 @@ abstract class OcupacaoRepository {
   Future<OcupacaoModel> getByBaiaId(int baiaId);
 
   Future<List<OcupacaoModel>> getList(int fazendaId);
+
+  Future<OcupacaoModel> addAnimalToOcupacao(int ocupacaoId, int animalId);
 }

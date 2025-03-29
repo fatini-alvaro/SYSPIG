@@ -3,6 +3,8 @@ import 'package:intl/intl.dart';
 import 'package:syspig/components/buttons/custom_salvar_cadastro_button_component.dart';
 import 'package:syspig/controller/cadastrar_movimentacao/cadastrar_movimentacao_controller.dart';
 import 'package:syspig/model/animal_model.dart';
+import 'package:syspig/model/baia_model.dart';
+import 'package:syspig/model/ocupacao_model.dart';
 import 'package:syspig/themes/themes.dart';
 import 'package:syspig/widgets/custom_text_form_field_widget.dart';
 
@@ -15,19 +17,41 @@ class CadastrarMovimentacaoPageState extends State<CadastrarMovimentacaoPage> {
   final CadastrarMovimentacaoController _cadastrarMovimentacaoController = CadastrarMovimentacaoController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   List<AnimalModel> animais = [];
+  List<BaiaModel> baias = [];
   TextEditingController _searchControllerAnimal = TextEditingController();
+  TextEditingController _searchControllerBaia = TextEditingController();
   bool _isAnimalSearchFocused = false;
+  bool _isBaiaSearchFocused = false;
   AnimalModel? animalSelecionado;
+  BaiaModel? baiaSelecionada;
+  OcupacaoModel? ocupacaoBaiaSelecionada;
 
   @override
   void initState() {
     super.initState();
     _carregarAnimais();
+    _carregarBaias();
   }
 
   Future<void> _carregarAnimais() async {
     animais = await _cadastrarMovimentacaoController.getAnimaisFromRepository();
     setState(() {});
+  }
+
+  Future<void> _carregarBaias() async {
+    baias = await _cadastrarMovimentacaoController.getBaiasFromRepository();
+    setState(() {});
+  }
+
+  Future<void> _selecionarBaia(BaiaModel baia) async {
+    final ocupacao = await _cadastrarMovimentacaoController.getOcupacaoByBaia(baia.id!);
+    setState(() {
+      baiaSelecionada = baia;
+      ocupacaoBaiaSelecionada = ocupacao;
+      _searchControllerBaia.text = baia.numero ?? '';
+      _isBaiaSearchFocused = false;
+    });
+    _cadastrarMovimentacaoController.setBaiaDestino(baia);
   }
 
   @override
@@ -90,6 +114,7 @@ class CadastrarMovimentacaoPageState extends State<CadastrarMovimentacaoPage> {
                             _searchControllerAnimal.text = animal.numeroBrinco;
                             _isAnimalSearchFocused = false;
                           });
+                          _cadastrarMovimentacaoController.setAnimal(animalSelecionado);
                         },
                       );
                     }).toList(),
@@ -97,6 +122,63 @@ class CadastrarMovimentacaoPageState extends State<CadastrarMovimentacaoPage> {
                 ),
               if (animalSelecionado != null)
                 _buildAnimalInfoCard(animalSelecionado!),
+              const SizedBox(height: 20),
+              CustomTextFormFieldWidget(
+                controller: _searchControllerBaia,
+                label: 'Selecionar Baia de Destino',
+                hintText: 'Baia para movimentar o animal',
+                suffixIcon: _searchControllerBaia.text.isNotEmpty
+                    ? IconButton(
+                        icon: Icon(Icons.clear),
+                        onPressed: () {
+                          setState(() {
+                            _searchControllerBaia.clear();
+                            baiaSelecionada = null;
+                            ocupacaoBaiaSelecionada = null;
+                            _isBaiaSearchFocused = false;
+                          });
+                        },
+                      )
+                    : Icon(Icons.search),
+                onChanged: (value) {
+                  setState(() {});
+                },
+                onTap: () {
+                  setState(() {
+                    _isBaiaSearchFocused = !_isBaiaSearchFocused;
+                  });
+                },
+              ),
+              if (_isBaiaSearchFocused)
+                SizedBox(
+                  height: 200,
+                  child: ListView(
+                    children: baias
+                        .where((baia) =>
+                            (baia.numero ?? '').toLowerCase().contains(_searchControllerBaia.text.toLowerCase()))
+                        .map((baia) {
+                      return ListTile(
+                        title: Text('${baia.numero}'),
+                        subtitle: Text(baia.vazia ?? true ? 'Vazia' : 'Ocupada'),
+                        onTap: () => _selecionarBaia(baia),
+                      );
+                    }).toList(),
+                  ),
+                ),
+              if (baiaSelecionada != null)
+                _buildBaiaInfoCard(baiaSelecionada!, ocupacaoBaiaSelecionada),
+              const Spacer(),
+              CustomSalvarCadastroButtonComponent(
+                buttonText: 'Movimentar Animal',
+                onPressed: () async {
+                  if (_formKey.currentState!.validate()) {
+                    final resultado = await _cadastrarMovimentacaoController.movimentarAnimal(context);
+                    if (resultado) {
+                      Navigator.pop(context);
+                    }
+                  }
+                },
+              ),
             ],
           ),
         ),
@@ -119,6 +201,32 @@ class CadastrarMovimentacaoPageState extends State<CadastrarMovimentacaoPage> {
             Text('Baia Atual: ${animal.ocupacaoAnimalAtiva?.ocupacao?.baia?.numero ?? "Sem baia vinculada"}'),
             Text('Data de Entrada: ${animal.ocupacaoAnimalAtiva?.dataEntrada != null ? DateFormat('dd/MM/yyyy HH:mm').format(animal.ocupacaoAnimalAtiva!.dataEntrada!) : "Não informado"}'),
             Text('Tempo na Baia: ${animal.ocupacaoAnimalAtiva?.dataEntrada != null ? _calcularTempoNaBaia(animal.ocupacaoAnimalAtiva?.dataEntrada) : "Não informado"}'),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBaiaInfoCard(BaiaModel baia, OcupacaoModel? ocupacao) {
+    return Card(
+      elevation: 4,
+      margin: const EdgeInsets.only(top: 16.0),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Informações da Baia', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            Divider(),
+            Text('Número da Baia: ${baia.numero}'),
+            Text('Capacidade: ${baia.capacidade ?? "Não informada"}'),
+            if (ocupacao != null) ...[
+              Text('Status: ${ocupacao.status?.toString().split('.').last ?? "Não informado"}'),
+              Text('Código: ${ocupacao.codigo ?? "Não informado"}'),
+              if (ocupacao.ocupacaoAnimais != null && ocupacao.ocupacaoAnimais!.isNotEmpty)
+                Text('Animais na Baia: ${ocupacao.ocupacaoAnimais!.length}'),
+            ] else
+              Text('Status: Vazia'),
           ],
         ),
       ),
