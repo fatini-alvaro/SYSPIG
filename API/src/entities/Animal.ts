@@ -1,9 +1,14 @@
-import { Column, CreateDateColumn, Entity, JoinColumn, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Fazenda } from "./Fazenda";
 import { Usuario } from "./Usuario";
+import { SexoAnimal, StatusAnimal } from "../constants/animalConstants";
+import { OcupacaoAnimal } from "./OcupacaoAnimal";
+import { ocupacaoAnimalRepository } from "../repositories/ocupacaoAnimalRepository";
+import { StatusOcupacaoAnimal } from "../constants/ocupacaoAnimalConstants";
+import { StatusOcupacao } from "../constants/ocupacaoConstants";
 
 @Entity('animal')
-export class Animal{
+export class Animal {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -16,12 +21,12 @@ export class Animal{
 
   @Column({ type: 'text' })
   numero_brinco: string;
-  
-  @Column({ type: 'text' })
-  sexo: string;
 
-  @Column({ type: 'int' })
-  status: number;
+  @Column({ type: 'text', enum: SexoAnimal })
+  sexo: SexoAnimal;
+
+  @Column({ type: 'enum', enum: StatusAnimal, default: StatusAnimal.VIVO })
+  status: StatusAnimal;
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', nullable: true })
   data_nascimento: Date;
@@ -39,4 +44,16 @@ export class Animal{
 
   @UpdateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   updated_at: Date;
+
+  async getOcupacaoAtiva(): Promise<OcupacaoAnimal | null> {
+    const ocupacaoAtiva = await ocupacaoAnimalRepository.findOne({
+      where: {
+        animal: { id: this.id },
+        status: StatusOcupacaoAnimal.ATIVO,
+      },
+      relations: ['ocupacao', 'ocupacao.baia']
+    });
+  
+    return ocupacaoAtiva ?? null;
+  }  
 }

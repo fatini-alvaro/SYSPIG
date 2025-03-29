@@ -1,58 +1,41 @@
 import 'package:flutter/material.dart';
-import 'package:syspig/controller/movimentacao/movimentacao_controller.dart';
-import 'package:syspig/repositories/movimentacao/movimentacao_repository_imp.dart';
-import 'package:syspig/utils/dialogs.dart';
+import 'package:syspig/controller/ocupacao/ocupacao_controller.dart';
+import 'package:syspig/model/animal_model.dart';
+import 'package:syspig/repositories/animal/animal_repository_imp.dart';
+import 'package:syspig/repositories/ocupacao/ocupacao_repository_imp.dart';
+import 'package:syspig/services/prefs_service.dart';
+import 'package:syspig/utils/async_fetcher_util.dart';
 
 class CadastrarMovimentacaoController with ChangeNotifier {
-  final MovimentacaoController _movimentacaoController = MovimentacaoController(MovimentacaoRepositoryImp());
 
-  String? _descricao;
-  setGranja(String value) => _descricao = value;
+  final OcupacaoController _ocupacaoController =
+      OcupacaoController(OcupacaoRepositoryImp());
 
-  String? _baia;
-  setBaia(String value) => _baia = value;
+  final AnimalRepositoryImp _animalRepository = AnimalRepositoryImp();
 
-  String? granjaError;
-  String? baiaError;
-
-  // Função para validar os campos
-  bool validateFields() {
-    bool isValid = true;
-    const textObrigatorio = 'Campo obrigatório';
-
-    // Validar e definir mensagens de erro para cada campo
-    if (_descricao == null || _descricao!.isEmpty) {
-      granjaError = textObrigatorio;
-      isValid = false;
-    } else {
-      granjaError = '';
-
-    }
-
-    if (_baia == null || _baia!.isEmpty) {
-      baiaError = textObrigatorio;
-      isValid = false;
-    } else {
-      baiaError = '';
-    }
-
+  AnimalModel? _animal;
+  void setAnimal(AnimalModel? value) {
+    _animal = value;
     notifyListeners();
+  }
+  AnimalModel? get animal => _animal;
 
-    return isValid;
+  Future<List<AnimalModel>> getAnimaisFromRepository() async {
+    return await AsyncFetcher.fetch(
+      action: () async {
+        var idFazenda = await PrefsService.getFazendaId();
+        return await _animalRepository.getList(idFazenda!);
+      },
+      errorMessage: 'Erro ao buscar os animais do repositório',
+    ) ?? [];
   }
 
-  Future<bool> create(BuildContext context) async {
-    if (!validateFields()) {
-      // Se houver campos vazios, retornar false sem realizar a ação
-      return false;
-    }
-
-    Dialogs.showLoading(context, message: 'Aguarde, registrando transferência.');
-    await Future.delayed(Duration(seconds: 2));
-    //To-do chama o create do fazendacontroller
-
-    Dialogs.hideLoading(context);
-
-    return true;
+  Future<AnimalModel?> getAnimalDetalhes(int animalId) async {
+    return await AsyncFetcher.fetch(
+      action: () async {
+        return await _animalRepository.getById(animalId);
+      },
+      errorMessage: 'Erro ao buscar detalhes do animal',
+    );
   }
 }

@@ -2,9 +2,10 @@ import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGenerat
 import { Animal } from "./Animal";
 import { Usuario } from "./Usuario";
 import { Ocupacao } from "./Ocupacao";
+import { StatusOcupacaoAnimal } from "../constants/ocupacaoAnimalConstants";
 
 @Entity('ocupacao_animal')
-export class OcupacaoAnimal{
+export class OcupacaoAnimal {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -29,5 +30,13 @@ export class OcupacaoAnimal{
 
   @UpdateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   updated_at: Date;
-  
+
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  data_entrada: Date;
+
+  @Column({ type: 'timestamp', nullable: true })
+  data_saida: Date;
+
+  @Column({ type: 'enum', enum: StatusOcupacaoAnimal, default: StatusOcupacaoAnimal.ATIVO })
+  status: StatusOcupacaoAnimal;
 }

@@ -1,36 +1,34 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:syspig/components/buttons/custom_salvar_cadastro_button_component.dart';
 import 'package:syspig/controller/cadastrar_movimentacao/cadastrar_movimentacao_controller.dart';
+import 'package:syspig/model/animal_model.dart';
 import 'package:syspig/themes/themes.dart';
+import 'package:syspig/widgets/custom_text_form_field_widget.dart';
 
 class CadastrarMovimentacaoPage extends StatefulWidget {
   @override
-  State<CadastrarMovimentacaoPage> createState() => CadastrarAnotacaoPageState();
+  State<CadastrarMovimentacaoPage> createState() => CadastrarMovimentacaoPageState();
 }
 
-class CadastrarAnotacaoPageState extends State<CadastrarMovimentacaoPage> {
+class CadastrarMovimentacaoPageState extends State<CadastrarMovimentacaoPage> {
   final CadastrarMovimentacaoController _cadastrarMovimentacaoController = CadastrarMovimentacaoController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  //Aterar para o tipo do que vai ser carregado
-  List<String> granjas = [
-    'Granja A',
-    'Granja B',
-    'Granja C',
-    'Granja D',
-    // Adicione suas granjas carregadas do banco de dados aqui
-  ];
+  List<AnimalModel> animais = [];
+  TextEditingController _searchControllerAnimal = TextEditingController();
+  bool _isAnimalSearchFocused = false;
+  AnimalModel? animalSelecionado;
 
-  List<String> baia = [
-    'Baia A',
-    'Baia B',
-    'Baia C',
-    'Baia D',
-    // Adicione suas baias carregadas do banco de dados aqui
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _carregarAnimais();
+  }
 
-  String selectedBaia = '';
-  String selectedGranja = '';
-  bool showDetails = false; // Variável para controlar a exibição do card de detalhes
+  Future<void> _carregarAnimais() async {
+    animais = await _cadastrarMovimentacaoController.getAnimaisFromRepository();
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,261 +41,93 @@ class CadastrarAnotacaoPageState extends State<CadastrarMovimentacaoPage> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: SingleChildScrollView(
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildBaiaAtual(),
-                _buildMovimentarPara(),
-                _buildSelecionarGranja(),
-                _buildSelecionarBaia(),
-                _buildSalvarButton(),
-              ],
-            ),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            children: [
+              const SizedBox(height: 20),
+              CustomTextFormFieldWidget(
+                controller: _searchControllerAnimal,
+                label: 'Selecionar Animal',
+                hintText: 'Animal para movimentar',
+                suffixIcon: _searchControllerAnimal.text.isNotEmpty
+                    ? IconButton(
+                        icon: Icon(Icons.clear),
+                        onPressed: () {
+                          setState(() {
+                            _searchControllerAnimal.clear();
+                            animalSelecionado = null;
+                            _isAnimalSearchFocused = false;
+                          });
+                        },
+                      )
+                    : Icon(Icons.search),
+                onChanged: (value) {
+                  setState(() {});
+                },
+                onTap: () {
+                  setState(() {
+                    _isAnimalSearchFocused = !_isAnimalSearchFocused;
+                  });
+                },
+              ),
+              if (_isAnimalSearchFocused)
+                SizedBox(
+                  height: 200,
+                  child: ListView(
+                    children: animais
+                        .where((animal) =>
+                            animal.numeroBrinco.toLowerCase().contains(_searchControllerAnimal.text.toLowerCase()))
+                        .map((animal) {
+                      return ListTile(
+                        title: Text('${animal.numeroBrinco}'),
+                        onTap: () async {
+                          AnimalModel? detalhes = animal.id != null
+                              ? await _cadastrarMovimentacaoController.getAnimalDetalhes(animal.id!)
+                              : null;
+                          setState(() {
+                            animalSelecionado = detalhes ?? animal;
+                            _searchControllerAnimal.text = animal.numeroBrinco;
+                            _isAnimalSearchFocused = false;
+                          });
+                        },
+                      );
+                    }).toList(),
+                  ),
+                ),
+              if (animalSelecionado != null)
+                _buildAnimalInfoCard(animalSelecionado!),
+            ],
           ),
         ),
       ),
     );
   }
 
-  Widget _buildBaiaAtual() {
-    return Column(
-      children: [
-        SizedBox(height: 20),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  Widget _buildAnimalInfoCard(AnimalModel animal) {
+    return Card(
+      elevation: 4,
+      margin: const EdgeInsets.only(top: 16.0),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Baia Atual: ',
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-              textAlign: TextAlign.left,
-            ),
-            Material(
-              elevation: 4,
-              shape: CircleBorder(),
-              color: Colors.orange,
-              child: Container(width: 50, height: 50,
-                decoration: BoxDecoration(shape: BoxShape.circle),
-                child: Center(
-                  child: Text('3', style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold,),
-                  ),
-                ),
-              ),
-            ),
+            Text('Informações do Animal', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            Divider(),
+            Text('Número do Brinco: ${animal.numeroBrinco}'),
+            Text('Baia Atual: ${animal.ocupacaoAnimalAtiva?.ocupacao?.baia?.numero ?? "Sem baia vinculada"}'),
+            Text('Data de Entrada: ${animal.ocupacaoAnimalAtiva?.dataEntrada != null ? DateFormat('dd/MM/yyyy HH:mm').format(animal.ocupacaoAnimalAtiva!.dataEntrada!) : "Não informado"}'),
+            Text('Tempo na Baia: ${animal.ocupacaoAnimalAtiva?.dataEntrada != null ? _calcularTempoNaBaia(animal.ocupacaoAnimalAtiva?.dataEntrada) : "Não informado"}'),
           ],
         ),
-        SizedBox(height: 10),
-        SizedBox(
-          width: double.infinity, // Define a largura do botão para ocupar toda a largura disponível
-          height: 50, // Define a altura do botão
-          child: ElevatedButton(
-            onPressed: () {
-              setState(() {
-                showDetails = !showDetails; // Alterna a exibição do card de detalhes
-              });
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.orange, // Define a cor de fundo do botão
-              foregroundColor: Colors.white, // Define a cor do texto do botão
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
-            ),
-            child:
-                Text(showDetails ? 'Esconder Detalhes' : 'Visualizar Detalhes'),
-          ),
-        ),
-        if (showDetails) // Exibe o card de detalhes somente se showDetails for verdadeiro
-          Card(
-            color: Colors.white,
-            elevation: 4,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Nome da Granja', style: TextStyle(fontSize: 18)),
-                  Divider(color: Colors.grey,thickness: 1),
-                  Text('Informações:',style: TextStyle(fontSize: 15)),
-                  Text('Data de Entrada: 22/11/2023', style: TextStyle(fontSize: 18),
-                  ),
-                ],
-              ),
-            ),
-          ),
-      ],
-    );
-  }
-
-  Widget _buildMovimentarPara() {
-    return Column(
-      children: [
-        SizedBox(height: 20),
-        Text('Movimentar para: ',
-          style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-          textAlign: TextAlign.left,
-        ),
-      ],
-    );
-  }
-
-  Widget _buildSelecionarGranja() {
-    return SizedBox(
-      height: 80,
-      child: Autocomplete<String>(
-        optionsBuilder: (TextEditingValue textEditingValue) {
-          return granjas.where((String option) {
-            return option.toLowerCase().contains(textEditingValue.text.toLowerCase());
-          });
-        },
-        onSelected: (String selection) {
-          setState(() {
-            selectedGranja = selection;
-          });
-        },
-        fieldViewBuilder: (BuildContext context,
-            TextEditingController textEditingController,
-            FocusNode focusNode,
-            VoidCallback onFieldSubmitted) {
-          return TextFormField(
-            controller: textEditingController,
-            focusNode: focusNode,
-            onFieldSubmitted: (String value) {
-              onFieldSubmitted();
-            },
-            decoration: InputDecoration(
-              labelText: 'Selecionar Granja',
-              border: OutlineInputBorder(),
-            ),
-            validator: (String? value) {
-              if (value == null || value.isEmpty) {
-                return 'Campo obrigatório';
-              }
-              return null;
-            },
-          );
-        },
-        optionsViewBuilder: (BuildContext context,
-            AutocompleteOnSelected<String> onSelected,
-            Iterable<String> options) {
-          return Align(
-            alignment: Alignment.topLeft,
-            child: Material(
-              elevation: 4.0,
-              child: SizedBox(
-                height: 200.0,
-                child: ListView.builder(
-                  padding: EdgeInsets.all(8.0),
-                  itemCount: options.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    final String option = options.elementAt(index);
-                    return GestureDetector(
-                      onTap: () {
-                        onSelected(option);
-                      },
-                      child: ListTile(
-                        title: Text(option),
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ),
-          );
-        },
       ),
     );
   }
 
-  Widget _buildSelecionarBaia() {
-    return Padding(
-      padding: const EdgeInsets.only(
-          top: 15.0), // Adicionando um padding top de 16.0
-      child: SizedBox(
-        height: 80,
-        child: Autocomplete<String>(
-          optionsBuilder: (TextEditingValue textEditingValue) {
-            return baia.where((String option) {
-              return option.toLowerCase().contains(
-                    textEditingValue.text.toLowerCase(),
-                  );
-            });
-          },
-          onSelected: (String selection) {
-            setState(() {
-              selectedBaia = selection;
-            });
-          },
-          fieldViewBuilder: (BuildContext context,
-              TextEditingController textEditingController,
-              FocusNode focusNode,
-              VoidCallback onFieldSubmitted) {
-            return TextFormField(
-              controller: textEditingController,
-              focusNode: focusNode,
-              onFieldSubmitted: (String value) {
-                onFieldSubmitted();
-              },
-              decoration: InputDecoration(
-                labelText: 'Selecionar Baia',
-                border: OutlineInputBorder(),
-              ),
-              validator: (String? value) {
-                if (value == null || value.isEmpty) {
-                  return 'Campo obrigatório';
-                }
-                return null;
-              },
-            );
-          },
-          optionsViewBuilder: (BuildContext context,
-              AutocompleteOnSelected<String> onSelected,
-              Iterable<String> options) {
-            return Align(
-              alignment: Alignment.topLeft,
-              child: Material(
-                elevation: 4.0,
-                child: SizedBox(
-                  height: 200.0,
-                  child: ListView.builder(
-                    padding: EdgeInsets.all(8.0),
-                    itemCount: options.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      final String option = options.elementAt(index);
-                      return GestureDetector(
-                        onTap: () {
-                          onSelected(option);
-                        },
-                        child: ListTile(
-                          title: Text(option),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ),
-            );
-          },
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSalvarButton() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        SizedBox(height: 20),
-        CustomSalvarCadastroButtonComponent(
-          buttonText: 'Salvar movimentação',
-          rotaTelaAposSalvar: 'selecionarMovimentacao',
-          onPressed: () {
-            if (_formKey.currentState!.validate()) {
-              // Execute a ação de salvar
-            }
-          },
-        ),
-      ],
-    );
+  String _calcularTempoNaBaia(DateTime? dataEntrada) {
+    if (dataEntrada == null) return "Não disponível";
+    final Duration diferenca = DateTime.now().difference(dataEntrada);
+    return "${diferenca.inDays} dias";
   }
 }

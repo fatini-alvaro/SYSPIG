@@ -6,17 +6,18 @@ import { Usuario } from "./Usuario";
 import { Baia } from "./Baia";
 import { OcupacaoAnimal } from "./OcupacaoAnimal";
 import { Anotacao } from "./Anotacao";
+import { StatusOcupacao } from "../constants/ocupacaoConstants";
 
 @Entity('ocupacao')
-export class Ocupacao{
+export class Ocupacao {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column({ type: 'int', nullable: true })
   codigo: number;
 
-  @Column({ type: 'int' })
-  status: number;
+  @Column({ type: 'enum', enum: StatusOcupacao, default: StatusOcupacao.ABERTA })
+  status: StatusOcupacao;
 
   @ManyToOne(() => Fazenda, { eager: true, nullable: true })
   @JoinColumn({ name: 'fazenda_id', referencedColumnName: 'id' }) 

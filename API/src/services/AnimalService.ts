@@ -8,8 +8,8 @@ import { SexoAnimal, StatusAnimal } from "../constants/animalConstants";
 
 interface AnimalCreateOrUpdateData {
   numero_brinco: string;
-  sexo: string;
-  status: number;
+  sexo: SexoAnimal;
+  status: StatusAnimal;
   data_nascimento: Date;
   fazenda_id: number;
   usuarioIdAcao: number;
@@ -28,9 +28,23 @@ export class AnimalService {
   }
   
   async getById(animal_id: number) {
-    return await animalRepository.findOne({ where: { id: animal_id } });
-  }
-
+    // Buscar o animal
+    const animal = await animalRepository.findOne({
+      where: { id: animal_id },
+    });
+  
+    if (animal) {
+      // Buscar a ocupação ativa do animal usando o método getOcupacaoAtiva
+      const ocupacao_animal_ativa = await animal.getOcupacaoAtiva();
+  
+      // Incluir a ocupação ativa na resposta, mas não como um campo no banco, apenas na resposta
+      return { ...animal, ocupacao_animal_ativa };
+    }
+  
+    // Se o animal não for encontrado, retornar null ou um erro
+    return null;
+  }  
+  
   async createOrUpdate(animalData: AnimalCreateOrUpdateData, animal_id?: number) {
     return await AppDataSource.transaction(async transactionalEntityManager => {
       let animal: Animal | null = null;

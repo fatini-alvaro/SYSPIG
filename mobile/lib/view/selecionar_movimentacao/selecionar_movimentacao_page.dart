@@ -1,8 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 import 'package:syspig/components/buttons/custom_abrir_tela_adicionar_novo_button_component.dart';
-import 'package:syspig/controller/movimentacao/movimentacao_controller.dart';
-import 'package:syspig/repositories/movimentacao/movimentacao_repository_imp.dart';
+import 'package:syspig/components/cards/custom_registro_card.dart';
+import 'package:syspig/controller/animal/animal_controller.dart';
+import 'package:syspig/controller/ocupacao/ocupacao_controller.dart';
+import 'package:syspig/model/animal_model.dart';
+import 'package:syspig/repositories/animal/animal_repository_imp.dart';
+import 'package:syspig/repositories/ocupacao/ocupacao_repository_imp.dart';
+import 'package:syspig/services/prefs_service.dart';
 import 'package:syspig/themes/themes.dart';
+import 'package:syspig/utils/dialogs.dart';
+import 'package:syspig/view/animal/cadastrar_animal_page.dart';
 
 class SelecionarMovimentacaoPage extends StatefulWidget {
   @override
@@ -12,13 +20,23 @@ class SelecionarMovimentacaoPage extends StatefulWidget {
 }
 
 class SelecionarMovimentacaoPageState extends State<SelecionarMovimentacaoPage> {
-  final MovimentacaoController _movimentacaoController = MovimentacaoController(MovimentacaoRepositoryImp());
+  
+  final OcupacaoController _ocupacaoController = OcupacaoController(OcupacaoRepositoryImp());
+   
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   _carregarMovimentacoes();
+  // }
 
-  @override
-  void initState() {
-    super.initState();
-    _movimentacaoController.fetch();
-  }
+  // Future<void> _carregarMovimentacoes() async {
+  //   int? fazendaId = await PrefsService.getFazendaId();
+  //   if (fazendaId != null) {
+  //     _ocupacaoController.fetchMovimentacoes(fazendaId);
+  //   } else {
+  //     Logger().e('ID da fazenda não encontrado');
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -26,68 +44,16 @@ class SelecionarMovimentacaoPageState extends State<SelecionarMovimentacaoPage> 
       appBar: AppBar(
         backgroundColor: AppThemes.lightTheme.primaryColor,
         foregroundColor: Colors.white,
-        title: Text('Movimentações'),
+        title: Text('Movimentar Animais'),
         centerTitle: true,
       ),
       body: Column(
         children: [
           SizedBox(height: 20),
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16.0),
-            child: Material(
-              elevation: 4, // Define o nível de elevação para criar o efeito de sombra
-              borderRadius: BorderRadius.circular(5), // Bordas arredondadas do Material
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: const Color.fromARGB(255, 250, 249, 248), // Cor de fundo do campo de pesquisa
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(5),
-                          bottomLeft: Radius.circular(5),
-                        ), // Borda arredondada apenas nos cantos esquerdos
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 10),
-                        child: TextField(
-                          decoration: InputDecoration(
-                            border: InputBorder.none, // Sem borda
-                            hintText: 'Pesquisar',
-                            hintStyle: TextStyle(
-                                color: Color.fromARGB(193, 208, 205, 205)), // Cor do texto de dica
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  Material(
-                    borderRadius: BorderRadius.only(
-                      topRight: Radius.circular(5),
-                      bottomRight: Radius.circular(5),
-                    ), // Borda arredondada apenas nos cantos direitos
-                    color: Colors.orange, // Cor de fundo do botão de pesquisa
-                    child: InkWell(
-                      onTap: () {
-                        // Adicione aqui a lógica para a pesquisa
-                      },
-                      child: Padding(
-                        padding: EdgeInsets.all(13),
-                        child: Icon(Icons.search, color: Colors.white), // Ícone de pesquisa branco
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          //--------
-          SizedBox(height: 20),
-          Padding(
-            padding: EdgeInsets.symmetric(
-                horizontal: 16.0), // Ajuste a quantidade de espaço desejada
+            padding: EdgeInsets.symmetric(horizontal: 16.0), // Ajuste a quantidade de espaço desejada
             child: CustomAbrirTelaAdicionarNovoButtonComponent(
-              buttonText: 'Cadastrar Nova Movimentacao',
+              buttonText: 'Cadastrar Movimentação', 
               onPressed: () {
                 Navigator.of(context).pushNamed('/abrirTelaCadastroMovimentacao');     
               },
@@ -95,25 +61,74 @@ class SelecionarMovimentacaoPageState extends State<SelecionarMovimentacaoPage> 
           ),
           SizedBox(height: 15),
           // Expanded(
-          //   child: ValueListenableBuilder<List<GranjaModel>>(
-          //     valueListenable: _granjaController.granjas,
+          //   child: ValueListenableBuilder<List<AnimalModel>>(
+          //     valueListenable: _animalController.animais,
           //     builder: (_, list, __) {
           //       return ListView.builder(
           //         itemCount: list.length,
           //         itemBuilder: (_, idx) => CustomRegistroCard(
-          //           granja: list[idx],
+          //           descricao: Column(
+          //             crossAxisAlignment: CrossAxisAlignment.start,
+          //             children: [
+          //               Text(
+          //                 'Brinco: ${list[idx].numeroBrinco}',
+          //                 style: TextStyle(
+          //                   fontWeight: FontWeight.bold,
+          //                   fontSize: 20,
+          //                 ),
+          //               ),
+          //             ],
+          //           ),
           //           onEditarPressed: () {
-          //             // Lógica para abrir a tela de edição
+          //             Navigator.push(
+          //               context,
+          //               MaterialPageRoute(
+          //                 builder: (context) => CadastrarAnimalPage(
+          //                   animalId: list[idx].id,
+          //                 ),
+          //               ),
+          //             );
           //           },
           //           onExcluirPressed: () {
-          //             // Lógica para excluir
-          //           },
-          //           caminhoTelaAoClicar: 'home'
+          //             showDialog(
+          //               context: context,
+          //               builder: (_) => AlertDialog(
+          //                 title: Text('Confirmar exclusão'),
+          //                 content: Text('Tem certeza de que deseja excluir o animal ${list[idx].numeroBrinco}?'),
+          //                 actions: [
+          //                   TextButton(
+          //                     onPressed: () async {
+          //                       try {
+          //                         Navigator.pop(context);
+
+          //                         bool excluido = await _animalController.delete(list[idx].id!);
+
+          //                         if (excluido) {
+          //                           Dialogs.successToast(context, 'Animal excluído com sucesso!');
+          //                           _carregarAnimais();
+          //                         }
+          //                       } catch (e) {
+          //                         String errorMessage = e.toString().replaceFirst('Exception: ', ''); // Removendo duplicação
+          //                         Dialogs.errorToast(context, errorMessage);
+          //                       }
+          //                     },
+          //                     child: Text('Confirmar'),
+          //                   ),
+          //                   TextButton(
+          //                     onPressed: () {
+          //                       Navigator.pop(context); // Fechar o diálogo de confirmação
+          //                     },
+          //                     child: Text('Cancelar'),
+          //                   ),
+          //                 ],
+          //               ),
+          //             );
+          //           },   
           //         ),
           //       );
           //     },
           //   ),
-          // ),
+          // )
         ],
       ),
     );

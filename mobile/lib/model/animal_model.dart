@@ -1,5 +1,6 @@
 import 'package:syspig/enums/animal_constants.dart';
 import 'package:syspig/model/fazenda_model.dart';
+import 'package:syspig/model/ocupacao_animal_model.dart';
 import 'package:syspig/model/usuario_model.dart';
 
 class AnimalModel {
@@ -13,6 +14,8 @@ class AnimalModel {
   final DateTime? createdAt;
   final UsuarioModel? updatedBy;
   final DateTime? updatedAt;
+  final OcupacaoAnimalModel? ocupacaoAnimalAtiva;
+
 
   AnimalModel({
     this.id,
@@ -21,6 +24,7 @@ class AnimalModel {
     required this.sexo,
     required this.status,
     this.dataNascimento,
+    this.ocupacaoAnimalAtiva,
     this.createdBy,
     this.createdAt,
     this.updatedBy,
@@ -35,6 +39,7 @@ class AnimalModel {
       status: intToStatusAnimal[json['status']] ?? StatusAnimal.vivo,
       fazenda: json['fazenda'] != null ? FazendaModel.fromJson(json['fazenda']) : null,
       dataNascimento: json['data_nascimento'] != null ? DateTime.parse(json['data_nascimento']) : null,
+      ocupacaoAnimalAtiva: json['ocupacao_animal_ativa'] != null ? OcupacaoAnimalModel.fromJson(json['ocupacao_animal_ativa']) : null,
       createdBy: json['createdBy'] != null ? UsuarioModel.fromJson(json['createdBy']) : null,
       createdAt: json['created_at'] != null ? DateTime.parse(json['created_at']) : null,
       updatedBy: json['updatedBy'] != null ? UsuarioModel.fromJson(json['updatedBy']) : null,
