@@ -23,13 +23,16 @@ interface OcupacaoCreateOrUpdateData {
   usuarioIdAcao: number;
 }
 
-interface MovimentarAnimalData {
-  fazenda_id: number;
+interface MovimentacaoData {
   animal_id: number;
   baia_destino_id: number;
-  usuarioIdAcao: number;
 }
 
+interface MovimentarAnimaisData {
+  fazenda_id: number;
+  movimentacoes: MovimentacaoData[];
+  usuarioIdAcao: number;
+}
 export class OcupacaoService {
 
   async list(fazenda_id: number) {
@@ -166,71 +169,103 @@ export class OcupacaoService {
     return { fazenda, baiaInstancia, createdBy, updatedBy };
   }
 
-  async movimentarAnimal(data: MovimentarAnimalData) {
+  async movimentarAnimais(data: MovimentarAnimaisData) {
     return await AppDataSource.transaction(async (transactionalEntityManager) => {
-      const {fazenda_id, animal_id, baia_destino_id, usuarioIdAcao } = data;
+      const { fazenda_id, movimentacoes, usuarioIdAcao } = data;
       
-      // Validações iniciais
-      const animal = await ValidationService.validateAndReturnAnimal(animal_id);
-      const baiaDestino = await ValidationService.validateAndReturnBaia(baia_destino_id);
+      // Validações comuns
       const usuario = await ValidationService.validateAndReturnUsuario(usuarioIdAcao);
       const fazenda = await ValidationService.validateAndReturnFazenda(fazenda_id);
-
-      if (!fazenda || !animal || !baiaDestino || !usuario) {
-        throw new ValidationError('Dados inválidos para movimentação');
+  
+      // Validação inicial da lista
+      if (!movimentacoes || movimentacoes.length === 0) {
+        throw new Error('Nenhuma movimentação foi informada');
       }
+  
+      const resultados = [];
+      const erros = [];
+  
+      for (const movimentacao of movimentacoes) {
+        try {
+          const { animal_id, baia_destino_id } = movimentacao;
+          
+          // Validações específicas para cada movimentação
+          const animal = await ValidationService.validateAndReturnAnimal(animal_id);
+          const baiaDestino = await ValidationService.validateAndReturnBaia(baia_destino_id);
+  
+          // Verificar se o animal já está na baia de destino
+          const ocupacaoAtiva = await transactionalEntityManager.findOne(OcupacaoAnimal, {
+            where: { 
+              animal: { id: animal!.id },
+              ocupacao: { baia: { id: baiaDestino!.id } },
+              status: StatusOcupacaoAnimal.ATIVO
+            }
+          });
+  
+          if (ocupacaoAtiva) {
+            throw new Error(`O animal ${animal_id} já está na baia de destino ${baia_destino_id}`);
+          }
+  
+          // Processar ocupação atual do animal
+          const ocupacaoAtual = await this.tratarOcupacaoAtual(
+            transactionalEntityManager, 
+            animal!.id, 
+            usuario!
+          );
+  
+          // Processar baia de destino
+          const ocupacaoDestino = await this.processarBaiaDestino(
+            transactionalEntityManager,
+            fazenda,
+            baiaDestino!.id,
+            usuario!
+          );
+  
+          // Criar nova associação
+          await this.criarNovaOcupacaoAnimal(
+            transactionalEntityManager,
+            ocupacaoDestino,
+            animal!,
+            usuario!
+          );
+  
+          // Registrar movimentação
+          await this.registrarMovimentacao(
+            transactionalEntityManager,
+            animal!,
+            ocupacaoAtual?.ocupacao?.baia,
+            baiaDestino!,
+            usuario!
+          );
+  
+          resultados.push({ 
+            animal_id: animal!.id,
+            success: true,
+            message: 'Animal movimentado com sucesso'
+          });
+        } catch (error) {
+          const message = error instanceof Error ? error.message : 'Erro ao movimentar animal';
+          
+          erros.push({ 
+            animal_id: movimentacao.animal_id,
+            message: message
+          });
 
-      // Verificar se o animal já está ATIVO na baia de destino
-      const ocupacaoAtiva = await transactionalEntityManager.findOne(OcupacaoAnimal, {
-        where: { 
-          animal: { id: animal.id },
-          ocupacao: { baia: { id: baiaDestino.id } },
-          status: StatusOcupacaoAnimal.ATIVO
         }
-      });
-
-      if (ocupacaoAtiva) {
-        throw new ValidationError('O animal já está na baia de destino');
       }
-
-      // Processar ocupação atual do animal
-      const ocupacaoAtual = await this.tratarOcupacaoAtual(
-        transactionalEntityManager, 
-        animal.id, 
-        usuario
-      );
-
-      // Processar baia de destino
-      const ocupacaoDestino = await this.processarBaiaDestino(
-        transactionalEntityManager,
-        fazenda,
-        baiaDestino.id,
-        usuario
-      );
-
-      // Criar nova associação
-      await this.criarNovaOcupacaoAnimal(
-        transactionalEntityManager,
-        ocupacaoDestino,
-        animal,
-        usuario
-      );
-
-      //Registrar movimentacao
-      await this.registrarMovimentacao(
-        transactionalEntityManager,
-        animal,
-        ocupacaoAtual?.ocupacao?.baia, // baia de origem (pode ser null se o animal não estava em nenhuma baia)
-        baiaDestino, // baia de destino
-        usuario
-      );
-
+  
+      if (erros.length > 0) {
+        // Consolida todos os erros em uma única mensagem
+        const errorMessage = erros.map(e => e.message).join('; ');
+        throw new Error(errorMessage);
+      }
+  
       return {
         success: true,
-        message: 'Animal movimentado com sucesso',
-        animal: classToPlain(animal),
-        baiaOrigem: ocupacaoAtual?.ocupacao?.baia,
-        baiaDestino: classToPlain(baiaDestino)
+        resultados,
+        total: movimentacoes.length,
+        sucessos: resultados.length,
+        falhas: erros.length
       };
     });
   }

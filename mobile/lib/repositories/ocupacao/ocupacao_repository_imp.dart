@@ -62,21 +62,20 @@ class OcupacaoRepositoryImp implements OcupacaoRepository {
     }
   }
 
-  Future<Map<String, dynamic>> movimentarAnimal({
-    required int animalId,
-    required int baiaDestinoId,
+  @override
+  Future<Map<String, dynamic>> movimentarAnimais({
+    required List<Map<String, int>> movimentacoes,
   }) async {
     try {
       final response = await _apiClient.dio.post(
-        '/ocupacoes/movimentar-animal',
+        '/ocupacoes/movimentar-animais',
         data: {
-          'animal_id': animalId,
-          'baia_destino_id': baiaDestinoId,
+          'movimentacoes': movimentacoes,
         },
       );
       return response.data;
     } catch (e) {
-      Logger().e('Erro ao movimentar animal: $e');
+      Logger().e('Erro ao movimentar animais: $e');
       rethrow;
     }
   }

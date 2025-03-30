@@ -172,14 +172,14 @@ class CadastrarMovimentacaoPageState extends State<CadastrarMovimentacaoPage> {
                 buttonText: 'Movimentar Animal',
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
-                     _cadastrarMovimentacaoController
-                          .movimentarAnimal(context)
-                          .then((resultado) {
-                        if (resultado) {
-                          Navigator.pop(context);
-                          Navigator.pushReplacementNamed(context, '/selecionarMovimentacao');
-                        }
-                      });
+                    _cadastrarMovimentacaoController
+                        .movimentarAnimal(context)
+                        .then((resultado) {
+                      if (resultado) {
+                        Navigator.pop(context);
+                        Navigator.pushReplacementNamed(context, '/selecionarMovimentacao');
+                      }
+                    });
                   }
                 },
               ),

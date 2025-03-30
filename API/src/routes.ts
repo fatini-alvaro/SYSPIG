@@ -106,7 +106,7 @@ routes.post('/ocupacoes', ocupacaoController.createOrUpdate);
 routes.get('/ocupacoes/ocupacao/:ocupacao_id', ocupacaoController.getById);
 routes.get('/ocupacoes/getbybaia/:baia_id', ocupacaoController.getByBaiaId);
 routes.get('/ocupacoes/:fazenda_id', ocupacaoController.list);
-routes.post('/ocupacoes/movimentar-animal', ocupacaoController.movimentarAnimal);
+routes.post('/ocupacoes/movimentar-animais', ocupacaoController.movimentarAnimais);
 
 //Movimentacao
 const movimentacaoController = new MovimentacaoController();

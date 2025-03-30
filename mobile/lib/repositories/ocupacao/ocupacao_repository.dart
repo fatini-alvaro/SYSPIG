@@ -1,4 +1,3 @@
-import 'package:syspig/enums/ocupacao_animal_constants.dart';
 import 'package:syspig/model/ocupacao_model.dart';
 
 abstract class OcupacaoRepository {
@@ -11,8 +10,7 @@ abstract class OcupacaoRepository {
 
   Future<List<OcupacaoModel>> getList(int fazendaId);
 
-  Future<Map<String, dynamic>> movimentarAnimal({
-    required int animalId,
-    required int baiaDestinoId,
+  Future<Map<String, dynamic>> movimentarAnimais({
+    required List<Map<String, int>> movimentacoes,
   });
 }

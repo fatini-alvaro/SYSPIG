@@ -79,12 +79,18 @@ class CadastrarMovimentacaoController with ChangeNotifier {
         if (_animal == null || _baiaDestino == null) {
           throw Exception('Selecione um animal e uma baia de destino');
         }
-        return await _ocupacaoRepository.movimentarAnimal(
-          animalId: _animal!.id!,
-          baiaDestinoId: _baiaDestino!.id!,
+        
+        // Agora envia como lista, mesmo sendo apenas um
+        return await _ocupacaoRepository.movimentarAnimais(
+          movimentacoes: [
+            {
+              'animal_id': _animal!.id!,
+              'baia_destino_id': _baiaDestino!.id!,
+            }
+          ],
         );
       },
-      loadingMessage: 'Aguarde, realiazando movimentação',
+      loadingMessage: 'Aguarde, realizando movimentação',
       successMessage: 'Movimentação criada com sucesso!',
     );
 

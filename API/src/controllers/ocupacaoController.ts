@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { OcupacaoService } from "../services/OcupacaoService";
 import { handleError } from "../utils/errorHandler";
 import { classToPlain } from "class-transformer";
+import { ValidationError } from "../utils/validationError";
 
 export class OcupacaoController {
 
@@ -89,27 +90,44 @@ export class OcupacaoController {
     }
   }
 
-  movimentarAnimal = async (req: Request, res: Response) => {
+  movimentarAnimais = async (req: Request, res: Response) => {
     try {
-      const { animal_id, baia_destino_id } = req.body;
+      const { movimentacoes } = req.body;
       const usuario_id = req.headers['user-id'];
       const fazenda_id = req.headers['fazenda-id'];
 
-      if (!fazenda_id || !animal_id || !baia_destino_id || !usuario_id) {
-        return res.status(400).json({ message: 'Parâmetros não informados' });
+      if (!fazenda_id || !movimentacoes || !usuario_id) {
+        return res.status(400).json({ 
+          success: false,
+          message: 'Parâmetros não informados' 
+        });
       }
 
-      const resultado = await this.ocupacaoService.movimentarAnimal({
+      if (!Array.isArray(movimentacoes)) {
+        return res.status(400).json({ 
+          success: false,
+          message: 'Formato inválido, esperado array de movimentações' 
+        });
+      }
+
+      const resultado = await this.ocupacaoService.movimentarAnimais({
         fazenda_id: Number(fazenda_id),
-        animal_id: Number(animal_id),
-        baia_destino_id: Number(baia_destino_id),
+        movimentacoes: movimentacoes.map(m => ({
+          animal_id: Number(m.animal_id),
+          baia_destino_id: Number(m.baia_destino_id),
+        })),
         usuarioIdAcao: Number(usuario_id)
       });
 
       return res.status(200).json(resultado);
     } catch (error) {
-      console.error("Erro ao movimentar animal:", error);
-      return handleError(error, res, "Erro ao movimentar animal");
+      console.error("Erro ao movimentar animais:", error);
+      
+      const message = error instanceof Error ? error.message : 'Erro ao processar movimentação';
+      return res.status(400).json({
+        success: false,
+        message: message
+      });
     }
   }
 }
