@@ -76,19 +76,18 @@ export class OcupacaoController {
   getByBaiaId = async (req: Request, res: Response) => {
     try {      
       const { baia_id } = req.params;
-
       const ocupacao = await this.ocupacaoService.getByBaiaId(Number(baia_id));
-
+  
       if (!ocupacao) {
-        return res.status(404).json({ message: 'Ocupação não encontrado' });
+        return res.status(200).json({});
       }
-
+  
       return res.status(200).json(ocupacao);      
     } catch (error) {
       console.error("Erro ao buscar Ocupação:", error);
       return handleError(error, res, "Erro ao buscar Ocupação");
     }
-  }
+  };  
 
   movimentarAnimais = async (req: Request, res: Response) => {
     try {

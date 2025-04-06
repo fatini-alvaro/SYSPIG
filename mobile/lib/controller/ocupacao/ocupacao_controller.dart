@@ -19,16 +19,16 @@ class OcupacaoController {
     return novaOcupacao;
   }
 
-  Future<OcupacaoModel> fetchBaiaById(int baiaId) async {
+  Future<OcupacaoModel?> fetchBaiaById(int baiaId) async {
     
-    OcupacaoModel baia = await  _ocupacaoRepository.getByBaiaId(baiaId);
+    OcupacaoModel? baia = await  _ocupacaoRepository.getByBaiaId(baiaId);
 
     return baia;
   }
 
-  Future<OcupacaoModel> fetchOcupacaoByBaia(int baiaId) async {
+  Future<OcupacaoModel?> fetchOcupacaoByBaia(int baiaId) async {
     
-    OcupacaoModel ocupacao = await  _ocupacaoRepository.getByBaiaId(baiaId);
+    OcupacaoModel? ocupacao = await  _ocupacaoRepository.getByBaiaId(baiaId);
 
     return ocupacao;
   }

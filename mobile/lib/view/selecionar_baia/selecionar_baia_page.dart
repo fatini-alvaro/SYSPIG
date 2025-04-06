@@ -104,8 +104,8 @@ class SelecionarBaiaPageState extends State<SelecionarBaiaPage> {
                   itemCount: list.length,
                   itemBuilder: (_, idx) => CustomBaiaCard(
                     baia: list[idx],
-                    onTapOcupada: () {
-                      Navigator.push(
+                    onTapOcupada: () async {
+                      await Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
                           builder: (context) => BaiaPage(
@@ -113,6 +113,8 @@ class SelecionarBaiaPageState extends State<SelecionarBaiaPage> {
                           ),
                         ),
                       );
+
+                      _carregarBaias();
                     },
                     onTapVazia: (){
                       _abrirbaiaController.setBaiaSelecionada(list[idx]);
@@ -244,7 +246,7 @@ class SelecionarBaiaPageState extends State<SelecionarBaiaPage> {
                                           alignment: MainAxisAlignment.center,
                                           children: [
                                             ElevatedButton.icon(
-                                              onPressed: () {
+                                              onPressed: () async {
 
                                                 if (_abrirbaiaController.animaisSelecionados.isEmpty) {
                                                   Dialogs.errorToast(context, 'Selecione pelo menos um animal antes de abrir a baia.');
@@ -257,7 +259,7 @@ class SelecionarBaiaPageState extends State<SelecionarBaiaPage> {
                                                       .then((ocupacaoCriada) {
                                                     if (ocupacaoCriada.id != null) {
                                                       Dialogs.successToast(context, 'Ocupação aberta com sucesso');
-                                                      Navigator.push(
+                                                      Navigator.pushReplacement(
                                                         context,
                                                         MaterialPageRoute(
                                                           builder: (context) => BaiaPage(
@@ -265,6 +267,8 @@ class SelecionarBaiaPageState extends State<SelecionarBaiaPage> {
                                                           ),
                                                         ),
                                                       );
+
+                                                      _carregarBaias();
                                                     }
                                                   });
                                                 }

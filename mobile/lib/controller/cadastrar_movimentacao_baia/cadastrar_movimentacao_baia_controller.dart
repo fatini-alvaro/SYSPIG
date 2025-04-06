@@ -3,11 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:syspig/model/animal_model.dart';
 import 'package:syspig/model/baia_model.dart';
 import 'package:syspig/repositories/baia/baia_repository_imp.dart';
+import 'package:syspig/repositories/ocupacao/ocupacao_repository_imp.dart';
 import 'package:syspig/services/prefs_service.dart';
 import 'package:syspig/utils/async_fetcher_util.dart';
+import 'package:syspig/utils/async_handler_util.dart';
+import 'package:syspig/widgets/custom_add_movimentacao_baia_widget.dart';
 
 class MovimentacaoBaiaController with ChangeNotifier {
   final BaiaRepositoryImp _baiaRepository = BaiaRepositoryImp();
+  final OcupacaoRepositoryImp _ocupacaoRepository = OcupacaoRepositoryImp();
 
   List<BaiaModel> _baias = [];
   List<BaiaModel> get baias => _baias;
@@ -76,5 +80,56 @@ class MovimentacaoBaiaController with ChangeNotifier {
   void clearBaiaSearch() {
     _isBaiaSearchFocused = false;
     notifyListeners();
+  }
+
+  Future<bool> movimentarAnimais(BuildContext context, List<AnimalModel> animais, MovimentacaoTipo tipo, BaiaModel? baiaSelecionada, Map<AnimalModel, BaiaModel> animalBaiaMap) async {
+    List<Map<String, dynamic>> movimentacoes = [];
+
+    // Lógica para gerar as movimentações de acordo com o tipo selecionado
+    switch (tipo) {
+      case MovimentacaoTipo.todosParaMesmaBaia:
+      case MovimentacaoTipo.selecionarIndividualmente:
+        if (baiaSelecionada != null) {
+          for (var animal in animais) {
+            movimentacoes.add({
+              'animal_id': animal.id as int,
+              'baia_destino_id': baiaSelecionada.id as int,
+            });
+          }
+        }
+        break;
+
+      case MovimentacaoTipo.cadaParaBaiaDiferente:
+        for (var animal in animais) {
+          if (animalBaiaMap.containsKey(animal)) {
+            var baiaDestino = animalBaiaMap[animal];
+            if (baiaDestino != null) {
+              movimentacoes.add({
+                'animal_id': animal.id,
+                'baia_destino_id': baiaDestino.id,
+              });
+            }
+          }
+        }
+        break;
+    }
+
+    // Verificando se a lista de movimentações não está vazia e fazendo a movimentação
+    if (movimentacoes.isNotEmpty) {
+      final movimentacaoRealizada = await AsyncHandler.execute(
+        context: context,
+        action: () async {
+          return await _ocupacaoRepository.movimentarAnimais(
+            movimentacoes: movimentacoes.map((mov) => mov.map((key, value) => MapEntry(key, value as int))).toList(),
+          );
+        },
+        loadingMessage: 'Aguarde, realizando movimentação',
+        successMessage: 'Movimentação criada com sucesso!',
+      );
+
+      return movimentacaoRealizada != null;
+    } else {
+      return false;
+    }
   }
 }

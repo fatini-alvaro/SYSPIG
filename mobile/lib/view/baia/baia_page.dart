@@ -9,7 +9,7 @@ import 'package:syspig/themes/themes.dart';
 class BaiaPage extends StatefulWidget {
   final int? baiaId;
 
-  BaiaPage({Key? key, this.baiaId}) : super(key: key);
+  const BaiaPage({Key? key, this.baiaId}) : super(key: key);
 
   @override
   State<BaiaPage> createState() => BaiaPageState();
@@ -20,76 +20,89 @@ class BaiaPageState extends State<BaiaPage> {
 
   BaiaModel? _baia;
   OcupacaoModel? _ocupacao;
-  
+  bool _isLoading = true;
+
   @override
   void initState() {
     super.initState();
     _carregarDados();
   }
 
+  @override
+  void didUpdateWidget(covariant BaiaPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.baiaId != widget.baiaId) {
+      _carregarDados();
+    }
+  }
+
   Future<void> _carregarDados() async {
+    setState(() => _isLoading = true);
     await _carregarBaia();
     await _carregarOcupacao();
+    setState(() => _isLoading = false);
   }
 
   Future<void> _carregarBaia() async {   
-    final baia = await _ocupacaoBaiaTelaController.fetchBaiaById(widget.baiaId!);  
-
-    setState(() {
-      _baia = baia;
-    }); 
+    final baia = await _ocupacaoBaiaTelaController.fetchBaiaById(widget.baiaId!);
+    setState(() => _baia = baia);
   }
 
   Future<void> _carregarOcupacao() async {   
-    final ocupacao = await _ocupacaoBaiaTelaController.fetchLoteById(widget.baiaId!);
-    
-    setState(() {
-      _ocupacao = ocupacao;
-    }); 
+    final ocupacao = await _ocupacaoBaiaTelaController.fetchOcupacaoByBaia(widget.baiaId!);
+
+    if (ocupacao == null) {
+      Navigator.pop(context);
+    }
+
+    setState(() => _ocupacao = ocupacao);
   }
 
-  void recarregarDados() async {
-    await _carregarOcupacao();
+  Future<void> recarregarDados() async {
+    await _carregarDados();
   }
 
   @override
   Widget build(BuildContext context) {
-
-    if (_baia == null) {
+    if (_isLoading) {
       return Scaffold(
         appBar: AppBar(
           backgroundColor: AppThemes.lightTheme.primaryColor,
           foregroundColor: Colors.white,
-          title: Text('Carregando...'),
+          title: const Text('Carregando...'),
           centerTitle: true,
         ),
-        body: Center(child: CircularProgressIndicator()),
+        body: const Center(child: CircularProgressIndicator()),
       );
     }
-    
+
     return DefaultTabController(
       length: 2,
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: AppThemes.lightTheme.primaryColor,
           foregroundColor: Colors.white,
-          title: Text('Nº: ${_baia!.numero} - Código Ocupação: ${_ocupacao!.codigo}'),
+          title: Text(
+            'Nº: ${_baia!.numero} - Código Ocupação: ${_ocupacao?.codigo ?? "Sem ocupação"}',
+          ),
           centerTitle: true,
-          bottom: TabBar(
-            labelColor: Colors.white,            
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.refresh),
+              onPressed: recarregarDados,
+            ),
+          ],
+          bottom: const TabBar(
+            labelColor: Colors.white,
             tabs: [
-              Tab(
-                text: 'Ações',
-              ),
-              Tab(
-                text: 'Informações'
-              ),
+              Tab(text: 'Ações'),
+              Tab(text: 'Informações'),
             ],
             indicator: BoxDecoration(
               border: Border(
                 bottom: BorderSide(
-                  color: Colors.white, // Highlighted tab color
-                  width: 5.0, // Thickness of the border
+                  color: Colors.white,
+                  width: 5.0,
                 ),
               ),
             ),
@@ -97,13 +110,21 @@ class BaiaPageState extends State<BaiaPage> {
           ),
         ),
         body: TabBarView(
-          children: [            
-            CustomBaiaAcoesTabCard(baia: _baia!, ocupacao: _ocupacao, recarregarDados: recarregarDados),                    
-            CustomBaiaInformacoesTabCard(ocupacao: _ocupacao),
-          ],
+          children: _ocupacao != null
+              ? [
+                  CustomBaiaAcoesTabCard(
+                    baia: _baia,
+                    ocupacao: _ocupacao,
+                    recarregarDados: recarregarDados,
+                  ),
+                  CustomBaiaInformacoesTabCard(ocupacao: _ocupacao),
+                ]
+              : [
+                  Center(child: Text("Nenhuma ocupação encontrada", style: TextStyle(fontSize: 18))),
+                  Center(child: Text("Nenhuma informação disponível", style: TextStyle(fontSize: 18))),
+                ],
         ),
       ),
     );
   }
-
 }

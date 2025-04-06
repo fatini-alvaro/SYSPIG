@@ -66,7 +66,11 @@ class CadastrarMovimentacaoController with ChangeNotifier {
   Future<OcupacaoModel?> getOcupacaoByBaia(int baiaId) async {
     return await AsyncFetcher.fetch(
       action: () async {
-        return await _ocupacaoController.fetchOcupacaoByBaia(baiaId);
+        final ocupacao = await _ocupacaoController.fetchOcupacaoByBaia(baiaId);
+        if (ocupacao == null) {
+          throw Exception('Ocupação não encontrada para a baia $baiaId');
+        }
+        return ocupacao;
       },
       errorMessage: 'Erro ao buscar ocupação da baia',
     );

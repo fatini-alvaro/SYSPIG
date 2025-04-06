@@ -39,9 +39,15 @@ class OcupacaoRepositoryImp implements OcupacaoRepository {
   }
 
   @override
-  Future<OcupacaoModel> getByBaiaId(int baiaId) async {
+  Future<OcupacaoModel?> getByBaiaId(int baiaId) async {
     try {
       var response = await _apiClient.dio.get('/ocupacoes/getbybaia/$baiaId');
+
+      // Verifica se response.data é nulo ou um mapa vazio
+      if (response.data == null || (response.data is Map && response.data.isEmpty)) {
+        return null;
+      }
+
       return OcupacaoModel.fromJson(response.data);
     } catch (e) {
       String errorMessage = ErrorHandlerUtil.handleDioError(e, 'Erro ao obter dados da ocupação');

@@ -9,7 +9,7 @@ import { Usuario } from "../entities/Usuario";
 import { StatusOcupacao } from "../constants/ocupacaoConstants";
 import { StatusOcupacaoAnimal } from "../constants/ocupacaoAnimalConstants";
 import { Baia } from "../entities/Baia";
-import { EntityManager } from "typeorm";
+import { EntityManager, In } from "typeorm";
 import { classToPlain } from "class-transformer";
 import { Fazenda } from "../entities/Fazenda";
 import { Movimentacao } from "../entities/movimentacao";
@@ -101,6 +101,33 @@ export class OcupacaoService {
         ocupacaoData.ocupacao_animais,
         createdBy ?? ocupacao.createdBy
       );
+
+      const animalIds = ocupacaoData.ocupacao_animais.map(({ animal_id }) => animal_id);
+
+      // Busca os animais no banco
+      const animais = await transactionalEntityManager.find(Animal, {
+        where: { id: In(animalIds) }, // Filtra pelos IDs recebidos
+      });
+
+      // Mapeia os animais encontrados para um objeto de busca rápida
+      const animaisMap = new Map(animais.map(animal => [animal.id, animal]));
+
+      for (const { animal_id } of ocupacaoData.ocupacao_animais) {
+        const animal = animaisMap.get(animal_id);
+        
+        if (!animal) {
+          console.warn(`Animal com ID ${animal_id} não encontrado.`);
+          continue;
+        }
+      
+        await this.registrarMovimentacao(
+          transactionalEntityManager,
+          animal,
+          null,
+          ocupacao.baia,
+          createdBy ?? ocupacao.createdBy
+        );
+      }
 
       baiaInstancia!.ocupacao = ocupacao;
       baiaInstancia!.vazia = false;

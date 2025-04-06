@@ -12,7 +12,7 @@ import 'package:syspig/widgets/custom_adicionar_nascimento_widget.dart';
 class CustomBaiaAcoesTabCard extends StatefulWidget {
   final OcupacaoModel? ocupacao;
   final BaiaModel? baia;
-  final VoidCallback? recarregarDados;
+  final Future<void> Function()? recarregarDados;
 
   const CustomBaiaAcoesTabCard({Key? key, this.ocupacao, this.baia, this.recarregarDados}) : super(key: key);
 
@@ -23,6 +23,58 @@ class CustomBaiaAcoesTabCard extends StatefulWidget {
 class _CustomBaiaAcoesTabCardState extends State<CustomBaiaAcoesTabCard> with SingleTickerProviderStateMixin {
   bool isAddingAnotacao = false;
   bool isAddingBorn = false;
+
+  void _abrirDialogMovimentacao() {
+    showDialog(
+      context: context,
+      builder: (context) => ChangeNotifierProvider(
+        create: (_) => MovimentacaoBaiaController()..loadBaias(),
+        child: AlertDialog(
+          title: const Text('Movimentar Animais'),
+          content: SizedBox(
+            width: double.maxFinite,
+            child: CustomMovimentacaoBaiaWidget(
+              ocupacao: widget.ocupacao!,
+              baia: widget.baia!,
+              onClose: () async {
+                Navigator.pop(context);
+                try {
+                  await widget.recarregarDados?.call();
+
+                  if (mounted) {
+                    setState(() {});
+                  }
+
+                  if (widget.baia?.vazia == true) {
+                    Future.delayed(Duration(milliseconds: 100), () {
+                      if (mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Baia foi encerrada pois está vazia.')),
+                        );
+                      }
+                    });
+
+                    Future.delayed(Duration(milliseconds: 400), () {
+                      if (mounted) {
+                        Navigator.pop(context);
+                      }
+                    });
+                  }
+                } catch (e) {
+                  Navigator.pop(context);
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Erro ao recarregar dados: $e')),
+                    );
+                  }
+                }
+              }
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -145,47 +197,4 @@ class _CustomBaiaAcoesTabCardState extends State<CustomBaiaAcoesTabCard> with Si
     );
   }
 
-  void _abrirDialogMovimentacao() {
-    showDialog(
-      context: context,
-      builder: (context) => ChangeNotifierProvider(
-        create: (_) => MovimentacaoBaiaController()..loadBaias(),
-        child: AlertDialog(
-          title: const Text('Movimentar Animais'),
-          content: SizedBox(
-            width: double.maxFinite,
-            child: CustomMovimentacaoBaiaWidget(
-              ocupacao: widget.ocupacao!,
-              baia: widget.baia!,
-              onClose: () => Navigator.pop(context),
-              onMovimentarTodosParaMesmaBaia: (baiaDestino) async {
-                // Implementar lógica para todos os animais
-                for (var oa in widget.ocupacao!.ocupacaoAnimais!) {
-                  // await _movimentarAnimal(oa.animal!, baiaDestino);
-                }
-                Navigator.pop(context);
-                widget.recarregarDados?.call();
-              },
-              onMovimentarSelecionadosParaMesmaBaia: (animais, baiaDestino) async {
-                // Implementar lógica para animais selecionados
-                for (var animal in animais) {
-                  // await _movimentarAnimal(animal, baiaDestino);
-                }
-                Navigator.pop(context);
-                widget.recarregarDados?.call();
-              },
-              onMovimentarParaBaiasDiferentes: (animalBaiaMap) async {
-                // Implementar lógica para cada animal em baia diferente
-                for (var entry in animalBaiaMap.entries) {
-                  // await _movimentarAnimal(entry.key, entry.value);
-                }
-                Navigator.pop(context);
-                widget.recarregarDados?.call();
-              },
-            ),
-          ),
-        ),
-      ),
-    );
-  }
 }
