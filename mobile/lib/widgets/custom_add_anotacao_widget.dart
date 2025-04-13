@@ -41,9 +41,9 @@ class _CustomAddAnotacaoWidgetState extends State<CustomAddAnotacaoWidget> {
   }
 
   Future<void> _carregarAnimais() async {
-    if (widget.ocupacao.ocupacaoAnimais != null) {
+    if (widget.ocupacao.ocupacaoAnimaisSemNascimento != null) {
       setState(() {
-        _animais = widget.ocupacao.ocupacaoAnimais!
+        _animais = widget.ocupacao.ocupacaoAnimaisSemNascimento!
             .map((ocupacaoAnimal) => ocupacaoAnimal.animal!)
             .toList();
       });
@@ -106,7 +106,7 @@ class _CustomAddAnotacaoWidgetState extends State<CustomAddAnotacaoWidget> {
               ? Wrap(
                   children: _animais.map((animal) {
                     return ChoiceChip(
-                      label: Text(animal.numeroBrinco),
+                      label: Text(animal.numeroBrinco!),
                       selected: _animalSelecionado == animal,
                       onSelected: (bool selected) {
                         setState(() {

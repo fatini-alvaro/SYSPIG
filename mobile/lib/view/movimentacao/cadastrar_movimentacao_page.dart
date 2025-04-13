@@ -101,7 +101,7 @@ class CadastrarMovimentacaoPageState extends State<CadastrarMovimentacaoPage> {
                   child: ListView(
                     children: animais
                         .where((animal) =>
-                            animal.numeroBrinco.toLowerCase().contains(_searchControllerAnimal.text.toLowerCase()))
+                            animal.numeroBrinco!.toLowerCase().contains(_searchControllerAnimal.text.toLowerCase()))
                         .map((animal) {
                       return ListTile(
                         title: Text('${animal.numeroBrinco}'),
@@ -111,7 +111,7 @@ class CadastrarMovimentacaoPageState extends State<CadastrarMovimentacaoPage> {
                               : null;
                           setState(() {
                             animalSelecionado = detalhes ?? animal;
-                            _searchControllerAnimal.text = animal.numeroBrinco;
+                            _searchControllerAnimal.text = animal.numeroBrinco!;
                             _isAnimalSearchFocused = false;
                           });
                           _cadastrarMovimentacaoController.setAnimal(animalSelecionado);
@@ -227,8 +227,8 @@ class CadastrarMovimentacaoPageState extends State<CadastrarMovimentacaoPage> {
             if (ocupacao != null) ...[
               Text('Status: ${ocupacao.status?.toString().split('.').last ?? "Não informado"}'),
               Text('Código: ${ocupacao.codigo ?? "Não informado"}'),
-              if (ocupacao.ocupacaoAnimais != null && ocupacao.ocupacaoAnimais!.isNotEmpty)
-                Text('Animais na Baia: ${ocupacao.ocupacaoAnimais!.length}'),
+              if (ocupacao.ocupacaoAnimaisSemNascimento != null && ocupacao.ocupacaoAnimaisSemNascimento!.isNotEmpty)
+                Text('Animais na Baia: ${ocupacao.ocupacaoAnimaisSemNascimento!.length}'),
             ] else
               Text('Status: Vazia'),
           ],

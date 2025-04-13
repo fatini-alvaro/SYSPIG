@@ -40,6 +40,22 @@ class OcupacaoModel {
     this.updatedAt,
   });
 
+  /// Lista apenas os animais da ocupação que **não são nascimentos**
+  List<OcupacaoAnimalModel> get ocupacaoAnimaisSemNascimento {
+    return ocupacaoAnimais
+            ?.where((oa) => oa.animal?.nascimento != true)
+            .toList() ??
+        [];
+  }
+
+  /// Lista apenas os animais da ocupação que **são nascimentos**
+  List<OcupacaoAnimalModel> get ocupacaoAnimaisNascimento {
+    return ocupacaoAnimais
+            ?.where((oa) => oa.animal?.nascimento == true)
+            .toList() ??
+        [];
+  }
+
   factory OcupacaoModel.fromJson(Map<String, dynamic> json) {
     return OcupacaoModel(
       id: json['id'],

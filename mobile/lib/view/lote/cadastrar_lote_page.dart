@@ -198,7 +198,7 @@ class CadastrarLotePageState extends State<CadastrarLotePage> {
                   child: ListView(
                     children: animais
                         .where((animal) =>
-                            animal.numeroBrinco.toLowerCase().contains(_searchControllerAnimal.text.toLowerCase()))
+                            animal.numeroBrinco!.toLowerCase().contains(_searchControllerAnimal.text.toLowerCase()))
                         .map((animal) {
                       return ListTile(
                         title: Text('${animal.numeroBrinco}'),
@@ -233,7 +233,7 @@ class CadastrarLotePageState extends State<CadastrarLotePage> {
                   return animais.map((animal) {
                     return DataRow(
                       cells: [
-                        DataCell(Text(animal.numeroBrinco)),
+                        DataCell(Text(animal.numeroBrinco!)),
                         DataCell(
                           ElevatedButton.icon(
                             onPressed: () {

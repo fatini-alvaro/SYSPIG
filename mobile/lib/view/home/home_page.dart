@@ -69,13 +69,25 @@ class HomePageState extends State<HomePage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 CustomHomeCard(
-                  descricao: 'Gestação',
-                  icone: Icons.child_friendly,
+                  descricao: 'Baias',
+                  icone: Icons.panorama_horizontal_select_outlined,
                   onTapCallback: () {
-                    Navigator.of(context).pushNamed('/baiasGestacaoOcupadas');
+                    Navigator.of(context).pushNamed('/selecionarBaia');
                   },
                 ),
                 SizedBox(height: 20),
+                CustomHomeCard(
+                  descricao: 'Gestação',
+                  icone: Icons.child_friendly,
+                  onTapCallback: () {
+                    Navigator.of(context).pushNamed('/animaisEmGestacao');
+                  },
+                ),                
+              ]
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
                 CustomHomeCard(
                   descricao: 'Movimentação',
                   icone: Icons.compare_arrows,
@@ -83,11 +95,7 @@ class HomePageState extends State<HomePage> {
                     Navigator.of(context).pushNamed('/selecionarMovimentacao');
                   },
                 ),
-              ]
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
+                SizedBox(height: 20),
                 CustomHomeCard(
                   descricao: 'Granjas',
                   icone: Icons.house_siding,
@@ -95,7 +103,11 @@ class HomePageState extends State<HomePage> {
                     Navigator.of(context).pushNamed('/selecionarGranja');
                   },
                 ),
-                SizedBox(height: 20),
+              ]
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
                 CustomHomeCard(
                   descricao: 'Animais',
                   icone: Icons.pets,
@@ -103,11 +115,7 @@ class HomePageState extends State<HomePage> {
                     Navigator.of(context).pushNamed('/selecionarAnimal');
                   },
                 ),
-              ]
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
+                SizedBox(height: 20),
                 CustomHomeCard(
                   descricao: 'lotes',
                   icone: Icons.note,
@@ -115,7 +123,12 @@ class HomePageState extends State<HomePage> {
                     Navigator.of(context).pushNamed('/selecionarLote');
                   },
                 ),
-                SizedBox(height: 20),
+              ]
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(height: 20,),
                 CustomHomeCard(
                   descricao: 'Anotações',
                   icone: Icons.note_alt_outlined,
@@ -123,19 +136,6 @@ class HomePageState extends State<HomePage> {
                     Navigator.of(context).pushNamed('/selecionarAnotacao');
                   },
                 ),
-              ]
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                CustomHomeCard(
-                  descricao: 'Baias',
-                  icone: Icons.panorama_horizontal_select_outlined,
-                  onTapCallback: () {
-                    Navigator.of(context).pushNamed('/selecionarBaia');
-                  },
-                ),
-                SizedBox(height: 20,),
                 CustomHomeCard(
                   descricao: 'Inseminação',
                   icone: Icons.clean_hands_rounded,

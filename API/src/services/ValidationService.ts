@@ -51,7 +51,7 @@ export class ValidationService {
 
     const baia = await AppDataSource.getRepository(Baia).findOne({
       where: { id: baiaId },
-      relations: ['fazenda'],
+      relations: ['fazenda', 'ocupacao'],
     });
 
     if (!baia) {

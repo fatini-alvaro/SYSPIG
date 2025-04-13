@@ -14,6 +14,8 @@ import { classToPlain } from "class-transformer";
 import { Fazenda } from "../entities/Fazenda";
 import { Movimentacao } from "../entities/movimentacao";
 import { StatusMovimentacao, TipoMovimentacao } from "../constants/movimentacaoConstants";
+import { TipoGranjaId } from "../constants/tipoGranjaConstants";
+import { SexoAnimal } from "../constants/animalConstants";
 
 interface OcupacaoCreateOrUpdateData {
   fazenda_id: number;
@@ -83,6 +85,34 @@ export class OcupacaoService {
 
       const { fazenda, baiaInstancia, createdBy, updatedBy } = 
         await this.validateOcupacao(ocupacaoData, ocupacao);
+
+      if (baiaInstancia!.granja!.tipoGranja.id === TipoGranjaId.GESTACAO) {        
+        if (baiaInstancia?.vazia === false) {
+          throw new ValidationError(`A baia de gestação ${baiaInstancia!.numero} já está ocupada`);
+        }
+
+        if (ocupacaoData.ocupacao_animais.length > 1) {
+          throw new ValidationError(`A baia de gestação só pode receber um animal por vez`);
+        }
+
+        const animal = await ValidationService.validateAndReturnAnimal(ocupacaoData.ocupacao_animais[0].animal_id);
+
+        if (animal!.sexo !== SexoAnimal.FEMEA) {
+          throw new ValidationError(`A baia de gestação só pode receber femeas. O animal ${animal!.numero_brinco} é macho`);
+        }
+      }
+
+      for (const ocupacaoAnimal of ocupacaoData.ocupacao_animais) {
+        const animal = await ValidationService.validateAndReturnAnimal(ocupacaoAnimal.animal_id);
+
+        const ocupacao_animal_ativa = await animal!.getOcupacaoAtiva();
+
+        if (ocupacao_animal_ativa) {
+          throw new ValidationError(
+            `O animal ${animal!.numero_brinco} já está alocado na baia ${ocupacao_animal_ativa.ocupacao.baia.codigo}`
+          );
+        }
+      }
 
       if (!ocupacao) {
         ocupacao = transactionalEntityManager.create(Ocupacao, { fazenda });
@@ -219,6 +249,16 @@ export class OcupacaoService {
           // Validações específicas para cada movimentação
           const animal = await ValidationService.validateAndReturnAnimal(animal_id);
           const baiaDestino = await ValidationService.validateAndReturnBaia(baia_destino_id);
+
+          if (baiaDestino!.granja!.tipoGranja.id === TipoGranjaId.GESTACAO) {
+            if (animal!.sexo !== SexoAnimal.FEMEA) {
+              throw new ValidationError(`A baia de gestação só pode receber femeas. O animal ${animal!.numero_brinco} é macho`);
+            }
+
+            if (baiaDestino?.vazia === false) {
+              throw new ValidationError(`A baia de gestação ${baiaDestino!.numero} já está ocupada`);
+            }
+          }
   
           // Verificar se o animal já está na baia de destino
           const ocupacaoAtiva = await transactionalEntityManager.findOne(OcupacaoAnimal, {

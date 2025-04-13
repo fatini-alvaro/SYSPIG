@@ -81,7 +81,12 @@ routes.post('/animais', animalController.createOrUpdate);
 routes.put('/animais/:animal_id', animalController.createOrUpdate);
 routes.delete('/animais/:animal_id', animalController.delete); 
 routes.get('/animais/:fazenda_id', animalController.list);
+routes.get('/animais/liveanddie/:fazenda_id', animalController.listLiveAndDie);
 routes.get('/animais/animal/:animal_id', animalController.getById);
+routes.get('/animais/nascimentos/:ocupacao_id', animalController.listNascimentos);
+routes.post('/animais/adicionar-nascimento', animalController.createNascimento);
+routes.delete('/animais/nascimentos/:animal_id', animalController.deleteNascimento);
+routes.put('/animais/nascimentos/:animal_id', animalController.editarStatusNascimento); 
 
 //Anotacao
 const anotacaoController = new AnotacaoController();

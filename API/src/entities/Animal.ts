@@ -19,10 +19,10 @@ export class Animal {
   @Column({ type: 'int', nullable: true })
   codigo: number;
 
-  @Column({ type: 'text' })
+  @Column({ type: 'text', nullable: true })
   numero_brinco: string;
 
-  @Column({ type: 'text', enum: SexoAnimal })
+  @Column({ type: 'text', enum: SexoAnimal, nullable: true })
   sexo: SexoAnimal;
 
   @Column({ type: 'enum', enum: StatusAnimal, default: StatusAnimal.VIVO })
@@ -30,6 +30,9 @@ export class Animal {
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', nullable: true })
   data_nascimento: Date;
+
+  @Column({ type: 'boolean', default: false})
+  nascimento: boolean;
 
   @ManyToOne(() => Usuario, { nullable: true })
   @JoinColumn({ name: 'created_by', referencedColumnName: 'id' }) 

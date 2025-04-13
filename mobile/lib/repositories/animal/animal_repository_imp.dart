@@ -1,6 +1,7 @@
 
 import 'package:logger/logger.dart';
 import 'package:syspig/api/api_client.dart';
+import 'package:syspig/enums/animal_constants.dart';
 import 'package:syspig/model/animal_model.dart';
 import 'package:syspig/repositories/animal/animal_repository.dart';
 import 'package:syspig/utils/error_handler_util.dart';
@@ -21,6 +22,30 @@ class AnimalRepositoryImp implements AnimalRepository {
     } catch (e) {
       String errorMessage = ErrorHandlerUtil.handleDioError(e, 'Erro ao obter lista de animais');
       Logger().e('Erro ao obter lista de animais (lista - Animais): $e');
+      throw Exception(errorMessage);
+    }
+  }
+
+  @override
+  Future<List<AnimalModel>> getListLiveAndDie(int fazendaId) async {
+    try {
+      var response = await _apiClient.dio.get('/animais/liveanddie/$fazendaId');
+      return (response.data as List).map((e) => AnimalModel.fromJson(e)).toList();
+    } catch (e) {
+      String errorMessage = ErrorHandlerUtil.handleDioError(e, 'Erro ao obter lista de animais vivos e mortos');
+      Logger().e('Erro ao obter lista de animais vivos e mortos (lista - Animais vivos e mortos): $e');
+      throw Exception(errorMessage);
+    }
+  }
+
+  @override
+  Future<List<AnimalModel>> getlistNascimentos(int ocupacaoId) async {
+    try {
+      var response = await _apiClient.dio.get('/animais/nascimentos/$ocupacaoId');
+      return (response.data as List).map((e) => AnimalModel.fromJson(e)).toList();
+    } catch (e) {
+      String errorMessage = ErrorHandlerUtil.handleDioError(e, 'Erro ao obter lista de animais vivos e mortos');
+      Logger().e('Erro ao obter lista de animais nascimentos (lista - Animais nascimentos): $e');
       throw Exception(errorMessage);
     }
   }
@@ -48,6 +73,33 @@ class AnimalRepositoryImp implements AnimalRepository {
       throw Exception(errorMessage);
     }
   }
+
+  @override
+  Future<bool> adicionarNascimentos({
+    required DateTime dataNascimento,
+    required StatusAnimal status,
+    required int quantidade,
+    required int baiaId,
+  }) async {
+    try {
+      final response = await _apiClient.dio.post(
+        '/animais/adicionar-nascimento',
+        data: {
+          'data_nascimento': dataNascimento.toIso8601String(),
+          'status': statusAnimalToInt[status],
+          'quantidade': quantidade,
+          'baia_id': baiaId,
+        },
+      );
+
+      return response.statusCode == 200;
+    } catch (e) {
+      String errorMessage = ErrorHandlerUtil.handleDioError(e, 'Erro ao adicionar nascimentos');
+      Logger().e('Erro ao adicionar nascimentos: $e');
+      throw Exception(errorMessage);
+    }
+  }
+
 
   @override
   Future<AnimalModel> update(AnimalModel animal) async {
@@ -78,4 +130,41 @@ class AnimalRepositoryImp implements AnimalRepository {
       throw Exception(errorMessage);
     }
   }
+
+  @override
+  Future<bool> deleteNascimento(int animalId) async {
+    try {
+      var response = await _apiClient.dio.delete('/animais/nascimentos/$animalId');
+      
+      if (response.statusCode == 200) {
+        return true; // Exclusão bem-sucedida
+      } else {
+        throw Exception(response.data['message'] ?? 'Erro desconhecido ao excluir nascimento');
+      }
+    } catch (e) {
+      String errorMessage = ErrorHandlerUtil.handleDioError(e, 'Erro ao excluir nascimento');
+      Logger().e('Erro ao excluir animal (delete - Nascimento): $e');
+      throw Exception(errorMessage);
+    }
+  }
+
+  @override
+  Future<bool> updateStatusNascimento(int animald, StatusAnimal status) async {
+     try {
+      var response = await _apiClient.dio.put('/animais/nascimentos/$animald', data: {
+        'status': statusAnimalToInt[status],
+      });
+
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        throw Exception(response.data['message'] ?? 'Erro desconhecido ao atualizar status');
+      }
+    } catch (e) {    
+      String errorMessage = ErrorHandlerUtil.handleDioError(e, 'Erro ao editar animal');
+      Logger().e('Erro ao editar animal (update - Animais): $e');
+      throw Exception(errorMessage);
+    }
+  }
+
 }

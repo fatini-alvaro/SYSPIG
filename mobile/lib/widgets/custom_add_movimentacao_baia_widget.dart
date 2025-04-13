@@ -42,7 +42,7 @@ class _CustomMovimentacaoBaiaWidgetState extends State<CustomMovimentacaoBaiaWid
   @override
   Widget build(BuildContext context) {
     final controller = Provider.of<MovimentacaoBaiaController>(context, listen: false);
-    final animais = widget.ocupacao.ocupacaoAnimais?.map((oa) => oa.animal!).toList() ?? [];
+    final animais = widget.ocupacao.ocupacaoAnimaisSemNascimento?.map((oa) => oa.animal!).toList() ?? [];
 
     return SingleChildScrollView(
       child: Column(
@@ -160,7 +160,7 @@ class _CustomMovimentacaoBaiaWidgetState extends State<CustomMovimentacaoBaiaWid
             Column(
               children: animais.map((animal) {
                 return CheckboxListTile(
-                  title: Text(animal.numeroBrinco),
+                  title: Text(animal.numeroBrinco!),
                   value: controller.selectedAnimals.contains(animal),
                   onChanged: (_) => controller.toggleAnimalSelection(animal),
                 );
@@ -224,7 +224,7 @@ class _CustomMovimentacaoBaiaWidgetState extends State<CustomMovimentacaoBaiaWid
               return Column(
                 children: [
                   ListTile(
-                    title: Text(animal.numeroBrinco),
+                    title: Text(animal.numeroBrinco!),
                     trailing: SizedBox(
                       width: 150,
                       child: DropdownButton<BaiaModel>(

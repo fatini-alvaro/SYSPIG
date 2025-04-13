@@ -122,6 +122,7 @@ class CadastrarGranjaPageState extends State<CadastrarGranjaPage> {
                   }
                   return null;
                 },
+                isEnabled: widget.granjaId == null,
               ),
               SizedBox(height: 20),
               Expanded(

@@ -6,7 +6,6 @@ import 'package:syspig/view/animal/cadastrar_animal_page.dart';
 import 'package:syspig/view/anotacao/cadastrar_anotacao_page.dart';
 import 'package:syspig/view/baia/baia_page.dart';
 import 'package:syspig/view/baia/cadastrar_baia_page.dart';
-import 'package:syspig/view/baiasGestacaoOcupadas/baias_gestacao_ocupadas_page.dart';
 import 'package:syspig/view/criar_conta/criar_conta_page.dart';
 import 'package:syspig/view/details_page/details_page.dart';
 import 'package:syspig/view/fazenda/cadastrar_fazenda_page.dart';
@@ -68,7 +67,6 @@ class AppWidget extends StatelessWidget {
           '/selecionarBaia': (context) => SelecionarBaiaPage(),
           '/abrirTelaCadastroBaia': (context) => CadastrarBaiaPage(),
           '/baiaPage': (context) => BaiaPage(),
-          '/baiasGestacaoOcupadas': (context) => BaiasGestacaoOcupadasPage(),
           //Movimentação
           '/selecionarMovimentacao': (context) => SelecionarMovimentacaoPage(),
           '/abrirTelaCadastroMovimentacao': (context) => CadastrarMovimentacaoPage(),

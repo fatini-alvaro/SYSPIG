@@ -5,30 +5,31 @@ import 'package:syspig/model/usuario_model.dart';
 
 class AnimalModel {
   final int? id;
-  final String numeroBrinco;
+  final String? numeroBrinco;
   final FazendaModel? fazenda;
-  final SexoAnimal sexo;
-  final StatusAnimal status;
+  final SexoAnimal? sexo;
+  final StatusAnimal? status;
   final DateTime? dataNascimento;
   final UsuarioModel? createdBy;
   final DateTime? createdAt;
   final UsuarioModel? updatedBy;
   final DateTime? updatedAt;
   final OcupacaoAnimalModel? ocupacaoAnimalAtiva;
-
+  final bool? nascimento;
 
   AnimalModel({
     this.id,
-    required this.numeroBrinco,
+    this.numeroBrinco,
     this.fazenda,
-    required this.sexo,
-    required this.status,
+    this.sexo,
+    this.status,
     this.dataNascimento,
     this.ocupacaoAnimalAtiva,
     this.createdBy,
     this.createdAt,
     this.updatedBy,
     this.updatedAt,
+    this.nascimento,
   });
 
   factory AnimalModel.fromJson(Map<String, dynamic> json) {
@@ -44,6 +45,7 @@ class AnimalModel {
       createdAt: json['created_at'] != null ? DateTime.parse(json['created_at']) : null,
       updatedBy: json['updatedBy'] != null ? UsuarioModel.fromJson(json['updatedBy']) : null,
       updatedAt: json['updated_at'] != null ? DateTime.parse(json['updated_at']) : null,
+      nascimento: json['nascimento'] ?? false,
     );
   }
 
@@ -51,7 +53,7 @@ class AnimalModel {
     return {
       'id': id,
       'numero_brinco': numeroBrinco,
-      'sexo': sexo.toShortString(),
+      'sexo': sexo?.toShortString(),
       'status': statusAnimalToInt[status],
       'fazenda_id': fazenda?.id,
       'data_nascimento': dataNascimento?.toIso8601String(),
@@ -59,11 +61,12 @@ class AnimalModel {
       'created_at': createdAt?.toIso8601String(),
       'updated_by': updatedBy?.id,
       'updated_at': updatedAt?.toIso8601String(),
+      'nascimento': nascimento,
     };
   }
 
   @override
   String toString() {
-    return 'id: $id, numero_brinco: $numeroBrinco, sexo: ${sexoAnimalDescriptions[sexo]}, status: ${statusAnimalDescriptions[status]}, fazenda: $fazenda, data_nascimento: $dataNascimento, createdBy: $createdBy, created_at: $createdAt, updatedBy: $updatedBy, updated_at: $updatedAt';
+    return 'id: $id, numero_brinco: $numeroBrinco, sexo: ${sexoAnimalDescriptions[sexo]}, status: ${statusAnimalDescriptions[status]}, fazenda: $fazenda, data_nascimento: $dataNascimento, createdBy: $createdBy, created_at: $createdAt, updatedBy: $updatedBy, updated_at: $updatedAt, ocupacao_animal_ativa: $ocupacaoAnimalAtiva, nascimento: $nascimento';
   }
 }

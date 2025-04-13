@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:syspig/components/cards/custom_baia_acao_card.dart';
 import 'package:syspig/controller/cadastrar_movimentacao_baia/cadastrar_movimentacao_baia_controller.dart';
+import 'package:syspig/controller/ocupacao/ocupacao_controller.dart';
 import 'package:syspig/enums/tipo_granja_constants.dart';
 import 'package:syspig/model/baia_model.dart';
 import 'package:syspig/model/ocupacao_model.dart';
+import 'package:syspig/repositories/ocupacao/ocupacao_repository_imp.dart';
 import 'package:syspig/widgets/custom_add_anotacao_widget.dart';
 import 'package:syspig/widgets/custom_add_movimentacao_baia_widget.dart';
 import 'package:syspig/widgets/custom_adicionar_nascimento_widget.dart';
@@ -22,7 +24,7 @@ class CustomBaiaAcoesTabCard extends StatefulWidget {
 
 class _CustomBaiaAcoesTabCardState extends State<CustomBaiaAcoesTabCard> with SingleTickerProviderStateMixin {
   bool isAddingAnotacao = false;
-  bool isAddingBorn = false;
+  bool isAddingNascimento = false;
 
   void _abrirDialogMovimentacao() {
     showDialog(
@@ -81,7 +83,7 @@ class _CustomBaiaAcoesTabCardState extends State<CustomBaiaAcoesTabCard> with Si
     return Stack(
       children: [
         Visibility(
-          visible: !isAddingAnotacao && !isAddingBorn,
+          visible: !isAddingAnotacao && !isAddingNascimento,
           child: SingleChildScrollView(
             child: Column(
               children: [
@@ -95,7 +97,7 @@ class _CustomBaiaAcoesTabCardState extends State<CustomBaiaAcoesTabCard> with Si
                       onTapCallback: () {
                         setState(() {
                           isAddingAnotacao = true;
-                          isAddingBorn = false;
+                          isAddingNascimento = false;
                         });
                       },
                     ),
@@ -115,7 +117,7 @@ class _CustomBaiaAcoesTabCardState extends State<CustomBaiaAcoesTabCard> with Si
                   icone: Icons.child_friendly_outlined,
                   onTapCallback: () {
                     setState(() {
-                      isAddingBorn = true;
+                      isAddingNascimento = true;
                       isAddingAnotacao = false;
                     });
                   },
@@ -161,7 +163,7 @@ class _CustomBaiaAcoesTabCardState extends State<CustomBaiaAcoesTabCard> with Si
           ),
         ),
         Visibility(
-          visible: isAddingBorn,
+          visible: isAddingNascimento,
           child: SingleChildScrollView(
             child: Padding(
               padding: const EdgeInsets.all(16.0),
@@ -174,7 +176,7 @@ class _CustomBaiaAcoesTabCardState extends State<CustomBaiaAcoesTabCard> with Si
                         icon: const Icon(Icons.arrow_back),
                         onPressed: () {
                           setState(() {
-                            isAddingBorn = false;
+                            isAddingNascimento = false;
                           });
                         },
                       ),
@@ -184,9 +186,14 @@ class _CustomBaiaAcoesTabCardState extends State<CustomBaiaAcoesTabCard> with Si
                   CustomAdicionarNascimentoWidget(
                     onClose: () {
                       setState(() {
-                        isAddingBorn = false;
+                        isAddingNascimento = false;
                       });
+                      widget.recarregarDados?.call();
                     },
+                    getOcupacao: () async {
+                      return await OcupacaoController(OcupacaoRepositoryImp()).fetchOcupacaoById(widget.ocupacao!.id!);
+                    }, // aqui a mágica
+                    baia: widget.baia!,
                   ),
                 ],
               ),

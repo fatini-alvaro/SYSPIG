@@ -6,6 +6,7 @@ class CustomDataTable<T> extends StatelessWidget {
   final List<DataColumn> columns;
   final List<DataRow> Function(List<T>) generateRows;
   final List<T> data;
+  final double maxTableHeight;
 
   const CustomDataTable({
     Key? key,
@@ -13,6 +14,7 @@ class CustomDataTable<T> extends StatelessWidget {
     required this.columns,
     required this.data,
     required this.generateRows,
+    this.maxTableHeight = 315,
   }) : super(key: key);
 
   @override
@@ -20,7 +22,6 @@ class CustomDataTable<T> extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Título da tabela estilizado
         Center(
           child: Text(
             title,
@@ -29,8 +30,8 @@ class CustomDataTable<T> extends StatelessWidget {
         ),
         const SizedBox(height: 10),
         Container(
-          width: double.infinity, // Preenche a largura disponível
-          constraints: const BoxConstraints(maxHeight: 315),
+          width: double.infinity,
+          constraints: BoxConstraints(maxHeight: maxTableHeight),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(8),
@@ -46,39 +47,43 @@ class CustomDataTable<T> extends StatelessWidget {
           child: ClipRRect(
             borderRadius: BorderRadius.circular(8),
             child: SingleChildScrollView(
-              scrollDirection: Axis.vertical, // Permite rolar verticalmente
+              scrollDirection: Axis.vertical,
               child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal, // Permite rolar horizontalmente
+                scrollDirection: Axis.horizontal,
                 child: ConstrainedBox(
                   constraints: BoxConstraints(
-                    minWidth: MediaQuery.of(context).size.width, // Garante que a tabela ocupe toda a largura
+                    minWidth: MediaQuery.of(context).size.width,
                   ),
-                  child: DataTable(
-                    border: TableBorder.all(
-                      color: Colors.grey.shade300,
-                      width: 1,
-                    ),
-                    headingRowColor:
-                        MaterialStateProperty.all(AppThemes.lightTheme.colorScheme.primary),
-                    columns: columns.map((column) {
-                      return DataColumn(
-                        label: Text(
-                          (column.label as Text).data ?? '',
-                          style: TextStyle(
-                            color: const Color.fromARGB(255, 255, 255, 255), // Cor do texto do cabeçalho
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      );
-                    }).toList(),
-                    rows: generateRows(data),
-                  ),
+                  child: _buildDataTable(),
                 ),
               ),
             ),
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildDataTable() {
+    return DataTable(
+      border: TableBorder.all(
+        color: Colors.grey.shade300,
+        width: 1,
+      ),
+      headingRowColor:
+          MaterialStateProperty.all(AppThemes.lightTheme.colorScheme.primary),
+      columns: columns.map((column) {
+        return DataColumn(
+          label: Text(
+            (column.label as Text).data ?? '',
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        );
+      }).toList(),
+      rows: generateRows(data),
     );
   }
 }

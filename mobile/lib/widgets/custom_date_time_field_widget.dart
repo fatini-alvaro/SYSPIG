@@ -4,13 +4,15 @@ import 'package:flutter_localization/flutter_localization.dart';
 class CustomDateTimeFieldWidget extends StatefulWidget {
   final String? labelText;
   final ValueChanged<DateTime?> onChanged;
-  final DateTime? initialValue; // Novo parâmetro
+  final DateTime? initialValue;
+  final bool showTime;
 
   const CustomDateTimeFieldWidget({
     Key? key,
     this.labelText,
     required this.onChanged,
-    this.initialValue, // Adiciona o valor inicial
+    this.initialValue,
+    this.showTime = false,
   }) : super(key: key);
 
   @override
@@ -24,32 +26,56 @@ class _CustomDateTimeFieldWidgetState extends State<CustomDateTimeFieldWidget> {
   @override
   void initState() {
     super.initState();
-    selectedDate = widget.initialValue; // Inicializa com o valor passado
+    selectedDate = widget.initialValue;
   }
 
   Future<void> _selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
+    final DateTime? pickedDate = await showDatePicker(
       context: context,
       initialDate: selectedDate ?? DateTime.now(),
       firstDate: DateTime(2015),
       lastDate: DateTime(2100),
     );
-    if (picked != null) {
-      setState(() {
-        selectedDate = picked;
-        widget.onChanged(picked);
-      });
+
+    if (pickedDate != null) {
+      if (widget.showTime) {
+        final TimeOfDay? pickedTime = await showTimePicker(
+          context: context,
+          initialTime: TimeOfDay.fromDateTime(selectedDate ?? DateTime.now()),
+        );
+
+        if (pickedTime != null) {
+          final DateTime combined = DateTime(
+            pickedDate.year,
+            pickedDate.month,
+            pickedDate.day,
+            pickedTime.hour,
+            pickedTime.minute,
+          );
+          setState(() {
+            selectedDate = combined;
+            widget.onChanged(combined);
+          });
+        }
+      } else {
+        setState(() {
+          selectedDate = pickedDate;
+          widget.onChanged(pickedDate);
+        });
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final displayText = selectedDate != null
+        ? widget.showTime
+            ? '${selectedDate!.day.toString().padLeft(2, '0')}/${selectedDate!.month.toString().padLeft(2, '0')}/${selectedDate!.year} ${selectedDate!.hour.toString().padLeft(2, '0')}:${selectedDate!.minute.toString().padLeft(2, '0')}'
+            : '${selectedDate!.day.toString().padLeft(2, '0')}/${selectedDate!.month.toString().padLeft(2, '0')}/${selectedDate!.year}'
+        : '';
+
     return TextField(
-      controller: TextEditingController(
-        text: selectedDate != null
-            ? '${selectedDate!.toLocal()}'.split(' ')[0] // Formata a data
-            : '',
-      ),
+      controller: TextEditingController(text: displayText),
       onTap: () => _selectDate(context),
       decoration: InputDecoration(
         labelText: widget.labelText,

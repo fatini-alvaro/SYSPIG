@@ -68,7 +68,7 @@ class CadastrarAnotacaoPageState extends State<CadastrarAnotacaoPage> {
   void _preencherCamposParaEdicao(AnotacaoModel anotacao) {
     setState(() {
       //valores em tela
-      _searchControllerAnimal.text = anotacao.animal != null ? anotacao.animal!.numeroBrinco : '';
+      _searchControllerAnimal.text = anotacao.animal != null ? anotacao.animal!.numeroBrinco! : '';
       _searchControllerBaia.text = anotacao.baia != null ? anotacao.baia!.numero! : '';
       _searchControllerOcupacao.text = 'Código: ${anotacao.ocupacao?.codigo} - Baia ${anotacao.ocupacao?.baia!.numero}';
       _descricaoController.text = anotacao.descricao!;
@@ -250,14 +250,14 @@ class CadastrarAnotacaoPageState extends State<CadastrarAnotacaoPage> {
                   child: ListView(
                     children: animais
                         .where((animal) =>
-                            animal.numeroBrinco.toLowerCase().contains(_searchControllerAnimal.text.toLowerCase()))
+                            animal.numeroBrinco!.toLowerCase().contains(_searchControllerAnimal.text.toLowerCase()))
                         .map((animal) {
                       return ListTile(
                         title: Text('${animal.numeroBrinco}'),
                         onTap: () {
                           _cadastrarAnotacaoController.setAnimal(animal);
                           setState(() {
-                            _searchControllerAnimal.text = animal.numeroBrinco;
+                            _searchControllerAnimal.text = animal.numeroBrinco!;
                             _isAnimalSearchFocused = false;
                           });
                         },

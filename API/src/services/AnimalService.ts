@@ -5,6 +5,10 @@ import { ValidationService } from "./ValidationService";
 import { ValidationError } from "../utils/validationError";
 import { Usuario } from "../entities/Usuario";
 import { SexoAnimal, StatusAnimal } from "../constants/animalConstants";
+import { IsNull, Not } from "typeorm";
+import { OcupacaoAnimal } from "../entities/OcupacaoAnimal";
+import { StatusOcupacaoAnimal } from "../constants/ocupacaoAnimalConstants";
+import { OcupacaoService } from "./OcupacaoService";
 
 interface AnimalCreateOrUpdateData {
   numero_brinco: string;
@@ -13,6 +17,16 @@ interface AnimalCreateOrUpdateData {
   data_nascimento: Date;
   fazenda_id: number;
   usuarioIdAcao: number;
+  nascimento?: boolean;
+}
+
+interface AnimalAdicionarNascimentoData {
+  baia_id: number,
+  quantidade: number,
+  status: StatusAnimal;
+  data_nascimento: Date;
+  usuarioIdAcao: number;
+  fazenda_id: number;
 }
 
 export class AnimalService {
@@ -20,10 +34,110 @@ export class AnimalService {
   async list(fazenda_id: number) {
     return await animalRepository.find({ 
       where: { 
-        fazenda: { id: fazenda_id }
+        fazenda: { id: fazenda_id },
+        status: StatusAnimal.VIVO,
+        numero_brinco: Not(IsNull()),
+        nascimento: false,
       },
       select: ['id', 'numero_brinco'],
       order: { id: 'ASC' }
+    });
+  }
+
+  async listNascimentos(ocupacao_id: number) {
+    return await animalRepository.find({ 
+      where: { 
+        fazenda: { id: ocupacao_id },
+        nascimento: true,
+      },
+      select: ['id', 'data_nascimento', 'status'],
+      order: { id: 'ASC' }
+    });
+  }
+
+  async listLiveAndDie(fazenda_id: number) {
+    return await animalRepository.find({ 
+      where: { 
+        fazenda: { id: fazenda_id },
+        numero_brinco: Not(IsNull()),
+        nascimento: false,
+      },
+      select: ['id', 'numero_brinco'],
+      order: { id: 'ASC' }
+    });
+  }
+
+  async adicionarNascimento(adicionarNascimentoData: AnimalAdicionarNascimentoData){
+    return await AppDataSource.transaction(async transactionalEntityManager => {
+
+      // Validações comuns
+      const usuario = await ValidationService.validateAndReturnUsuario(adicionarNascimentoData.usuarioIdAcao);
+      const fazenda = await ValidationService.validateAndReturnFazenda(adicionarNascimentoData.fazenda_id);
+      
+      if (adicionarNascimentoData.quantidade < 1){
+        throw new Error('Nenhum nascimento foi informado.');
+      }
+
+      const baiaDestino = await ValidationService.validateAndReturnBaia(adicionarNascimentoData.baia_id);
+
+      //recupera a ocupacao da baia
+      const ocupacao = await baiaDestino?.ocupacao;
+
+      if (!ocupacao) {
+        throw new ValidationError('Ocupação ativa não encontrada para o animal.');
+      }
+
+      const resultados = [];
+      const erros = [];
+
+      for (let i = 0; i < adicionarNascimentoData.quantidade; i++) {
+        try {
+
+          const animal = transactionalEntityManager.create(Animal, {        
+            fazenda: fazenda,
+            status: adicionarNascimentoData.status,
+            nascimento: true
+          });
+
+          await transactionalEntityManager.save(animal);
+
+          const novaOcupacaoAnimal = transactionalEntityManager.create(OcupacaoAnimal, {
+            ocupacao: { id: ocupacao.id }, // Ensure 'ocupacao' matches the expected type
+            animal: { id: animal.id }, // Ensure 'animal' matches the expected type
+            data_entrada: adicionarNascimentoData.data_nascimento,
+            status: StatusOcupacaoAnimal.ATIVO,
+            createdBy: usuario!,
+          });
+
+          await transactionalEntityManager.save(novaOcupacaoAnimal);
+
+          resultados.push({ 
+            animal_id: animal.id,
+            success: true,
+            message: 'Nascimento registrado com sucesso'
+          });
+
+        } catch (error) {
+          const message = error instanceof Error ? error.message : 'Erro ao registrar nascimento';          
+          erros.push({
+            message: message
+          });
+        }
+      }
+
+      if (erros.length > 0) {
+        // Consolida todos os erros em uma única mensagem
+        const errorMessage = erros.map(e => e.message).join('; ');
+        throw new Error(errorMessage);
+      }
+  
+      return {
+        success: true,
+        resultados,
+        total: resultados.length,
+        sucessos: resultados.length,
+        falhas: erros.length
+      };
     });
   }
   
@@ -82,6 +196,40 @@ export class AnimalService {
     });
   }
 
+  async deletarNascimento(animalId: number, usuarioIdAcao: number) {
+    return await AppDataSource.transaction(async transactionalEntityManager => {
+      const usuario = await ValidationService.validateAndReturnUsuario(usuarioIdAcao);
+  
+      // Busca o animal com as ocupações
+      const animal = await transactionalEntityManager.findOne(Animal, {
+        where: { id: animalId }
+      });
+  
+      if (!animal) {
+        throw new Error(`Animal com ID ${animalId} não encontrado.`);
+      }
+  
+      if (!animal.nascimento) {
+        throw new Error(`Animal com ID ${animalId} não é um nascimento e não pode ser excluído por este método.`);
+      }
+  
+      // Remove as ocupações associadas ao animal
+      await transactionalEntityManager.delete(OcupacaoAnimal, {
+        animal: { id: animal.id }
+      });
+  
+      // Remove o animal
+      await transactionalEntityManager.delete(Animal, { id: animal.id });
+  
+      return {
+        success: true,
+        message: 'Nascimento excluído com sucesso',
+        animal_id: animal.id
+      };
+    });
+  }
+  
+
   async validateAnimal(animalData: AnimalCreateOrUpdateData, animal?: Animal | null) {
     const fazenda = await ValidationService.validateAndReturnFazenda(animalData.fazenda_id);
 
@@ -127,4 +275,39 @@ export class AnimalService {
       updatedBy,
     };
   }
+
+  async editarStatusNascimento(animalId: number, novoStatus: StatusAnimal, usuarioIdAcao: number) {
+    return await AppDataSource.transaction(async transactionalEntityManager => {
+      const usuario = await ValidationService.validateAndReturnUsuario(usuarioIdAcao);
+  
+      const animal = await transactionalEntityManager.findOne(Animal, {
+        where: { id: animalId }
+      });
+  
+      if (!animal) {
+        throw new ValidationError(`Animal com ID ${animalId} não encontrado.`);
+      }
+  
+      if (!animal.nascimento) {
+        throw new ValidationError(`Animal com ID ${animalId} não é um nascimento e não pode ter o status editado por este método.`);
+      }
+  
+      if (!Object.values(StatusAnimal).includes(novoStatus)) {
+        throw new ValidationError(`Status inválido para o animal.`);
+      }
+  
+      animal.status = novoStatus;
+      animal.updatedBy = usuario!;
+  
+      await transactionalEntityManager.save(animal);
+  
+      return {
+        success: true,
+        message: 'Status do nascimento atualizado com sucesso',
+        animal_id: animal.id,
+        novo_status: novoStatus
+      };
+    });
+  }
+  
 }

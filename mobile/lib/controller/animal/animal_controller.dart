@@ -1,6 +1,10 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
+import 'package:syspig/enums/animal_constants.dart';
 import 'package:syspig/model/animal_model.dart';
+import 'package:syspig/model/baia_model.dart';
 import 'package:syspig/repositories/animal/animal_repository.dart';
 
 class AnimalController {
@@ -10,7 +14,7 @@ class AnimalController {
   ValueNotifier<List<AnimalModel>> animais = ValueNotifier<List<AnimalModel>>([]);
 
   fetch(int fazendaId) async {
-    animais.value = await _animalRepository.getList(fazendaId);
+    animais.value = await _animalRepository.getListLiveAndDie(fazendaId);
   }
 
   Future<AnimalModel> fetchAnimalById(int animalId) async {
@@ -39,6 +43,40 @@ class AnimalController {
       return await _animalRepository.delete(animalExclusaoID);
     } catch (e) {
       Logger().e('Erro ao excluir animal: $e');
+      rethrow;
+    }
+  }
+
+  Future<bool> createNascimentos({required DateTime data,
+    required int quantidade,
+    required StatusAnimal status,
+    required BaiaModel baia}) 
+    async {
+
+    bool criouNascimentos = await  _animalRepository.adicionarNascimentos(
+      dataNascimento: data,
+      status: status,
+      quantidade: quantidade,
+      baiaId: baia.id!
+    );
+
+    return criouNascimentos;
+  }
+
+  Future<bool> deleteNascimento(int animalExclusaoID) async {
+    try {
+      return await _animalRepository.deleteNascimento(animalExclusaoID);
+    } catch (e) {
+      Logger().e('Erro ao excluir animal: $e');
+      rethrow;
+    }
+  }
+
+  Future<bool> atualizarStatusNascimento(int id, StatusAnimal novoStatus) async {
+    try {
+      return await _animalRepository.updateStatusNascimento(id, novoStatus);
+    } catch (e) {
+      Logger().e('Erro ao editar status do animal: $e');
       rethrow;
     }
   }

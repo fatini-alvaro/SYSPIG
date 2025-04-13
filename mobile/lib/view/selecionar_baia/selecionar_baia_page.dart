@@ -172,7 +172,7 @@ class SelecionarBaiaPageState extends State<SelecionarBaiaPage> {
                                             child: ListView(
                                               children: animais
                                                   .where((animal) =>
-                                                      animal.numeroBrinco.toLowerCase().contains(_searchControllerAnimal.text.toLowerCase()))
+                                                      animal.numeroBrinco!.toLowerCase().contains(_searchControllerAnimal.text.toLowerCase()))
                                                   .map((animal) {
                                                 return ListTile(
                                                   title: Text('${animal.numeroBrinco}'),
@@ -191,7 +191,7 @@ class SelecionarBaiaPageState extends State<SelecionarBaiaPage> {
                                           crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
                                             CustomDataTable(
-                                              title: 'Animais adicionados ao lote',
+                                              title: 'Animais para movimentar na baia',
                                               columns: const [
                                                 DataColumn(
                                                   label: Text(
@@ -210,11 +210,11 @@ class SelecionarBaiaPageState extends State<SelecionarBaiaPage> {
                                                 return animais.map((animal) {
                                                   return DataRow(
                                                     cells: [
-                                                      DataCell(Text(animal.numeroBrinco)),
+                                                      DataCell(Text(animal.numeroBrinco!)),
                                                       DataCell(
                                                         ElevatedButton.icon(
                                                           onPressed: () {
-                                                            setState(() {                                      
+                                                            setStateModal(() {                                      
                                                             _removerAnimal(animal);
                                                             });
                                                           },

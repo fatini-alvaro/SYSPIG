@@ -21,6 +21,28 @@ export class AnimalController {
     }
   };
 
+  listLiveAndDie = async (req: Request, res: Response) => {
+    try {
+      const { fazenda_id } = req.params;
+      const animais = await this.animalService.listLiveAndDie(Number(fazenda_id));
+      return res.status(200).json(animais);
+    } catch (error) {
+      console.error("Erro ao listar animais vivos e mortos:", error);
+      return handleError(error, res, "Erro ao listar animais  vivos e mortos");
+    }
+  };
+
+  listNascimentos = async (req: Request, res: Response) => {
+    try {
+      const { ocupacao_id } = req.params;
+      const animais = await this.animalService.listNascimentos(Number(ocupacao_id));
+      return res.status(200).json(animais);
+    } catch (error) {
+      console.error("Erro ao listar nascimentos:", error);
+      return handleError(error, res, "Erro ao listar nascimentos");
+    }
+  };
+
   getById = async (req: Request, res: Response) => {
     try {      
       const { animal_id } = req.params;
@@ -55,6 +77,24 @@ export class AnimalController {
     }
   }
 
+  deleteNascimento = async (req: Request, res: Response) => {
+    const animal_id = req.params.animal_id;
+    const usuario_id = req.headers['user-id'];
+
+    if (!animal_id)
+      return res.status(400).json({ message: 'Parâmetros não informados' });
+
+    try {
+      await this.animalService.deletarNascimento(Number(animal_id), Number(usuario_id));
+
+      return res.status(200).json({ message: 'Nascimento excluído com sucesso' });
+    } catch (error) {
+      console.error("Erro ao excluir nascimento:", error);
+      return handleError(error, res, "Erro ao excluir nascimento");
+    }
+  }
+
+
   createOrUpdate = async (req: Request, res: Response) => {
     const { numero_brinco, sexo, data_nascimento, status } = req.body;
     const fazenda_id = req.headers['fazenda-id'];
@@ -86,6 +126,57 @@ export class AnimalController {
     } catch (error) {
       console.error("Erro ao criar/atualizar animal:", error);
       return handleError(error, res, "Erro interno ao processar animal");
+    }
+  };
+
+  createNascimento = async (req: Request, res: Response) => {
+    const { data_nascimento, status, quantidade, baia_id } = req.body;
+    const fazenda_id = req.headers['fazenda-id'];
+    const usuario_id = req.headers['user-id'];
+
+    if (!fazenda_id || !status || !quantidade || !data_nascimento || !baia_id) {
+      return res.status(400).json({ message: 'Parâmetros não informados' });
+    }
+
+    try {
+      const nascimentoData = {
+        baia_id: Number(baia_id),
+        quantidade,
+        status,
+        data_nascimento, 
+        usuarioIdAcao :  Number(usuario_id),
+        fazenda_id: Number(fazenda_id),
+      };
+
+      const resultado = await this.animalService.adicionarNascimento(nascimentoData);
+
+      return res.status(200).json(resultado);
+
+    } catch (error) {
+      console.error("Erro ao criar/atualizar animal:", error);
+      return handleError(error, res, "Erro interno ao processar animal");
+    }
+  };
+
+  editarStatusNascimento = async (req: Request, res: Response) => {
+    const animal_id = req.params.animal_id;
+    const { status} = req.body;
+    const fazenda_id = req.headers['fazenda-id'];
+    const usuario_id = req.headers['user-id'];
+
+    if (!fazenda_id || !status || !animal_id) {
+      return res.status(400).json({ message: 'Parâmetros não informados' });
+    }
+
+    try {
+
+      const resultado = await this.animalService.editarStatusNascimento(Number(animal_id), status, Number(usuario_id));
+
+      return res.status(200).json(resultado);
+
+    } catch (error) {
+      console.error("Erro ao editar status do nascimento:", error);
+      return handleError(error, res, "Erro interno ao ao editar status do nascimento");
     }
   };
 

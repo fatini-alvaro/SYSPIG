@@ -46,7 +46,7 @@ class CadastrarAnimalPageState extends State<CadastrarAnimalPage> {
   void _preencherCamposParaEdicao(AnimalModel animal) {
     setState(() {
       //valores em tela
-      _numeroBrincoController.text = animal.numeroBrinco;
+      _numeroBrincoController.text = animal.numeroBrinco ?? '';
       _dataNascimento = animal.dataNascimento;
 
       //valores no controller

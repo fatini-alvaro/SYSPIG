@@ -9,6 +9,7 @@ class CustomDropdownButtonFormFieldWidget<T> extends StatelessWidget {
   final Icon? suffixIcon;
   final void Function(T?)? onChanged;
   final String? Function(T?)? validator;
+  final bool? isEnabled;
 
   const CustomDropdownButtonFormFieldWidget({
     Key? key,
@@ -20,6 +21,7 @@ class CustomDropdownButtonFormFieldWidget<T> extends StatelessWidget {
     this.suffixIcon,
     this.onChanged,
     this.validator,
+    this.isEnabled = true,
   }) : super(key: key);
 
   @override
@@ -37,7 +39,7 @@ class CustomDropdownButtonFormFieldWidget<T> extends StatelessWidget {
           borderRadius: BorderRadius.circular(10),
         ),
       ),
-      onChanged: onChanged,
+      onChanged: isEnabled == true ? onChanged : null,
       validator: validator != null ? (value) => validator!(value) : null,
     );
   }

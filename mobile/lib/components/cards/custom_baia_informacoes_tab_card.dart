@@ -70,7 +70,7 @@ class _CustomBaiaInformacoesTabCardState extends State<CustomBaiaInformacoesTabC
                   ),
                 ),
               ],
-              data: widget.ocupacao?.ocupacaoAnimais ?? [],
+              data: widget.ocupacao?.ocupacaoAnimaisSemNascimento ?? [],
               generateRows: (animais) {
                 return animais.map((ocupacaoAnimal) {
                   return DataRow(
