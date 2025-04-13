@@ -74,27 +74,20 @@ class HomePageState extends State<HomePage> {
                   onTapCallback: () {
                     Navigator.of(context).pushNamed('/selecionarBaia');
                   },
-                ),
-                SizedBox(height: 20),
-                CustomHomeCard(
-                  descricao: 'Gestação',
-                  icone: Icons.child_friendly,
-                  onTapCallback: () {
-                    Navigator.of(context).pushNamed('/animaisEmGestacao');
-                  },
-                ),                
-              ]
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
+                ),   
                 CustomHomeCard(
                   descricao: 'Movimentação',
                   icone: Icons.compare_arrows,
                   onTapCallback: () {
                     Navigator.of(context).pushNamed('/selecionarMovimentacao');
                   },
-                ),
+                ),         
+              ]
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                
                 SizedBox(height: 20),
                 CustomHomeCard(
                   descricao: 'Granjas',
@@ -103,16 +96,23 @@ class HomePageState extends State<HomePage> {
                     Navigator.of(context).pushNamed('/selecionarGranja');
                   },
                 ),
+                CustomHomeCard(
+                  descricao: 'Animais',
+                  icone: Icons.pets,
+                  onTapCallback: () {
+                    Navigator.of(context).pushNamed('/selecionarAnimal');
+                  },
+                ),
               ]
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 CustomHomeCard(
-                  descricao: 'Animais',
-                  icone: Icons.pets,
+                  descricao: 'Anotações',
+                  icone: Icons.note_alt_outlined,
                   onTapCallback: () {
-                    Navigator.of(context).pushNamed('/selecionarAnimal');
+                    Navigator.of(context).pushNamed('/selecionarAnotacao');
                   },
                 ),
                 SizedBox(height: 20),
@@ -129,13 +129,6 @@ class HomePageState extends State<HomePage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 SizedBox(height: 20,),
-                CustomHomeCard(
-                  descricao: 'Anotações',
-                  icone: Icons.note_alt_outlined,
-                  onTapCallback: () {
-                    Navigator.of(context).pushNamed('/selecionarAnotacao');
-                  },
-                ),
                 CustomHomeCard(
                   descricao: 'Inseminação',
                   icone: Icons.clean_hands_rounded,

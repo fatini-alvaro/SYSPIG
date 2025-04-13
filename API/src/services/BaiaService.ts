@@ -42,13 +42,17 @@ export class BaiaService {
 
   async listByGranja(granja_id: number) {
     return await baiaRepository.createQueryBuilder("baia")
-      .leftJoinAndSelect("baia.ocupacao", "ocupacao") // Faz o join com a ocupacao
+      .leftJoinAndSelect("baia.ocupacao", "ocupacao")
+      .leftJoinAndSelect("baia.granja", "granja")
       .select([
         "baia.id", 
         "baia.numero", 
         "baia.vazia", 
-        "ocupacao.id", // Adiciona o id da ocupação
-        "ocupacao.codigo" // Adiciona o código da ocupação
+        "ocupacao.id",
+        "ocupacao.codigo",
+        "granja.id",
+        "granja.descricao",
+        "granja.tipo_granja_id",
       ])
       .where("baia.granja_id = :granja_id", { granja_id })
       .orderBy({ 
@@ -60,13 +64,20 @@ export class BaiaService {
 
   async listByFazenda(fazenda_id: number) {
     return await baiaRepository.createQueryBuilder("baia")
-      .leftJoinAndSelect("baia.ocupacao", "ocupacao") // Faz o join com a ocupacao
+      .leftJoinAndSelect("baia.ocupacao", "ocupacao")
+      .leftJoinAndSelect("baia.granja", "granja")
+      .leftJoinAndSelect("granja.tipoGranja", "tipoGranja")
       .select([
         "baia.id", 
         "baia.numero", 
         "baia.vazia", 
-        "ocupacao.id", // Adiciona o id da ocupação
-        "ocupacao.codigo" // Adiciona o código da ocupação
+        "ocupacao.id",
+        "ocupacao.codigo",
+        "granja.id",
+        "granja.descricao",
+        "granja.codigo",
+        "tipoGranja.id",
+        "tipoGranja.descricao",
       ])
       .where("baia.fazenda_id = :fazenda_id", { fazenda_id })
       .orderBy({ 
