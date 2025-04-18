@@ -5,11 +5,13 @@ class LoteAnimalModel {
   final int? id;
   final LoteModel? lote;
   final AnimalModel? animal;
+  final bool? inseminado;
 
   LoteAnimalModel({
     this.id,
     this.lote,
     this.animal,
+    this.inseminado,
   });
 
    factory LoteAnimalModel.fromJson(Map<String, dynamic> json) {
@@ -17,6 +19,7 @@ class LoteAnimalModel {
       id: json['id'],
       lote: json['lote'] != null ? LoteModel.fromJson(json['lote']) : null,
       animal: json['animal'] != null ? AnimalModel.fromJson(json['animal']) : null,
+      inseminado: json['inseminado'],
     );
   }
 
@@ -25,11 +28,12 @@ class LoteAnimalModel {
       'id': id,
       'lote_id': lote?.id,
       'animal_id': animal?.id,
+      'inseminado': inseminado,
     };
   }
 
   @override
   String toString() {
-    return 'id: $id, lote: $lote, animal: $animal';
+    return 'id: $id, lote: $lote, animal: $animal, inseminado: $inseminado';
   }
 }

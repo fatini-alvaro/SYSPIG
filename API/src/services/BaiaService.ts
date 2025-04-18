@@ -87,6 +87,33 @@ export class BaiaService {
       .getMany();
   }  
 
+  async listByFazendaAndTipo(fazenda_id: number, tipoGranja_id: number) {
+    return await baiaRepository.createQueryBuilder("baia")
+      .leftJoinAndSelect("baia.ocupacao", "ocupacao")
+      .leftJoinAndSelect("baia.granja", "granja")
+      .leftJoinAndSelect("granja.tipoGranja", "tipoGranja")
+      .select([
+        "baia.id", 
+        "baia.numero", 
+        "baia.vazia", 
+        "ocupacao.id",
+        "ocupacao.codigo",
+        "granja.id",
+        "granja.descricao",
+        "granja.codigo",
+        "tipoGranja.id",
+        "tipoGranja.descricao",
+      ])
+      .where("baia.fazenda_id = :fazenda_id AND baia.vazia = true", { fazenda_id })
+      .andWhere("tipoGranja.id = :tipoGranja_id", { tipoGranja_id })
+      .orderBy({ 
+        "baia.vazia": "ASC", 
+        "baia.numero": "DESC" 
+      })
+      .getMany();
+  }
+  
+
   async delete(baia_id: number): Promise<void> {
     if (!baia_id) {
       throw new ValidationError('Parâmetros não informados');

@@ -157,17 +157,6 @@ class CadastrarLotePageState extends State<CadastrarLotePage> {
                 },   
                 onChanged: _cadastrarLoteController.setNumero,
               ),
-              const SizedBox(height: 20),
-              CustomDateTimeFieldWidget(
-                labelText: 'Data de Criação/Chegada',
-                initialValue: _dataCriacao,
-                onChanged: (selectedDate) {
-                  setState(() {
-                    _dataCriacao = selectedDate;
-                  });
-                  _cadastrarLoteController.setDataCriacao(selectedDate);
-                },
-              ),
               SizedBox(height: 20),
               CustomTextFormFieldWidget(
                 controller: _searchControllerAnimal,

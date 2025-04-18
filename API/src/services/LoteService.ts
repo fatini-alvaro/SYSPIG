@@ -29,6 +29,19 @@ export class LoteService {
     });
   }
 
+  async listAtivo(fazenda_id: number) {
+    return await loteRepository.find({
+      where: {
+        fazenda: {
+          id: Number(fazenda_id),
+        },
+        encerrado: false,
+      },
+      relations: ['loteAnimais'],
+      order: { id: "DESC" },
+    });
+  }
+
   async createOrUpdate(loteData: LoteCreateOrUpdateData, lote_id?: number) {
     return await AppDataSource.transaction(async (transactionalEntityManager) => {
       let lote: Lote | null = null;

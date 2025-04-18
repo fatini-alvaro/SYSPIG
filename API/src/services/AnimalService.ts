@@ -67,6 +67,20 @@ export class AnimalService {
     });
   }
 
+  async listPorcos(fazenda_id: number) {
+    return await animalRepository.find({ 
+      where: { 
+        fazenda: { id: fazenda_id },
+        status: StatusAnimal.VIVO,
+        numero_brinco: Not(IsNull()),
+        nascimento: false,
+        sexo: SexoAnimal.MACHO,
+      },
+      select: ['id', 'numero_brinco'],
+      order: { id: 'ASC' }
+    });
+  }
+
   async adicionarNascimento(adicionarNascimentoData: AnimalAdicionarNascimentoData){
     return await AppDataSource.transaction(async transactionalEntityManager => {
 

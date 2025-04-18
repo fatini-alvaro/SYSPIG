@@ -72,6 +72,21 @@ export class BaiaController {
     }
   };
 
+  listByFazendaAndTipo = async (req: Request, res: Response) => {
+    try {
+      const { fazenda_id, tipoGranja_id } = req.params;
+  
+      if (!fazenda_id || !tipoGranja_id)
+        return res.status(400).json({ message: 'Parâmetros não informados' });
+  
+      const baias = await this.baiaService.listByFazendaAndTipo(Number(fazenda_id), Number(tipoGranja_id));
+      return res.status(200).json(baias);
+    } catch (error) {
+      console.error("Erro ao listar baias por fazenda e tipo:", error);
+      return handleError(error, res, "Erro ao listar baias por fazenda e tipo");
+    }
+  };  
+
   getById = async (req: Request, res: Response) => {
     try {      
       const { baia_id } = req.params;

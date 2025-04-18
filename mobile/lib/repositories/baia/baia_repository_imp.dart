@@ -1,5 +1,6 @@
 import 'package:logger/logger.dart';
 import 'package:syspig/api/api_client.dart';
+import 'package:syspig/enums/tipo_granja_constants.dart';
 import 'package:syspig/model/baia_model.dart';
 import 'package:syspig/repositories/baia/baia_repository.dart';
 import 'package:syspig/utils/error_handler_util.dart';
@@ -44,6 +45,19 @@ class BaiaRepositoryImp implements BaiaRepository {
     } catch (e) {
       String errorMessage = ErrorHandlerUtil.handleDioError(e, 'Erro ao obter dados da baia');
       Logger().e('Erro ao obter dados da baia: $e');
+      throw Exception(errorMessage);
+    }
+  }
+
+  @override
+  Future<List<BaiaModel>> getListByFazendaAndTipo(int fazendaId, TipoGranjaId tipoGranja) async {
+    try {
+      final tipoGranjaId = tipoGranjaIdToInt[tipoGranja];
+      final response = await _apiClient.dio.get('/baias/byFazendaAndTipo/$fazendaId/$tipoGranjaId');
+      return (response.data as List).map((e) => BaiaModel.fromJson(e)).toList();
+    } catch (e) {
+      String errorMessage = ErrorHandlerUtil.handleDioError(e, 'Erro ao obter lista de baias por fazenda e tipo');
+      Logger().e('Erro ao obter lista de baias (filtro fazenda/tipo): $e');
       throw Exception(errorMessage);
     }
   }

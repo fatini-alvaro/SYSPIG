@@ -1,19 +1,18 @@
 import { MigrationInterface, QueryRunner } from "typeorm";
 
-export class Default1722709772253 implements MigrationInterface {
-    name = 'Default1722709772253'
+export class InsertMoreTipoGranja1744758494173 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`
             INSERT INTO tipo_granja (id, descricao) VALUES 
-            (1, 'Gestação'),
-            (2, 'Geral')
+            (3, 'Creche'),
+            (4, 'Inseminação')
         `);
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`
-            DELETE FROM tipo_granja WHERE id IN (1, 2);
+            DELETE FROM tipo_granja WHERE id IN (3, 4)
         `);
     }
 

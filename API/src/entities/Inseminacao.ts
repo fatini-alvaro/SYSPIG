@@ -4,19 +4,13 @@ import { Usuario } from "./Usuario";
 import { Cidade } from "./Cidade";
 import { Fazenda } from "./Fazenda";
 import { Animal } from "./Animal";
+import { LoteAnimal } from "./LoteAnimal";
 
 
 @Entity('inseminacao')
 export class Inseminacao {
   @PrimaryGeneratedColumn()
   id: number;
-
-  @ManyToOne(() => Fazenda, { eager: true })
-  @JoinColumn({ name: 'fazenda_id', referencedColumnName: 'id' }) 
-  fazenda: Fazenda;
-
-  @Column({ type: 'int', nullable: true })
-  codigo: number;
 
   @ManyToOne(() => Animal, { eager: true })
   @JoinColumn({ name: 'porco_doador_id', referencedColumnName: 'id' }) 
@@ -28,6 +22,10 @@ export class Inseminacao {
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   data: Date;
+
+  @ManyToOne(() => LoteAnimal, { eager: true })
+  @JoinColumn({ name: 'lote_animal', referencedColumnName: 'id' })
+  loteAnimal: LoteAnimal;
 
   @ManyToOne(() => Usuario, { eager: true, nullable: true })
   @JoinColumn({ name: 'created_by', referencedColumnName: 'id' }) 

@@ -55,6 +55,17 @@ export class LoteController {
     }
   };
 
+  listAtivo = async (req: Request, res: Response) => {
+    try {
+      const { fazenda_id } = req.params;
+      const lotes = await this.loteService.listAtivo(Number(fazenda_id));
+      return res.status(200).json(lotes);
+    } catch (error) {
+      console.error("Erro ao listar lotes ativos:", error);
+      return handleError(error, res, "Erro ao listar lotes ativos");
+    }
+  };
+
   getById = async (req: Request, res: Response) => {
     try {      
       const { lote_id } = req.params;

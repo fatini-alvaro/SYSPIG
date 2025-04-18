@@ -21,6 +21,17 @@ export class AnimalController {
     }
   };
 
+  listPorcos = async (req: Request, res: Response) => {
+    try {
+      const { fazenda_id } = req.params;
+      const animais = await this.animalService.listPorcos(Number(fazenda_id));
+      return res.status(200).json(animais);
+    } catch (error) {
+      console.error("Erro ao listar porcos:", error);
+      return handleError(error, res, "Erro ao listar porcos");
+    }
+  };
+
   listLiveAndDie = async (req: Request, res: Response) => {
     try {
       const { fazenda_id } = req.params;

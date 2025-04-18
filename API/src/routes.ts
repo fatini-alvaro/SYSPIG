@@ -70,6 +70,8 @@ routes.delete('/baias/:baia_id',baiaController.delete);
 routes.get('/baias/:granja_id', baiaController.listByGranja);
 routes.get('/baias/byFazenda/:fazenda_id', baiaController.listByFazenda);
 routes.get('/baias/baia/:baia_id', baiaController.getById);
+routes.get('/baias/byFazendaAndTipo/:fazenda_id/:tipoGranja_id', baiaController.listByFazendaAndTipo);
+
 
 //Cidade
 const cidadeController = new CidadeController();
@@ -81,6 +83,7 @@ routes.post('/animais', animalController.createOrUpdate);
 routes.put('/animais/:animal_id', animalController.createOrUpdate);
 routes.delete('/animais/:animal_id', animalController.delete); 
 routes.get('/animais/:fazenda_id', animalController.list);
+routes.get('/animais/porcos/:fazenda_id', animalController.listPorcos);
 routes.get('/animais/liveanddie/:fazenda_id', animalController.listLiveAndDie);
 routes.get('/animais/animal/:animal_id', animalController.getById);
 routes.get('/animais/nascimentos/:ocupacao_id', animalController.listNascimentos);
@@ -101,6 +104,7 @@ routes.get('/anotacoes/anotacao/:anotacao_id', anotacaoController.getById);
 const loteController = new LoteController();
 routes.post('/lotes', loteController.createOrUpdate);
 routes.get('/lotes/:fazenda_id', loteController.list);
+routes.get('/lotes/ativos/:fazenda_id', loteController.listAtivo);
 routes.delete('/lotes/:lote_id', loteController.delete);
 routes.put('/lotes/:lote_id', loteController.createOrUpdate);
 routes.get('/lotes/lote/:lote_id', loteController.getById); 

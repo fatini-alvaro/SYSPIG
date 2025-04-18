@@ -1,7 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:syspig/components/buttons/custom_salvar_cadastro_button_component.dart';
 import 'package:syspig/controller/cadastrar_inseminacao/cadastrar_inseminacao_controller.dart';
+import 'package:syspig/model/animal_model.dart';
+import 'package:syspig/model/baia_model.dart';
+import 'package:syspig/model/inseminacao_model.dart';
+import 'package:syspig/model/lote_animal_model.dart';
+import 'package:syspig/model/lote_model.dart';
 import 'package:syspig/themes/themes.dart';
+import 'package:syspig/widgets/custom_data_table.dart';
+import 'package:syspig/widgets/custom_date_time_field_widget.dart';
 import 'package:syspig/widgets/custom_text_form_field_widget.dart';
 
 class CadastrarInseminacaoPage extends StatefulWidget {
@@ -12,45 +20,49 @@ class CadastrarInseminacaoPage extends StatefulWidget {
 class CadastrarInseminacaoPageState extends State<CadastrarInseminacaoPage> {
   final CadastrarInseminacaoController _cadastrarInseminacaoController = CadastrarInseminacaoController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  //Aterar para o tipo do que vai ser carregado
-  List<String> porcos = [
-    '123',
-    '12321',
-    '23432',
-    '667675',
-    // Adicione suas granjas carregadas do banco de dados aqui
-  ];
 
-  List<String> porcas = [
-    '55546',
-    '934769',
-    '98098',
-    '964324',
-    // Adicione suas baias carregadas do banco de dados aqui
-  ];
+  List<LoteModel> lotes = [];
+  TextEditingController _searchControllerLote = TextEditingController();
+  LoteModel? loteSelecionado;
+  bool _isLoteSearchFocused = false;
 
-  List<String> granjas = [
-    'Granja A',
-    'Granja B',
-    'Granja C',
-    'Granja D',
-    // Adicione suas granjas carregadas do banco de dados aqui
-  ];
+  List<AnimalModel> porcos = [];
+  TextEditingController _searchControllerPorco = TextEditingController();
+  AnimalModel? porcoSelecionado;
+  bool _isPorcoSearchFocused = false;
 
-  List<String> baia = [
-    'Baia A',
-    'Baia B',
-    'Baia C',
-    'Baia D',
-    // Adicione suas baias carregadas do banco de dados aqui
-  ];
+  List<BaiaModel> baiasInseminacao = [];
+  TextEditingController _searchControllerBaiaInseminacao= TextEditingController();
+  BaiaModel? baiaInseminacaoSelecionado;
+  bool _isBaiaInseminacaoSearchFocused = false;
 
-  String selectedPorcos = '';
-  String selectedPorcas = '';
-  String selectedBaia = '';
-  String selectedGranja = '';
-  bool showDetails = false;
-  bool showMovimentation = false;
+  DateTime? _data;
+
+  List<LoteAnimalModel> loteAnimaisDisponiveis = [];
+  List<LoteAnimalModel> loteAnimaisSelecionados = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _carregarLotes();
+    _carregarPorcos();
+    _carregarBaiasDeInseminacao();
+  }
+
+  Future<void> _carregarLotes() async {
+    lotes = await _cadastrarInseminacaoController.getLotesFromRepository();
+    setState(() {});
+  }
+
+  Future<void> _carregarPorcos() async {
+    porcos = await _cadastrarInseminacaoController.getPorcosFromRepository();
+    setState(() {});
+  }
+
+  Future<void> _carregarBaiasDeInseminacao() async {
+    baiasInseminacao = await _cadastrarInseminacaoController.getListByFazendaAndTipo();
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -63,420 +75,337 @@ class CadastrarInseminacaoPageState extends State<CadastrarInseminacaoPage> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: SingleChildScrollView(
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildSelecionarPorco(),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            children: [
+              const SizedBox(height: 20),
+              CustomTextFormFieldWidget(
+                controller: _searchControllerLote,
+                label: 'Selecionar Lote',
+                hintText: 'Lotes',
+                validator: (value) {
+                  // add email validation
+                  if (value == null || value.isEmpty) {
+                    return 'Informe o lote';
+                  }
+                  return null;
+                },
+                suffixIcon: _searchControllerLote.text.isNotEmpty
+                    ? IconButton(
+                        icon: Icon(Icons.clear),
+                        onPressed: () {
+                          setState(() {
+                            _searchControllerLote.clear();
+                            loteSelecionado = null;
+                            _isLoteSearchFocused = false;
+                            loteAnimaisDisponiveis = [];
+                            loteAnimaisSelecionados.clear();
+                            _cadastrarInseminacaoController.inseminacoes.clear();
+                          });
+                        },
+                      )
+                    : Icon(Icons.search),
+                onChanged: (value) {
+                  setState(() {});
+                },
+                onTap: () {
+                  setState(() {
+                    _isLoteSearchFocused = !_isLoteSearchFocused;
+                  });
+                },
+              ),
+              if (_isLoteSearchFocused)
                 SizedBox(
-                  height: 80,
-                  child: CustomTextFormFieldWidget(
-                    label: 'Data',
-                    onChanged: _cadastrarInseminacaoController.setData,
+                  height: 200,
+                  child: ListView(
+                    children: lotes
+                        .where((lote) =>
+                            lote.numeroLote!.toLowerCase().contains(_searchControllerLote.text.toLowerCase()))
+                        .map((lote) {
+                      return ListTile(
+                        title: Text('${lote.numeroLote}'),
+                        onTap: () {
+                          setState(() {
+                            loteSelecionado = lote;
+                            _searchControllerLote.text = lote.numeroLote!;
+                            _isLoteSearchFocused = false;
+                            loteAnimaisDisponiveis = lote.loteAnimais ?? [];
+                            loteAnimaisSelecionados.clear(); // limpa os já selecionados se mudar o lote
+                          });
+                          _cadastrarInseminacaoController.setLote(loteSelecionado);
+                        },
+                      );
+                    }).toList(),
                   ),
                 ),
-                _buildSelecionarPorca(),
-                _buildBaiaAtual(),
-                _buildMovimentarPara(),
-                _buildSalvarButton(),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildBaiaAtual() {
-    return Column(
-      children: [
-        SizedBox(height: 20),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text('Baia Atual: ',
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-              textAlign: TextAlign.left,
-            ),
-            Material(
-              elevation: 4,
-              shape: CircleBorder(),
-              color: Colors.orange,
-              child: Container(width: 50, height: 50,
-                decoration: BoxDecoration(shape: BoxShape.circle),
-                child: Center(
-                  child: Text('3', style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold,),
+              if (loteSelecionado != null)
+              _buildLoteInfoCard(loteSelecionado!),
+              const SizedBox(height: 20),
+              CustomTextFormFieldWidget(
+                controller: _searchControllerPorco,
+                label: 'Selecionar Porco',
+                hintText: 'Porcos',
+                suffixIcon: _searchControllerPorco.text.isNotEmpty
+                    ? IconButton(
+                        icon: Icon(Icons.clear),
+                        onPressed: () {
+                          setState(() {
+                            _searchControllerPorco.clear();
+                            porcoSelecionado = null;
+                            _isPorcoSearchFocused = false;
+                          });
+                        },
+                      )
+                    : Icon(Icons.search),
+                onChanged: (value) {
+                  setState(() {});
+                },
+                onTap: () {
+                  setState(() {
+                    _isPorcoSearchFocused = !_isPorcoSearchFocused;
+                  });
+                },
+              ),
+              const SizedBox(height: 20),                
+              if (_isPorcoSearchFocused)
+                SizedBox(
+                  height: 200,
+                  child: ListView(
+                    children: porcos
+                        .where((porco) =>
+                            porco.numeroBrinco!.toLowerCase().contains(_searchControllerPorco.text.toLowerCase()))
+                        .map((porco) {
+                      return ListTile(
+                        title: Text('${porco.numeroBrinco}'),
+                        onTap: () {
+                          setState(() {
+                            porcoSelecionado = porco;
+                            _searchControllerPorco.text = porco.numeroBrinco!;
+                            _isPorcoSearchFocused = false;
+                          });
+                          _cadastrarInseminacaoController.setPorco(porcoSelecionado);
+                        },
+                      );
+                    }).toList(),
                   ),
                 ),
+              CustomTextFormFieldWidget(
+                controller: _searchControllerBaiaInseminacao,
+                label: 'Selecionar Baia de Inseminação',
+                hintText: 'Baias',
+                suffixIcon: _searchControllerBaiaInseminacao.text.isNotEmpty
+                    ? IconButton(
+                        icon: Icon(Icons.clear),
+                        onPressed: () {
+                          setState(() {
+                            _searchControllerBaiaInseminacao.clear();
+                            baiaInseminacaoSelecionado = null;
+                            _isBaiaInseminacaoSearchFocused = false;
+                          });
+                        },
+                      )
+                    : Icon(Icons.search),
+                onChanged: (value) {
+                  setState(() {});
+                },
+                onTap: () {
+                  setState(() {
+                    _isBaiaInseminacaoSearchFocused = !_isBaiaInseminacaoSearchFocused;
+                  });
+                },
               ),
-            ),
-          ],
-        ),
-        SizedBox(height: 10),
-        SizedBox(
-          width: double.infinity, // Define a largura do botão para ocupar toda a largura disponível
-          height: 50, // Define a altura do botão
-          child: ElevatedButton(
-            onPressed: () {
-              setState(() {
-                showDetails = !showDetails; // Alterna a exibição do card de detalhes
-              });
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.orange, // Define a cor de fundo do botão
-              foregroundColor: Colors.white, // Define a cor do texto do botão
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
-            ),
-            child:
-                Text(showDetails ? 'Esconder Detalhes' : 'Visualizar Detalhes'),
-          ),
-        ),
-        if (showDetails) // Exibe o card de detalhes somente se showDetails for verdadeiro
-          Card(
-            color: Colors.white,
-            elevation: 4,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Nome da Granja', style: TextStyle(fontSize: 18)),
-                  Divider(color: Colors.grey,thickness: 1),
-                  Text('Informações:',style: TextStyle(fontSize: 15)),
-                  Text('Data de Entrada: 22/11/2023', style: TextStyle(fontSize: 18),
+              const SizedBox(height: 20),                
+              if (_isBaiaInseminacaoSearchFocused)
+                SizedBox(
+                  height: 200,
+                  child: ListView(
+                    children: baiasInseminacao
+                      .where((baia) =>
+                        baia.numero!.toLowerCase().contains(_searchControllerBaiaInseminacao.text.toLowerCase()) &&
+                        !_cadastrarInseminacaoController.inseminacoes.any((inseminacao) => inseminacao.baia?.id == baia.id))
+                      .map((baia) {
+                      return ListTile(
+                        title: Text('${baia.numero}'),
+                        onTap: () {
+                          setState(() {
+                            baiaInseminacaoSelecionado = baia;
+                            _searchControllerBaiaInseminacao.text = baia.numero!;
+                            _isBaiaInseminacaoSearchFocused = false;
+                          });
+                          _cadastrarInseminacaoController.setBaiaInseminacao(baiaInseminacaoSelecionado);
+                        },
+                      );
+                    }).toList(),
+                  ),
+                ),
+              CustomDateTimeFieldWidget(
+                labelText: 'Data da inseminação',
+                initialValue: _data,
+                onChanged: (selectedDate) {
+                  setState(() {
+                    _data = selectedDate;
+                  });
+                  _cadastrarInseminacaoController.setData(selectedDate);
+                },
+              ),
+              if (loteSelecionado != null && loteAnimaisDisponiveis.isNotEmpty)
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 20),
+                    Text("Selecionar Animais do Lote", style: TextStyle(fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 10),
+                    ...loteAnimaisDisponiveis.map((lote) {
+                      return ListTile(
+                        title: Text('${lote.animal?.numeroBrinco ?? 'Sem nome'}'),
+                        trailing: IconButton(
+                          icon: Icon(Icons.add),
+                          onPressed: () {
+                            if (baiaInseminacaoSelecionado == null) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('Selecione uma baia antes de adicionar o animal.')),
+                              );
+                              return;
+                            }
+        
+                            final jaExiste = _cadastrarInseminacaoController.inseminacoes.any(
+                              (i) => i.porcaInseminada?.id == lote.animal?.id,
+                            );
+        
+                            final baiaJaUsada = _cadastrarInseminacaoController.inseminacoes.any(
+                              (i) => i.baia?.id == baiaInseminacaoSelecionado?.id,
+                            );
+        
+                            if (jaExiste) {
+                              // já existe a porca na lista
+                              return;
+                            }
+        
+                            if (baiaJaUsada) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('Esta baia já foi usada para outro animal.')),
+                              );
+                              return;
+                            }
+        
+                            setState(() {
+                              _cadastrarInseminacaoController.inseminacoes.add(InseminacaoModel(
+                                id: null,
+                                porcoDoador: porcoSelecionado,
+                                porcaInseminada: lote.animal,
+                                loteAnimal: lote,
+                                baia: baiaInseminacaoSelecionado,
+                                createdBy: null,
+                                createdAt: null,
+                                updatedBy: null,
+                                updatedAt: null,
+                              ));
+        
+                              // Limpa a baia após o uso
+                              baiaInseminacaoSelecionado = null;
+                              _searchControllerBaiaInseminacao.clear();
+                            });
+                          },
+                        ),
+                      );
+                    }).toList(),
+                  ],
+                ),
+              const SizedBox(height: 20),
+              CustomDataTable(
+                title: 'Animais selecionados Para inseminar',
+                columns: const [
+                  DataColumn(
+                    label: Text(
+                      'Matriz',
+                      style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  DataColumn(
+                    label: Text(
+                      'Porco',
+                      style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  DataColumn(
+                    label: Text(
+                      'Baia',
+                      style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  DataColumn(label: Text(
+                      'Remover',
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
                   ),
                 ],
-              ),
-            ),
-          ),
-      ],
-    );
-  }
-
-  Widget _buildMovimentarPara() {
-    return Column(
-      children: [
-        SizedBox(height: 20),
-        SizedBox(
-          width: double.infinity, // Define a largura do botão para ocupar toda a largura disponível
-          height: 50, // Define a altura do botão
-          child: ElevatedButton(
-            onPressed: () {
-              setState(() {
-                showMovimentation = !showMovimentation; // Alterna a exibição do card de detalhes
-              });
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.orange, // Define a cor de fundo do botão
-              foregroundColor: Colors.white, // Define a cor do texto do botão
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
-            ),
-            child:
-                Text('Movimentar Porca Para Inseminar'),
-          ),
-        ),
-        if (showMovimentation) // Exibe o card de detalhes somente se showMovimentation for verdadeiro
-          Card(
-            color: Colors.white,
-            elevation: 4,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildSelecionarGranja(),
-                  _buildSelecionarBaia(),
-                ],
-              ),
-            ),
-          ),
-      ],
-    );
-  }
-
-  Widget _buildSelecionarPorco() {
-    return SizedBox(
-      height: 80,
-      child: Autocomplete<String>(
-        optionsBuilder: (TextEditingValue textEditingValue) {
-          return porcos.where((String option) {
-            return option.toLowerCase().contains(textEditingValue.text.toLowerCase());
-          });
-        },
-        onSelected: (String selection) {
-          setState(() {
-            selectedPorcos = selection;
-          });
-        },
-        fieldViewBuilder: (BuildContext context,
-            TextEditingController textEditingController,
-            FocusNode focusNode,
-            VoidCallback onFieldSubmitted) {
-          return TextFormField(
-            controller: textEditingController,
-            focusNode: focusNode,
-            onFieldSubmitted: (String value) {
-              onFieldSubmitted();
-            },
-            decoration: InputDecoration(
-              labelText: 'Selecionar Porco',
-              border: OutlineInputBorder(),
-            ),
-          );
-        },
-        optionsViewBuilder: (BuildContext context,
-            AutocompleteOnSelected<String> onSelected,
-            Iterable<String> options) {
-          return Align(
-            alignment: Alignment.topLeft,
-            child: Material(
-              elevation: 4.0,
-              child: SizedBox(
-                height: 200.0,
-                child: ListView.builder(
-                  padding: EdgeInsets.all(8.0),
-                  itemCount: options.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    final String option = options.elementAt(index);
-                    return GestureDetector(
-                      onTap: () {
-                        onSelected(option);
-                      },
-                      child: ListTile(
-                        title: Text(option),
-                      ),
+                data: _cadastrarInseminacaoController.inseminacoes,
+                generateRows: (inseminacoes) {
+                  return inseminacoes.map((inseminacao) {
+                    return DataRow(
+                      cells: [
+                        DataCell(Text(inseminacao.porcaInseminada!.numeroBrinco!)),
+                        DataCell(Text(inseminacao.porcoDoador?.numeroBrinco ?? 'Não informado')),
+                        DataCell(Text(inseminacao.baia!.numero!)),
+                        DataCell(
+                          ElevatedButton.icon(
+                            onPressed: () {
+                              setState(() {                                      
+                                inseminacoes.remove(inseminacao);
+                              });
+                            },
+                            icon: Icon(Icons.delete, color: Colors.white),
+                            label: Text(
+                              '-',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.red,
+                            ),
+                          ),
+                        ),
+                      ],
                     );
-                  },
-                ),
+                  }).toList();
+                },
               ),
-            ),
-          );
-        },
-      ),
-    );
-  }
-
-  Widget _buildSelecionarPorca() {
-    return Padding(
-      padding: const EdgeInsets.only(
-          top: 15.0), // Adicionando um padding top de 16.0
-      child: SizedBox(
-        height: 80,
-        child: Autocomplete<String>(
-          optionsBuilder: (TextEditingValue textEditingValue) {
-            return porcas.where((String option) {
-              return option.toLowerCase().contains(
-                    textEditingValue.text.toLowerCase(),
-                  );
-            });
-          },
-          onSelected: (String selection) {
-            setState(() {
-              selectedPorcas = selection;
-            });
-          },
-          fieldViewBuilder: (BuildContext context,
-              TextEditingController textEditingController,
-              FocusNode focusNode,
-              VoidCallback onFieldSubmitted) {
-            return TextFormField(
-              controller: textEditingController,
-              focusNode: focusNode,
-              onFieldSubmitted: (String value) {
-                onFieldSubmitted();
-              },
-              decoration: InputDecoration(
-                labelText: 'Selecionar Porca',
-                border: OutlineInputBorder(),
-              ),
-              validator: (String? value) {
-                if (value == null || value.isEmpty) {
-                  return 'Campo obrigatório';
+              const Spacer(),
+              CustomSalvarCadastroButtonComponent(
+              buttonText: 'Salvar',
+              onPressed: () async {
+                if (_formKey.currentState!.validate()) {
+                  _cadastrarInseminacaoController
+                      .cadastrarInseminacoes(context)
+                      .then((resultado) {
+                    if (resultado) {
+                      Navigator.pop(context);
+                      Navigator.pushReplacementNamed(context, '/selecionarInseminacao');
+                    }
+                  });
                 }
-                return null;
               },
-            );
-          },
-          optionsViewBuilder: (BuildContext context,
-              AutocompleteOnSelected<String> onSelected,
-              Iterable<String> options) {
-            return Align(
-              alignment: Alignment.topLeft,
-              child: Material(
-                elevation: 4.0,
-                child: SizedBox(
-                  height: 200.0,
-                  child: ListView.builder(
-                    padding: EdgeInsets.all(8.0),
-                    itemCount: options.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      final String option = options.elementAt(index);
-                      return GestureDetector(
-                        onTap: () {
-                          onSelected(option);
-                        },
-                        child: ListTile(
-                          title: Text(option),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ),
-            );
-          },
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSalvarButton() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        SizedBox(height: 20),
-        CustomSalvarCadastroButtonComponent(
-          buttonText: 'Salvar Inseminação',
-          rotaTelaAposSalvar: 'selecionarInseminacao',
-          onPressed: () {
-            if (_formKey.currentState!.validate()) {
-              // Execute a ação de salvar
-            }
-          },
-        ),
-      ],
-    );
-  }
-
-  Widget _buildSelecionarGranja() {
-    return SizedBox(
-      height: 80,
-      child: Autocomplete<String>(
-        optionsBuilder: (TextEditingValue textEditingValue) {
-          return granjas.where((String option) {
-            return option.toLowerCase().contains(textEditingValue.text.toLowerCase());
-          });
-        },
-        onSelected: (String selection) {
-          setState(() {
-            selectedGranja = selection;
-          });
-        },
-        fieldViewBuilder: (BuildContext context,
-            TextEditingController textEditingController,
-            FocusNode focusNode,
-            VoidCallback onFieldSubmitted) {
-          return TextFormField(
-            controller: textEditingController,
-            focusNode: focusNode,
-            onFieldSubmitted: (String value) {
-              onFieldSubmitted();
-            },
-            decoration: InputDecoration(
-              labelText: 'Selecionar Granja',
-              border: OutlineInputBorder(),
-            )
-          );
-        },
-        optionsViewBuilder: (BuildContext context,
-            AutocompleteOnSelected<String> onSelected,
-            Iterable<String> options) {
-          return Align(
-            alignment: Alignment.topLeft,
-            child: Material(
-              elevation: 4.0,
-              child: SizedBox(
-                height: 200.0,
-                child: ListView.builder(
-                  padding: EdgeInsets.all(8.0),
-                  itemCount: options.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    final String option = options.elementAt(index);
-                    return GestureDetector(
-                      onTap: () {
-                        onSelected(option);
-                      },
-                      child: ListTile(
-                        title: Text(option),
-                      ),
-                    );
-                  },
-                ),
-              ),
             ),
-          );
-        },
+            ]
+          ),
+        ),
       ),
     );
   }
 
-  Widget _buildSelecionarBaia() {
-    return Padding(
-      padding: const EdgeInsets.only(
-          top: 15.0), // Adicionando um padding top de 16.0
-      child: SizedBox(
-        height: 80,
-        child: Autocomplete<String>(
-          optionsBuilder: (TextEditingValue textEditingValue) {
-            return baia.where((String option) {
-              return option.toLowerCase().contains(
-                    textEditingValue.text.toLowerCase(),
-                  );
-            });
-          },
-          onSelected: (String selection) {
-            setState(() {
-              selectedBaia = selection;
-            });
-          },
-          fieldViewBuilder: (BuildContext context,
-              TextEditingController textEditingController,
-              FocusNode focusNode,
-              VoidCallback onFieldSubmitted) {
-            return TextFormField(
-              controller: textEditingController,
-              focusNode: focusNode,
-              onFieldSubmitted: (String value) {
-                onFieldSubmitted();
-              },
-              decoration: InputDecoration(
-                labelText: 'Selecionar Baia',
-                border: OutlineInputBorder(),
-              ),
-            );
-          },
-          optionsViewBuilder: (BuildContext context,
-              AutocompleteOnSelected<String> onSelected,
-              Iterable<String> options) {
-            return Align(
-              alignment: Alignment.topLeft,
-              child: Material(
-                elevation: 4.0,
-                child: SizedBox(
-                  height: 200.0,
-                  child: ListView.builder(
-                    padding: EdgeInsets.all(8.0),
-                    itemCount: options.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      final String option = options.elementAt(index);
-                      return GestureDetector(
-                        onTap: () {
-                          onSelected(option);
-                        },
-                        child: ListTile(
-                          title: Text(option),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ),
-            );
-          },
+  Widget _buildLoteInfoCard(LoteModel lote) {
+    return Card(
+      elevation: 4,
+      margin: const EdgeInsets.only(top: 16.0),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Informações do Lote', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            Divider(),
+            Text('Data de Inicio: ${lote.dataInicio != null ? DateFormat('dd/MM/yyyy HH:mm').format(lote.dataInicio!) : "Não informado"}'),
+          ],
         ),
       ),
     );

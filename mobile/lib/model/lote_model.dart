@@ -7,6 +7,7 @@ class LoteModel {
   final String? numeroLote;
   final String? descricao;
   final DateTime? data;
+  final DateTime? dataInicio;
   final List<LoteAnimalModel>? loteAnimais;
 
   LoteModel({
@@ -15,6 +16,7 @@ class LoteModel {
     this.numeroLote,
     this.descricao,
     this.data,
+    this.dataInicio,
     this.loteAnimais
   });
 
@@ -24,6 +26,7 @@ class LoteModel {
       fazenda: json['fazenda'] != null ? FazendaModel.fromJson(json['fazenda']) : null,
       numeroLote: json['numero_lote'],
       descricao: json['descricao'],
+      dataInicio: json['data_inicio'] != null ? DateTime.parse(json['data_inicio']) : null,
       data: json['data'] != null ? DateTime.parse(json['data']) : null,
       loteAnimais: (json['loteAnimais'] as List?)?.map((item) => LoteAnimalModel.fromJson(item)).toList(),
     );
@@ -36,12 +39,13 @@ class LoteModel {
       'numero_lote': numeroLote,
       'descricao': descricao,
       'data': data?.toIso8601String(),
+      'data_inicio': dataInicio?.toIso8601String(),
       'lote_animais': loteAnimais?.map((loteAnimal) => loteAnimal.toJson()).toList(),
     };
   }
 
   @override
   String toString() {
-    return 'id: $id, fazenda: $fazenda, numero: $numeroLote, descricao: $descricao, data: $data, loteAnimais: $loteAnimais';
+    return 'id: $id, fazenda: $fazenda, numero: $numeroLote, descricao: $descricao, data: $data, loteAnimais: $loteAnimais, dataInicio: $dataInicio';
   }
 }

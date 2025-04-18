@@ -13,4 +13,6 @@ abstract class LoteRepository {
 
   Future<LoteModel> getById(int loteId);
 
+  Future<List<LoteModel>> getListAtivos(int fazendaId);
+
 }

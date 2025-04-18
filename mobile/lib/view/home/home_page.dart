@@ -131,7 +131,7 @@ class HomePageState extends State<HomePage> {
                 SizedBox(height: 20,),
                 CustomHomeCard(
                   descricao: 'Inseminação',
-                  icone: Icons.clean_hands_rounded,
+                  icone: Icons.vaccines,
                   onTapCallback: () {
                     Navigator.of(context).pushNamed('/selecionarInseminacao');
                   },

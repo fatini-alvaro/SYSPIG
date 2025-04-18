@@ -27,4 +27,7 @@ abstract class AnimalRepository {
   Future<bool> deleteNascimento(int animald);
 
   Future<bool> updateStatusNascimento(int animald, StatusAnimal statusId);
+
+  Future<List<AnimalModel>> getListPorcos(int fazendaId);
+
 }

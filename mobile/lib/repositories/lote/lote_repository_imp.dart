@@ -25,6 +25,18 @@ class LoteRepositoryImp implements LoteRepository {
   }
 
   @override
+  Future<List<LoteModel>> getListAtivos(int fazendaId) async {    
+    try {
+      var response = await _apiClient.dio.get('/lotes/ativos/$fazendaId');
+      return (response.data as List).map((e) => LoteModel.fromJson(e)).toList();
+    } catch (e) {
+      String errorMessage = ErrorHandlerUtil.handleDioError(e, 'Erro ao obter lista de lotes ativos');
+      Logger().e('Erro ao obter lista de lotes ativos (lista - lotes ativos): $e');
+      throw Exception(errorMessage);
+    }
+  }
+
+  @override
   Future<LoteModel> getById(int loteId) async {
     try {
       var response = await _apiClient.dio.get('/lotes/lote/$loteId');

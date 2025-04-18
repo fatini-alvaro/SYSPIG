@@ -21,6 +21,15 @@ export class Lote{
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', nullable: true })
   data: Date;
 
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', nullable: true })
+  data_inicio: Date;
+
+  @Column({ type: 'timestamp', nullable: true })
+  data_fim: Date;
+
+  @Column({ type: 'boolean', default: false})
+  encerrado: boolean;
+
   @ManyToOne(() => Usuario, { eager: true, nullable: true })
   @JoinColumn({ name: 'created_by', referencedColumnName: 'id' }) 
   createdBy: Usuario;

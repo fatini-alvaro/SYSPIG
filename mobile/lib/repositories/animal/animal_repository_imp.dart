@@ -27,6 +27,18 @@ class AnimalRepositoryImp implements AnimalRepository {
   }
 
   @override
+  Future<List<AnimalModel>> getListPorcos(int fazendaId) async {
+    try {
+      var response = await _apiClient.dio.get('/animais/porcos/$fazendaId');
+      return (response.data as List).map((e) => AnimalModel.fromJson(e)).toList();
+    } catch (e) {
+      String errorMessage = ErrorHandlerUtil.handleDioError(e, 'Erro ao obter lista de porcos');
+      Logger().e('Erro ao obter lista de porcos (lista - Porcos): $e');
+      throw Exception(errorMessage);
+    }
+  }
+
+  @override
   Future<List<AnimalModel>> getListLiveAndDie(int fazendaId) async {
     try {
       var response = await _apiClient.dio.get('/animais/liveanddie/$fazendaId');
