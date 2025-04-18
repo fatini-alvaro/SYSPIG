@@ -74,8 +74,22 @@ export class LoteService {
       const newAnimalIds = loteData.lote_animais.map((la) => la.animal_id);
 
       // Animais a serem removidos
+      // Animais a serem removidos
       const animalsToRemove = existingLoteAnimais.filter((la) => !newAnimalIds.includes(la.animal.id));
       if (animalsToRemove.length > 0) {
+        for (const loteAnimal of animalsToRemove) {
+          // Remove o vínculo do lote no próprio animal
+          await transactionalEntityManager.update(
+            Animal,
+            { id: loteAnimal.animal.id },
+            {
+              loteAtual: null,
+              updated_at: new Date()
+            }
+          );
+        }
+
+        // Remove a associação LoteAnimal
         await transactionalEntityManager.remove(LoteAnimal, animalsToRemove);
       }
 
@@ -89,6 +103,15 @@ export class LoteService {
           newLoteAnimal.animal = animal;
           newLoteAnimal.createdBy = createdBy ?? lote.createdBy;
           await transactionalEntityManager.save(newLoteAnimal);
+
+          await transactionalEntityManager.update(
+            Animal,
+            { id: animal.id },
+            { 
+              loteAtual: { id: lote.id },
+              updated_at: new Date()
+            }
+          );
         }
       }
 
@@ -102,13 +125,32 @@ export class LoteService {
     }
   
     await AppDataSource.transaction(async (transactionalEntityManager) => {
+      // Buscar todos os animais associados ao lote
+      const loteAnimais = await transactionalEntityManager.find(LoteAnimal, {
+        where: { lote: { id: lote_id } },
+        relations: ['animal'],
+      });
+  
+      // Limpar o campo loteAtual de cada animal associado
+      for (const loteAnimal of loteAnimais) {
+        await transactionalEntityManager.update(
+          Animal,
+          { id: loteAnimal.animal.id },
+          {
+            loteAtual: null,
+            updated_at: new Date()
+          }
+        );
+      }
+  
       // Deletar registros de lote_animal relacionados ao lote
-      await transactionalEntityManager.delete(LoteAnimal, { lote: lote_id });
+      await transactionalEntityManager.delete(LoteAnimal, { lote: { id: lote_id } });
   
       // Agora, deletar o lote
-      await transactionalEntityManager.delete(Lote, lote_id);
+      await transactionalEntityManager.delete(Lote, { id: lote_id });
     });
-  }  
+  }
+  
 
   async getById(lote_id: number) {
     return await loteRepository.findOne({

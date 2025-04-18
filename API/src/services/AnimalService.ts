@@ -9,6 +9,7 @@ import { IsNull, Not } from "typeorm";
 import { OcupacaoAnimal } from "../entities/OcupacaoAnimal";
 import { StatusOcupacaoAnimal } from "../constants/ocupacaoAnimalConstants";
 import { OcupacaoService } from "./OcupacaoService";
+import { isNull } from "util";
 
 interface AnimalCreateOrUpdateData {
   numero_brinco: string;
@@ -43,6 +44,22 @@ export class AnimalService {
       order: { id: 'ASC' }
     });
   }
+
+  async listDisponivelParaLote(fazenda_id: number) {
+    return await animalRepository.find({ 
+      where: { 
+        fazenda: { id: fazenda_id },
+        status: StatusAnimal.VIVO,
+        sexo: SexoAnimal.FEMEA,
+        numero_brinco: Not(IsNull()),
+        loteAtual: IsNull(),
+        nascimento: false,
+      },
+      select: ['id', 'numero_brinco'],
+      order: { id: 'ASC' }
+    });
+  }
+
 
   async listNascimentos(ocupacao_id: number) {
     return await animalRepository.find({ 

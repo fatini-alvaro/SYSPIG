@@ -382,6 +382,29 @@ class CadastrarInseminacaoPageState extends State<CadastrarInseminacaoPage> {
                           buttonText: 'Salvar',
                           onPressed: () async {
                             if (_formKey.currentState!.validate()) {
+                              if (loteSelecionado == null) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text('Selecione um lote')),
+                                );
+                                return;
+                              }
+
+                              if (_data == null) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text('Selecione a data da inseminação')),
+                                );
+                                return;
+                              }
+
+                              final dataLote = loteSelecionado?.data ?? DateTime.now(); // ou outro campo de data do lote
+
+                              if (_data!.isBefore(dataLote)) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text('A data da inseminação não pode ser anterior à data do lote (${DateFormat('dd/MM/yyyy').format(dataLote)}).')),
+                                );
+                                return;
+                              }
+
                               _cadastrarInseminacaoController
                                   .cadastrarInseminacoes(context)
                                   .then((resultado) {

@@ -83,6 +83,7 @@ routes.post('/animais', animalController.createOrUpdate);
 routes.put('/animais/:animal_id', animalController.createOrUpdate);
 routes.delete('/animais/:animal_id', animalController.delete); 
 routes.get('/animais/:fazenda_id', animalController.list);
+routes.get('/animais/disponiveislote/:fazenda_id', animalController.listDisponivelParaLote);
 routes.get('/animais/porcos/:fazenda_id', animalController.listPorcos);
 routes.get('/animais/liveanddie/:fazenda_id', animalController.listLiveAndDie);
 routes.get('/animais/animal/:animal_id', animalController.getById);

@@ -339,7 +339,7 @@ export class OcupacaoService {
     });
   }
 
-  private async tratarOcupacaoAtual(
+  async tratarOcupacaoAtual(
       manager: EntityManager,
       animalId: number,
       usuario: Usuario
@@ -383,7 +383,7 @@ export class OcupacaoService {
     return ocupacaoAtual;
   }
 
-  private async processarBaiaDestino(
+  async processarBaiaDestino(
     manager: EntityManager,
     fazenda: Fazenda,
     baiaDestinoId: number,
@@ -419,7 +419,7 @@ export class OcupacaoService {
     return ocupacaoDestino;
   }
 
-  private async criarNovaOcupacaoAnimal(
+  async criarNovaOcupacaoAnimal(
     manager: EntityManager,
     ocupacao: Ocupacao,
     animal: Animal,
@@ -436,7 +436,7 @@ export class OcupacaoService {
     return await manager.save(novaOcupacaoAnimal);
   }
 
-  private async registrarMovimentacao(
+  async registrarMovimentacao(
     manager: EntityManager,
     fazenda: Fazenda,
     animal: Animal,

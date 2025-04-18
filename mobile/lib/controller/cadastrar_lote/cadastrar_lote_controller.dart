@@ -82,7 +82,7 @@ class CadastrarLoteController with ChangeNotifier {
     return await AsyncFetcher.fetch(
       action: () async {
         var idFazenda = await PrefsService.getFazendaId();
-        return await _animalRepository.getList(idFazenda!);
+        return await _animalRepository.getListDisponivelParaLote(idFazenda!);
       },
       errorMessage: 'Erro ao buscar os animais do repositório',
     ) ?? [];

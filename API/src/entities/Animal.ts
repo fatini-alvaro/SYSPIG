@@ -6,6 +6,7 @@ import { OcupacaoAnimal } from "./OcupacaoAnimal";
 import { ocupacaoAnimalRepository } from "../repositories/ocupacaoAnimalRepository";
 import { StatusOcupacaoAnimal } from "../constants/ocupacaoAnimalConstants";
 import { StatusOcupacao } from "../constants/ocupacaoConstants";
+import { Lote } from "./Lote";
 
 @Entity('animal')
 export class Animal {
@@ -30,6 +31,13 @@ export class Animal {
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', nullable: true })
   data_nascimento: Date;
+
+  @Column({ type: 'timestamp', nullable: true })
+  data_ultima_inseminacao: Date;
+
+  @ManyToOne(() => Lote, { nullable: true })
+  @JoinColumn({ name: 'lote_atual_id' })
+  loteAtual: Lote | null;
 
   @Column({ type: 'boolean', default: false})
   nascimento: boolean;
