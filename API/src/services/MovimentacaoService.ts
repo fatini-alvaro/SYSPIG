@@ -7,9 +7,7 @@ export class MovimentacaoService {
     async listByFazenda(fazenda_id: number) {
         return await this.movimentacaoRepository.find({
             where: {
-                animal: {
-                    fazenda: { id: fazenda_id }
-                }
+                fazenda: { id: fazenda_id }
             },
             relations: ['animal', 'baiaOrigem', 'baiaDestino', 'usuario'],
             order: { dataMovimentacao: "DESC" }

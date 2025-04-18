@@ -152,6 +152,7 @@ export class OcupacaoService {
       
         await this.registrarMovimentacao(
           transactionalEntityManager,
+          fazenda,
           animal,
           null,
           ocupacao.baia,
@@ -299,6 +300,7 @@ export class OcupacaoService {
           // Registrar movimentação
           await this.registrarMovimentacao(
             transactionalEntityManager,
+            fazenda,
             animal!,
             ocupacaoAtual?.ocupacao?.baia,
             baiaDestino!,
@@ -436,6 +438,7 @@ export class OcupacaoService {
 
   private async registrarMovimentacao(
     manager: EntityManager,
+    fazenda: Fazenda,
     animal: Animal,
     baiaOrigem: Baia | null | undefined,
     baiaDestino: Baia,
@@ -469,6 +472,7 @@ export class OcupacaoService {
     }
 
     const movimentacao = manager.create(Movimentacao, {
+        fazenda: fazenda,
         animal,
         baiaOrigem: baiaOrigem || null,
         baiaDestino,

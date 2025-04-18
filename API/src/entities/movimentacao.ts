@@ -4,11 +4,16 @@ import { Animal } from "./Animal";
 import { Baia } from "./Baia";
 import { Usuario } from "./Usuario";
 import { StatusMovimentacao, TipoMovimentacao } from "../constants/movimentacaoConstants";
+import { Fazenda } from "./Fazenda";
 
 @Entity()
 export class Movimentacao {
   @PrimaryGeneratedColumn()
   id: number;
+
+  @ManyToOne(() => Fazenda, { eager: true })
+  @JoinColumn({ name: 'fazenda_id', referencedColumnName: 'id' })
+  fazenda: Fazenda;
 
   @ManyToOne(() => Animal)
   @JoinColumn({ name: 'animal_id' })

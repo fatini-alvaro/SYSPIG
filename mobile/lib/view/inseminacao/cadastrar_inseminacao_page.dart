@@ -77,316 +77,328 @@ class CadastrarInseminacaoPageState extends State<CadastrarInseminacaoPage> {
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
-          child: Column(
-            children: [
-              const SizedBox(height: 20),
-              CustomTextFormFieldWidget(
-                controller: _searchControllerLote,
-                label: 'Selecionar Lote',
-                hintText: 'Lotes',
-                validator: (value) {
-                  // add email validation
-                  if (value == null || value.isEmpty) {
-                    return 'Informe o lote';
-                  }
-                  return null;
-                },
-                suffixIcon: _searchControllerLote.text.isNotEmpty
-                    ? IconButton(
-                        icon: Icon(Icons.clear),
-                        onPressed: () {
-                          setState(() {
-                            _searchControllerLote.clear();
-                            loteSelecionado = null;
-                            _isLoteSearchFocused = false;
-                            loteAnimaisDisponiveis = [];
-                            loteAnimaisSelecionados.clear();
-                            _cadastrarInseminacaoController.inseminacoes.clear();
-                          });
-                        },
-                      )
-                    : Icon(Icons.search),
-                onChanged: (value) {
-                  setState(() {});
-                },
-                onTap: () {
-                  setState(() {
-                    _isLoteSearchFocused = !_isLoteSearchFocused;
-                  });
-                },
-              ),
-              if (_isLoteSearchFocused)
-                SizedBox(
-                  height: 200,
-                  child: ListView(
-                    children: lotes
-                        .where((lote) =>
-                            lote.numeroLote!.toLowerCase().contains(_searchControllerLote.text.toLowerCase()))
-                        .map((lote) {
-                      return ListTile(
-                        title: Text('${lote.numeroLote}'),
-                        onTap: () {
-                          setState(() {
-                            loteSelecionado = lote;
-                            _searchControllerLote.text = lote.numeroLote!;
-                            _isLoteSearchFocused = false;
-                            loteAnimaisDisponiveis = lote.loteAnimais ?? [];
-                            loteAnimaisSelecionados.clear(); // limpa os já selecionados se mudar o lote
-                          });
-                          _cadastrarInseminacaoController.setLote(loteSelecionado);
-                        },
-                      );
-                    }).toList(),
-                  ),
-                ),
-              if (loteSelecionado != null)
-              _buildLoteInfoCard(loteSelecionado!),
-              const SizedBox(height: 20),
-              CustomTextFormFieldWidget(
-                controller: _searchControllerPorco,
-                label: 'Selecionar Porco',
-                hintText: 'Porcos',
-                suffixIcon: _searchControllerPorco.text.isNotEmpty
-                    ? IconButton(
-                        icon: Icon(Icons.clear),
-                        onPressed: () {
-                          setState(() {
-                            _searchControllerPorco.clear();
-                            porcoSelecionado = null;
-                            _isPorcoSearchFocused = false;
-                          });
-                        },
-                      )
-                    : Icon(Icons.search),
-                onChanged: (value) {
-                  setState(() {});
-                },
-                onTap: () {
-                  setState(() {
-                    _isPorcoSearchFocused = !_isPorcoSearchFocused;
-                  });
-                },
-              ),
-              const SizedBox(height: 20),                
-              if (_isPorcoSearchFocused)
-                SizedBox(
-                  height: 200,
-                  child: ListView(
-                    children: porcos
-                        .where((porco) =>
-                            porco.numeroBrinco!.toLowerCase().contains(_searchControllerPorco.text.toLowerCase()))
-                        .map((porco) {
-                      return ListTile(
-                        title: Text('${porco.numeroBrinco}'),
-                        onTap: () {
-                          setState(() {
-                            porcoSelecionado = porco;
-                            _searchControllerPorco.text = porco.numeroBrinco!;
-                            _isPorcoSearchFocused = false;
-                          });
-                          _cadastrarInseminacaoController.setPorco(porcoSelecionado);
-                        },
-                      );
-                    }).toList(),
-                  ),
-                ),
-              CustomTextFormFieldWidget(
-                controller: _searchControllerBaiaInseminacao,
-                label: 'Selecionar Baia de Inseminação',
-                hintText: 'Baias',
-                suffixIcon: _searchControllerBaiaInseminacao.text.isNotEmpty
-                    ? IconButton(
-                        icon: Icon(Icons.clear),
-                        onPressed: () {
-                          setState(() {
-                            _searchControllerBaiaInseminacao.clear();
-                            baiaInseminacaoSelecionado = null;
-                            _isBaiaInseminacaoSearchFocused = false;
-                          });
-                        },
-                      )
-                    : Icon(Icons.search),
-                onChanged: (value) {
-                  setState(() {});
-                },
-                onTap: () {
-                  setState(() {
-                    _isBaiaInseminacaoSearchFocused = !_isBaiaInseminacaoSearchFocused;
-                  });
-                },
-              ),
-              const SizedBox(height: 20),                
-              if (_isBaiaInseminacaoSearchFocused)
-                SizedBox(
-                  height: 200,
-                  child: ListView(
-                    children: baiasInseminacao
-                      .where((baia) =>
-                        baia.numero!.toLowerCase().contains(_searchControllerBaiaInseminacao.text.toLowerCase()) &&
-                        !_cadastrarInseminacaoController.inseminacoes.any((inseminacao) => inseminacao.baia?.id == baia.id))
-                      .map((baia) {
-                      return ListTile(
-                        title: Text('${baia.numero}'),
-                        onTap: () {
-                          setState(() {
-                            baiaInseminacaoSelecionado = baia;
-                            _searchControllerBaiaInseminacao.text = baia.numero!;
-                            _isBaiaInseminacaoSearchFocused = false;
-                          });
-                          _cadastrarInseminacaoController.setBaiaInseminacao(baiaInseminacaoSelecionado);
-                        },
-                      );
-                    }).toList(),
-                  ),
-                ),
-              CustomDateTimeFieldWidget(
-                labelText: 'Data da inseminação',
-                initialValue: _data,
-                onChanged: (selectedDate) {
-                  setState(() {
-                    _data = selectedDate;
-                  });
-                  _cadastrarInseminacaoController.setData(selectedDate);
-                },
-              ),
-              if (loteSelecionado != null && loteAnimaisDisponiveis.isNotEmpty)
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 20),
-                    Text("Selecionar Animais do Lote", style: TextStyle(fontWeight: FontWeight.bold)),
-                    const SizedBox(height: 10),
-                    ...loteAnimaisDisponiveis.map((lote) {
-                      return ListTile(
-                        title: Text('${lote.animal?.numeroBrinco ?? 'Sem nome'}'),
-                        trailing: IconButton(
-                          icon: Icon(Icons.add),
-                          onPressed: () {
-                            if (baiaInseminacaoSelecionado == null) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text('Selecione uma baia antes de adicionar o animal.')),
-                              );
-                              return;
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              return SingleChildScrollView(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                  child: IntrinsicHeight(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 20),
+                        CustomTextFormFieldWidget(
+                          controller: _searchControllerLote,
+                          label: 'Selecionar Lote',
+                          hintText: 'Lotes',
+                          validator: (value) {
+                            // add email validation
+                            if (value == null || value.isEmpty) {
+                              return 'Informe o lote';
                             }
-        
-                            final jaExiste = _cadastrarInseminacaoController.inseminacoes.any(
-                              (i) => i.porcaInseminada?.id == lote.animal?.id,
-                            );
-        
-                            final baiaJaUsada = _cadastrarInseminacaoController.inseminacoes.any(
-                              (i) => i.baia?.id == baiaInseminacaoSelecionado?.id,
-                            );
-        
-                            if (jaExiste) {
-                              // já existe a porca na lista
-                              return;
-                            }
-        
-                            if (baiaJaUsada) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text('Esta baia já foi usada para outro animal.')),
-                              );
-                              return;
-                            }
-        
+                            return null;
+                          },
+                          suffixIcon: _searchControllerLote.text.isNotEmpty
+                              ? IconButton(
+                                  icon: Icon(Icons.clear),
+                                  onPressed: () {
+                                    setState(() {
+                                      _searchControllerLote.clear();
+                                      loteSelecionado = null;
+                                      _isLoteSearchFocused = false;
+                                      loteAnimaisDisponiveis = [];
+                                      loteAnimaisSelecionados.clear();
+                                      _cadastrarInseminacaoController.inseminacoes.clear();
+                                    });
+                                  },
+                                )
+                              : Icon(Icons.search),
+                          onChanged: (value) {
+                            setState(() {});
+                          },
+                          onTap: () {
                             setState(() {
-                              _cadastrarInseminacaoController.inseminacoes.add(InseminacaoModel(
-                                id: null,
-                                porcoDoador: porcoSelecionado,
-                                porcaInseminada: lote.animal,
-                                loteAnimal: lote,
-                                baia: baiaInseminacaoSelecionado,
-                                createdBy: null,
-                                createdAt: null,
-                                updatedBy: null,
-                                updatedAt: null,
-                              ));
-        
-                              // Limpa a baia após o uso
-                              baiaInseminacaoSelecionado = null;
-                              _searchControllerBaiaInseminacao.clear();
+                              _isLoteSearchFocused = !_isLoteSearchFocused;
                             });
                           },
                         ),
-                      );
-                    }).toList(),
-                  ],
-                ),
-              const SizedBox(height: 20),
-              CustomDataTable(
-                title: 'Animais selecionados Para inseminar',
-                columns: const [
-                  DataColumn(
-                    label: Text(
-                      'Matriz',
-                      style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  DataColumn(
-                    label: Text(
-                      'Porco',
-                      style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  DataColumn(
-                    label: Text(
-                      'Baia',
-                      style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  DataColumn(label: Text(
-                      'Remover',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                ],
-                data: _cadastrarInseminacaoController.inseminacoes,
-                generateRows: (inseminacoes) {
-                  return inseminacoes.map((inseminacao) {
-                    return DataRow(
-                      cells: [
-                        DataCell(Text(inseminacao.porcaInseminada!.numeroBrinco!)),
-                        DataCell(Text(inseminacao.porcoDoador?.numeroBrinco ?? 'Não informado')),
-                        DataCell(Text(inseminacao.baia!.numero!)),
-                        DataCell(
-                          ElevatedButton.icon(
-                            onPressed: () {
-                              setState(() {                                      
-                                inseminacoes.remove(inseminacao);
-                              });
-                            },
-                            icon: Icon(Icons.delete, color: Colors.white),
-                            label: Text(
-                              '-',
-                              style: TextStyle(color: Colors.white),
-                            ),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.red,
+                        if (_isLoteSearchFocused)
+                          SizedBox(
+                            height: 200,
+                            child: ListView(
+                              children: lotes
+                                  .where((lote) =>
+                                      lote.numeroLote!.toLowerCase().contains(_searchControllerLote.text.toLowerCase()))
+                                  .map((lote) {
+                                return ListTile(
+                                  title: Text('${lote.numeroLote}'),
+                                  onTap: () {
+                                    setState(() {
+                                      loteSelecionado = lote;
+                                      _searchControllerLote.text = lote.numeroLote!;
+                                      _isLoteSearchFocused = false;
+                                      loteAnimaisDisponiveis = lote.loteAnimais ?? [];
+                                      loteAnimaisSelecionados.clear(); // limpa os já selecionados se mudar o lote
+                                    });
+                                    _cadastrarInseminacaoController.setLote(loteSelecionado);
+                                  },
+                                );
+                              }).toList(),
                             ),
                           ),
+                        if (loteSelecionado != null)
+                        _buildLoteInfoCard(loteSelecionado!),
+                        const SizedBox(height: 20),
+                        CustomTextFormFieldWidget(
+                          controller: _searchControllerPorco,
+                          label: 'Selecionar Porco',
+                          hintText: 'Porcos',
+                          suffixIcon: _searchControllerPorco.text.isNotEmpty
+                              ? IconButton(
+                                  icon: Icon(Icons.clear),
+                                  onPressed: () {
+                                    setState(() {
+                                      _searchControllerPorco.clear();
+                                      porcoSelecionado = null;
+                                      _isPorcoSearchFocused = false;
+                                    });
+                                  },
+                                )
+                              : Icon(Icons.search),
+                          onChanged: (value) {
+                            setState(() {});
+                          },
+                          onTap: () {
+                            setState(() {
+                              _isPorcoSearchFocused = !_isPorcoSearchFocused;
+                            });
+                          },
+                        ),
+                        const SizedBox(height: 20),                
+                        if (_isPorcoSearchFocused)
+                          SizedBox(
+                            height: 200,
+                            child: ListView(
+                              children: porcos
+                                  .where((porco) =>
+                                      porco.numeroBrinco!.toLowerCase().contains(_searchControllerPorco.text.toLowerCase()))
+                                  .map((porco) {
+                                return ListTile(
+                                  title: Text('${porco.numeroBrinco}'),
+                                  onTap: () {
+                                    setState(() {
+                                      porcoSelecionado = porco;
+                                      _searchControllerPorco.text = porco.numeroBrinco!;
+                                      _isPorcoSearchFocused = false;
+                                    });
+                                    _cadastrarInseminacaoController.setPorco(porcoSelecionado);
+                                  },
+                                );
+                              }).toList(),
+                            ),
+                          ),
+                        CustomTextFormFieldWidget(
+                          controller: _searchControllerBaiaInseminacao,
+                          label: 'Selecionar Baia de Inseminação',
+                          hintText: 'Baias',
+                          suffixIcon: _searchControllerBaiaInseminacao.text.isNotEmpty
+                              ? IconButton(
+                                  icon: Icon(Icons.clear),
+                                  onPressed: () {
+                                    setState(() {
+                                      _searchControllerBaiaInseminacao.clear();
+                                      baiaInseminacaoSelecionado = null;
+                                      _isBaiaInseminacaoSearchFocused = false;
+                                    });
+                                  },
+                                )
+                              : Icon(Icons.search),
+                          onChanged: (value) {
+                            setState(() {});
+                          },
+                          onTap: () {
+                            setState(() {
+                              _isBaiaInseminacaoSearchFocused = !_isBaiaInseminacaoSearchFocused;
+                            });
+                          },
+                        ),
+                        const SizedBox(height: 20),                
+                        if (_isBaiaInseminacaoSearchFocused)
+                          SizedBox(
+                            height: 200,
+                            child: ListView(
+                              children: baiasInseminacao
+                                .where((baia) =>
+                                  baia.numero!.toLowerCase().contains(_searchControllerBaiaInseminacao.text.toLowerCase()) &&
+                                  !_cadastrarInseminacaoController.inseminacoes.any((inseminacao) => inseminacao.baia?.id == baia.id))
+                                .map((baia) {
+                                return ListTile(
+                                  title: Text('${baia.numero}'),
+                                  onTap: () {
+                                    setState(() {
+                                      baiaInseminacaoSelecionado = baia;
+                                      _searchControllerBaiaInseminacao.text = baia.numero!;
+                                      _isBaiaInseminacaoSearchFocused = false;
+                                    });
+                                    _cadastrarInseminacaoController.setBaiaInseminacao(baiaInseminacaoSelecionado);
+                                  },
+                                );
+                              }).toList(),
+                            ),
+                          ),
+                        CustomDateTimeFieldWidget(
+                          labelText: 'Data da inseminação',
+                          initialValue: _data,
+                          onChanged: (selectedDate) {
+                            setState(() {
+                              _data = selectedDate;
+                            });
+                            _cadastrarInseminacaoController.setData(selectedDate);
+                          },
+                        ),
+                        if (loteSelecionado != null && loteAnimaisDisponiveis.isNotEmpty)
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const SizedBox(height: 20),
+                              Text("Selecionar Animais do Lote", style: TextStyle(fontWeight: FontWeight.bold)),
+                              const SizedBox(height: 10),
+                              ...loteAnimaisDisponiveis.map((lote) {
+                                return ListTile(
+                                  title: Text('${lote.animal?.numeroBrinco ?? 'Sem nome'}'),
+                                  trailing: IconButton(
+                                    icon: Icon(Icons.add),
+                                    onPressed: () {
+                                      if (baiaInseminacaoSelecionado == null) {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          SnackBar(content: Text('Selecione uma baia antes de adicionar o animal.')),
+                                        );
+                                        return;
+                                      }
+                  
+                                      final jaExiste = _cadastrarInseminacaoController.inseminacoes.any(
+                                        (i) => i.porcaInseminada?.id == lote.animal?.id,
+                                      );
+                  
+                                      final baiaJaUsada = _cadastrarInseminacaoController.inseminacoes.any(
+                                        (i) => i.baia?.id == baiaInseminacaoSelecionado?.id,
+                                      );
+                  
+                                      if (jaExiste) {
+                                        // já existe a porca na lista
+                                        return;
+                                      }
+                  
+                                      if (baiaJaUsada) {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          SnackBar(content: Text('Esta baia já foi usada para outro animal.')),
+                                        );
+                                        return;
+                                      }
+                  
+                                      setState(() {
+                                        _cadastrarInseminacaoController.inseminacoes.add(InseminacaoModel(
+                                          id: null,
+                                          porcoDoador: porcoSelecionado,
+                                          porcaInseminada: lote.animal,
+                                          loteAnimal: lote,
+                                          baia: baiaInseminacaoSelecionado,
+                                          createdBy: null,
+                                          createdAt: null,
+                                          updatedBy: null,
+                                          updatedAt: null,
+                                        ));
+                  
+                                        // Limpa a baia após o uso
+                                        baiaInseminacaoSelecionado = null;
+                                        _searchControllerBaiaInseminacao.clear();
+                                      });
+                                    },
+                                  ),
+                                );
+                              }).toList(),
+                            ],
+                          ),
+                        const SizedBox(height: 20),
+                        CustomDataTable(
+                          title: 'Animais selecionados Para inseminar',
+                          columns: const [
+                            DataColumn(
+                              label: Text(
+                                'Matriz',
+                                style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                            DataColumn(
+                              label: Text(
+                                'Porco',
+                                style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                            DataColumn(
+                              label: Text(
+                                'Baia',
+                                style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                            DataColumn(label: Text(
+                                'Remover',
+                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                          ],
+                          data: _cadastrarInseminacaoController.inseminacoes,
+                          generateRows: (inseminacoes) {
+                            return inseminacoes.map((inseminacao) {
+                              return DataRow(
+                                cells: [
+                                  DataCell(Text(inseminacao.porcaInseminada!.numeroBrinco!)),
+                                  DataCell(Text(inseminacao.porcoDoador?.numeroBrinco ?? 'Não informado')),
+                                  DataCell(Text(inseminacao.baia!.numero!)),
+                                  DataCell(
+                                    ElevatedButton.icon(
+                                      onPressed: () {
+                                        setState(() {                                      
+                                          inseminacoes.remove(inseminacao);
+                                        });
+                                      },
+                                      icon: Icon(Icons.delete, color: Colors.white),
+                                      label: Text(
+                                        '-',
+                                        style: TextStyle(color: Colors.white),
+                                      ),
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.red,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              );
+                            }).toList();
+                          },
+                        ),
+                        const Spacer(),
+                        CustomSalvarCadastroButtonComponent(
+                          buttonText: 'Salvar',
+                          onPressed: () async {
+                            if (_formKey.currentState!.validate()) {
+                              _cadastrarInseminacaoController
+                                  .cadastrarInseminacoes(context)
+                                  .then((resultado) {
+                                if (resultado) {
+                                  Navigator.pop(context);
+                                  Navigator.pushReplacementNamed(context, '/selecionarInseminacao');
+                                }
+                              });
+                            }
+                          },
                         ),
                       ],
-                    );
-                  }).toList();
-                },
-              ),
-              const Spacer(),
-              CustomSalvarCadastroButtonComponent(
-              buttonText: 'Salvar',
-              onPressed: () async {
-                if (_formKey.currentState!.validate()) {
-                  _cadastrarInseminacaoController
-                      .cadastrarInseminacoes(context)
-                      .then((resultado) {
-                    if (resultado) {
-                      Navigator.pop(context);
-                      Navigator.pushReplacementNamed(context, '/selecionarInseminacao');
-                    }
-                  });
-                }
-              },
-            ),
-            ]
+                    ),
+                  ),
+                ),
+              );
+            },
           ),
         ),
       ),

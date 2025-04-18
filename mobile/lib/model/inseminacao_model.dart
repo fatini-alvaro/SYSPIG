@@ -43,6 +43,17 @@ class InseminacaoModel {
     );
   }
 
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'porco_doador_id': porcoDoador?.id,
+      'porca_inseminada_id': porcaInseminada?.id,
+      'data': data?.toIso8601String(),
+      'lote_animal_id': loteAnimal?.id,
+      'baia_id': baia?.id,
+    };
+  }
+
   @override
   String toString() {
     return 'id: $id, porcoDoador: $porcoDoador, porcaInseminada: $porcaInseminada, data: $data, loteAnimal: $loteAnimal, baia: $baia, createdBy: $createdBy, createdAt: $createdAt, updatedBy: $updatedBy, updatedAt: $updatedAt';
