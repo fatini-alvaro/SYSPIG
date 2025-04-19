@@ -17,7 +17,7 @@ export class LoteAnimal {
   @JoinColumn({ name: 'animal_id', referencedColumnName: 'id' })
   animal: Animal;
 
-  @Column({ type: 'boolean', default: true})
+  @Column({ type: 'boolean', default: false})
   inseminado: boolean;
 
   @ManyToOne(() => Usuario, { eager: true, nullable: true })

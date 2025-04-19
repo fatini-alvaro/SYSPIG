@@ -12,6 +12,7 @@ import { OcupacaoService } from "./OcupacaoService";
 import { Inseminacao } from "../entities/Inseminacao";
 import { Fazenda } from "../entities/Fazenda";
 import { LoteAnimal } from "../entities/LoteAnimal";
+import { Lote } from "../entities/Lote";
 
 interface InseminacaoData {
   porca_inseminada_id: number;
@@ -156,17 +157,18 @@ export class InseminacaoService {
     usuario: Usuario,
   ): Promise<Inseminacao> {
 
+    const now = new Date();
+
     await manager.update(
       LoteAnimal,
       { 
-        id: data.lote_animal_id,
-        fazenda: { id: fazenda.id }
+        id: data.lote_animal_id
       },
       { 
         inseminado: true,
         updated_at: new Date()
       }
-    );
+    );    
 
     await manager.update(
       Animal,
@@ -191,7 +193,36 @@ export class InseminacaoService {
         createdBy: usuario,
     });
 
-    return await manager.save(inseminacao);
+    const savedInseminacao = await manager.save(inseminacao);
+
+    const loteAnimal = await manager.findOne(LoteAnimal, {
+      where: { id: data.lote_animal_id },
+      relations: ['lote'],
+    });
+
+    if (loteAnimal && loteAnimal.lote) {
+      const qtdNaoInseminados = await manager.count(LoteAnimal, {
+        where: {
+          lote: { id: loteAnimal.lote.id },
+          inseminado: false,
+        },
+      });
+  
+      if (qtdNaoInseminados === 0) {
+        // Último inseminado — encerrando o lote
+        await manager.update(
+          Lote,
+          { id: loteAnimal.lote.id },
+          {
+            encerrado: true,
+            data_fim: now,
+            updated_at: now,
+          }
+        );
+      }
+    }
+
+    return await manager.save(savedInseminacao);
   }
   
 }

@@ -263,7 +263,9 @@ class CadastrarInseminacaoPageState extends State<CadastrarInseminacaoPage> {
                               const SizedBox(height: 20),
                               Text("Selecionar Animais do Lote", style: TextStyle(fontWeight: FontWeight.bold)),
                               const SizedBox(height: 10),
-                              ...loteAnimaisDisponiveis.map((lote) {
+                              ...loteAnimaisDisponiveis
+                              .where((lote) => lote.inseminado == false)
+                              .map((lote) {
                                 return ListTile(
                                   title: Text('${lote.animal?.numeroBrinco ?? 'Sem nome'}'),
                                   trailing: IconButton(
@@ -272,6 +274,13 @@ class CadastrarInseminacaoPageState extends State<CadastrarInseminacaoPage> {
                                       if (baiaInseminacaoSelecionado == null) {
                                         ScaffoldMessenger.of(context).showSnackBar(
                                           SnackBar(content: Text('Selecione uma baia antes de adicionar o animal.')),
+                                        );
+                                        return;
+                                      }
+                                      
+                                      if (_data == null) {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          SnackBar(content: Text('Selecione a data da inseminação.')),
                                         );
                                         return;
                                       }
@@ -303,6 +312,7 @@ class CadastrarInseminacaoPageState extends State<CadastrarInseminacaoPage> {
                                           porcaInseminada: lote.animal,
                                           loteAnimal: lote,
                                           baia: baiaInseminacaoSelecionado,
+                                          data: _data,
                                           createdBy: null,
                                           createdAt: null,
                                           updatedBy: null,
@@ -396,7 +406,7 @@ class CadastrarInseminacaoPageState extends State<CadastrarInseminacaoPage> {
                                 return;
                               }
 
-                              final dataLote = loteSelecionado?.data ?? DateTime.now(); // ou outro campo de data do lote
+                              final dataLote = loteSelecionado?.dataInicio ?? DateTime.now(); // ou outro campo de data do lote
 
                               if (_data!.isBefore(dataLote)) {
                                 ScaffoldMessenger.of(context).showSnackBar(

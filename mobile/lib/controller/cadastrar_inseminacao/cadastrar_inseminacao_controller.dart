@@ -19,6 +19,7 @@ class CadastrarInseminacaoController with ChangeNotifier {
   final LoteRepositoryImp _loteRepository = LoteRepositoryImp();
   final AnimalRepositoryImp _animalRepository = AnimalRepositoryImp();
   final BaiaRepositoryImp _baiaRepository = BaiaRepositoryImp();
+  final InseminacaoRepositoryImp _inseminacaoRepository= InseminacaoRepositoryImp();
 
   LoteModel? _lote;
   void setLote(LoteModel? value) {
@@ -79,27 +80,19 @@ class CadastrarInseminacaoController with ChangeNotifier {
   }
 
   Future<bool> cadastrarInseminacoes(BuildContext context) async {
-    final movimentacaoRealizada = await AsyncHandler.execute(
+    final result = await AsyncHandler.execute(
       context: context,
       action: () async {
-        if (_inseminacoes.isEmpty) {
-          throw Exception('Sem inseminações para cadastrar');
+        if (_inseminacoes == null || _inseminacoes.isEmpty) {
+          throw Exception('Nenhuma inseminação informada');
         }
-        
-        // Agora envia como lista, mesmo sendo apenas um
-        // return await _ocupacaoRepository.movimentarAnimais(
-        //   movimentacoes: [
-        //     {
-        //       'animal_id': _animal!.id!,
-        //       'baia_destino_id': _baiaDestino!.id!,
-        //     }
-        //   ],
-        // );
+
+        return await _inseminacaoRepository.inseminarAnimais(inseminacoes: _inseminacoes);
       },
-      loadingMessage: 'Aguarde, realizando movimentação',
-      successMessage: 'Movimentação criada com sucesso!',
+      loadingMessage: 'Aguarde, realizando Iseminações',
+      successMessage: 'Iseminações criada com sucesso!',
     );
 
-    return movimentacaoRealizada != null;
+    return result != null;
   }
 }

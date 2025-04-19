@@ -14,6 +14,7 @@ import { verifyToken } from "./middleware/verifyToken";
 import { AuthController } from "./controllers/authController";
 import { CidadeController } from "./controllers/cidadeController";
 import { MovimentacaoController } from "./controllers/movimentacaoController";
+import { InseminacaoController } from "./controllers/inseminacaoController";
 const routes = Router();
 
 // Configuração do CORS
@@ -121,5 +122,9 @@ routes.post('/ocupacoes/movimentar-animais', ocupacaoController.movimentarAnimai
 //Movimentacao
 const movimentacaoController = new MovimentacaoController();
 routes.get('/movimentacoes/:fazenda_id', movimentacaoController.listByFazenda);
+
+//Inseminacao
+const inseminacaoController = new InseminacaoController();
+routes.post('/inseminacao', inseminacaoController.inseminarAnimais);
 
 export default routes

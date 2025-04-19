@@ -12,6 +12,24 @@ class InseminacaoRepositoryImp implements InseminacaoRepository {
   }
 
   @override
+  Future<Map<String, dynamic>> inseminarAnimais({
+    required List<InseminacaoModel> inseminacoes,
+  }) async {
+    try {
+      final response = await _apiClient.dio.post(
+        '/inseminacao',
+        data: {
+          'inseminacoes': inseminacoes,
+        },
+      );
+      return response.data;
+    } catch (e) {
+      Logger().e('Erro ao inseminar animais: $e');
+      rethrow;
+    }
+  }
+
+  @override
   Future<List<InseminacaoModel>> getList() async {
     try {
       var response = await _apiClient.dio.get('/inseminacoes');

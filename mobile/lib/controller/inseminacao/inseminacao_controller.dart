@@ -12,8 +12,16 @@ class InseminacaoController {
     inseminacoes.value = await _inseminacaoRepository.getList();
   }
 
-  Future<bool> create (BuildContext context) async {
-
-    return true;
+  Future<bool> inseminarAnimais({
+    required List<InseminacaoModel> inseminacoes,
+  }) async {
+    try {
+      final response = await _inseminacaoRepository.inseminarAnimais(
+        inseminacoes: inseminacoes,
+      );
+      return response['success'];
+    } catch (e) {
+      return false;
+    }
   }
 }
