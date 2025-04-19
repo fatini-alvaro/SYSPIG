@@ -132,25 +132,6 @@ export class LoteService {
         }
       }
 
-      // Se está encerrando agora, remover loteAtual de todos os animais
-      if (isEncerrandoAgora) {
-        const allLoteAnimais = await transactionalEntityManager.find(LoteAnimal, {
-          where: { lote: { id: lote.id } },
-          relations: ['animal'],
-        });
-
-        for (const loteAnimal of allLoteAnimais) {
-          await transactionalEntityManager.update(
-            Animal,
-            { id: loteAnimal.animal.id },
-            {
-              loteAtual: null,
-              updated_at: new Date(),
-            }
-          );
-        }
-      }
-
       return lote;
     });
   }
