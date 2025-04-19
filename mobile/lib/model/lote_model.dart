@@ -8,6 +8,8 @@ class LoteModel {
   final String? descricao;
   final DateTime? data;
   final DateTime? dataInicio;
+  final DateTime? dataFim;
+  final bool? encerrado;
   final List<LoteAnimalModel>? loteAnimais;
 
   LoteModel({
@@ -17,7 +19,9 @@ class LoteModel {
     this.descricao,
     this.data,
     this.dataInicio,
-    this.loteAnimais
+    this.loteAnimais,
+    this.dataFim,
+    this.encerrado,
   });
 
   factory LoteModel.fromJson(Map<String, dynamic> json) {
@@ -28,6 +32,8 @@ class LoteModel {
       descricao: json['descricao'],
       dataInicio: json['data_inicio'] != null ? DateTime.parse(json['data_inicio']) : null,
       data: json['data'] != null ? DateTime.parse(json['data']) : null,
+      dataFim: json['data_fim'] != null ? DateTime.parse(json['data_fim']) : null,
+      encerrado: json['encerrado'],
       loteAnimais: (json['loteAnimais'] as List?)?.map((item) => LoteAnimalModel.fromJson(item)).toList(),
     );
   }
@@ -40,12 +46,14 @@ class LoteModel {
       'descricao': descricao,
       'data': data?.toIso8601String(),
       'data_inicio': dataInicio?.toIso8601String(),
+      'data_fim': dataFim?.toIso8601String(),
+      'encerrado': encerrado,
       'lote_animais': loteAnimais?.map((loteAnimal) => loteAnimal.toJson()).toList(),
     };
   }
 
   @override
   String toString() {
-    return 'id: $id, fazenda: $fazenda, numero: $numeroLote, descricao: $descricao, data: $data, loteAnimais: $loteAnimais, dataInicio: $dataInicio';
+    return 'id: $id, fazenda: $fazenda, numero: $numeroLote, descricao: $descricao, data: $data, loteAnimais: $loteAnimais, dataInicio: $dataInicio, dataFim: $dataFim, encerrado: $encerrado';
   }
 }

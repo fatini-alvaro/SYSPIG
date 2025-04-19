@@ -11,12 +11,12 @@ export class LoteController {
   }
 
   createOrUpdate = async (req: Request, res: Response) => {
-    const { descricao, numero_lote, lote_animais, data } = req.body;
+    const { descricao, numero_lote, lote_animais, data_inicio, encerrado, data_fim, data } = req.body;
     const fazenda_id = req.headers['fazenda-id'];
     const usuario_id = req.headers['user-id'];
     const lote_id = req.params.lote_id ? Number(req.params.lote_id) : undefined;
 
-    if (!fazenda_id || !descricao || !usuario_id) {
+    if (!fazenda_id || !descricao || !data_inicio || !usuario_id) {
       return res.status(400).json({ message: 'Parâmetros não informados' });
     }
 
@@ -26,6 +26,9 @@ export class LoteController {
         numero_lote,
         data,
         lote_animais,
+        data_inicio,
+        data_fim,
+        encerrado,
         fazenda_id: Number(fazenda_id),
         usuarioIdAcao :  Number(usuario_id)
       };

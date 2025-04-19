@@ -10,6 +10,9 @@ interface LoteCreateOrUpdateData {
   descricao: string;
   numero_lote: string;
   data: Date;
+  encerrado: boolean;
+  data_inicio: Date;
+  data_fim: Date;
   lote_animais: { animal_id: number }[]; // Agora apenas o ID do animal
   fazenda_id: number;
   usuarioIdAcao: number;
@@ -46,8 +49,14 @@ export class LoteService {
     return await AppDataSource.transaction(async (transactionalEntityManager) => {
       let lote: Lote | null = null;
 
+      const isEncerrandoAgora = loteData.encerrado || loteData.data_fim;
+
       if (lote_id) {
         lote = await ValidationService.validateAndReturnLote(lote_id);
+
+        if (lote!.encerrado) {
+          throw new Error('Este lote já está encerrado e não pode ser editado.');
+        }
       }
 
       const { fazenda, createdBy, updatedBy } = await this.validateLote(
@@ -59,9 +68,18 @@ export class LoteService {
         lote = transactionalEntityManager.create(Lote, { fazenda });
       }
 
+      let data_encerrado = null;
+
+      if (isEncerrandoAgora) {
+        data_encerrado = new Date();
+      }
+
       lote.descricao = loteData.descricao;
       lote.numero_lote = loteData.numero_lote;
       lote.data = loteData.data;
+      lote.data_inicio = loteData.data_inicio;
+      lote.data_fim = loteData.data_fim ?? data_encerrado;
+      lote.encerrado = Boolean(isEncerrandoAgora);
       lote.createdBy = createdBy ?? lote.createdBy;
       lote.updatedBy = updatedBy ?? lote.updatedBy;
       await transactionalEntityManager.save(lote);
@@ -73,7 +91,6 @@ export class LoteService {
       const existingAnimalIds = existingLoteAnimais.map((la) => la.animal.id);
       const newAnimalIds = loteData.lote_animais.map((la) => la.animal_id);
 
-      // Animais a serem removidos
       // Animais a serem removidos
       const animalsToRemove = existingLoteAnimais.filter((la) => !newAnimalIds.includes(la.animal.id));
       if (animalsToRemove.length > 0) {
@@ -110,6 +127,25 @@ export class LoteService {
             { 
               loteAtual: { id: lote.id },
               updated_at: new Date()
+            }
+          );
+        }
+      }
+
+      // Se está encerrando agora, remover loteAtual de todos os animais
+      if (isEncerrandoAgora) {
+        const allLoteAnimais = await transactionalEntityManager.find(LoteAnimal, {
+          where: { lote: { id: lote.id } },
+          relations: ['animal'],
+        });
+
+        for (const loteAnimal of allLoteAnimais) {
+          await transactionalEntityManager.update(
+            Animal,
+            { id: loteAnimal.animal.id },
+            {
+              loteAtual: null,
+              updated_at: new Date(),
             }
           );
         }

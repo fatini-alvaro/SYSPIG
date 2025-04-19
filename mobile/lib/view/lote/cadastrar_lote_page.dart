@@ -7,6 +7,7 @@ import 'package:syspig/model/lote_model.dart';
 import 'package:syspig/themes/themes.dart';
 import 'package:syspig/utils/dialogs.dart';
 import 'package:syspig/view/selecionar_lote/selecionar_lote_page.dart';
+import 'package:syspig/widgets/custom_booleanField_widget.dart';
 import 'package:syspig/widgets/custom_data_table.dart';
 import 'package:syspig/widgets/custom_date_time_field_widget.dart';
 import 'package:syspig/widgets/custom_text_form_field_widget.dart';
@@ -31,6 +32,9 @@ class CadastrarLotePageState extends State<CadastrarLotePage> {
   late TextEditingController _descricaoController;
   late TextEditingController _numeroLoteController;
   DateTime? _dataCriacao;
+  DateTime? _dataInicio;
+  DateTime? _dataFim;
+  bool? _encerrado;
 
   List<AnimalModel> animais = [];
   TextEditingController _searchControllerAnimal = TextEditingController();
@@ -65,10 +69,16 @@ class CadastrarLotePageState extends State<CadastrarLotePage> {
       _descricaoController.text = lote.descricao!;
       _numeroLoteController.text = lote.numeroLote!;
       _dataCriacao = lote.data;
+      _dataInicio = lote.dataInicio;
+      _dataFim = lote.dataFim;
+      _encerrado = lote.encerrado ?? false;
 
       _cadastrarLoteController.setDescricao(lote.descricao);
       _cadastrarLoteController.setNumero(lote.numeroLote);
       _cadastrarLoteController.setDataCriacao(lote.data);
+      _cadastrarLoteController.setDataInicio(lote.dataInicio);
+      _cadastrarLoteController.setDataFim(lote.dataFim);
+      _cadastrarLoteController.setEncerrado(lote.encerrado);
 
       // Adicionando os animais do lote ao controlador
       lote.loteAnimais?.forEach((loteAnimal) {
@@ -156,6 +166,53 @@ class CadastrarLotePageState extends State<CadastrarLotePage> {
                   return null;
                 },   
                 onChanged: _cadastrarLoteController.setNumero,
+              ),
+              SizedBox(height: 20),
+              CustomDateTimeFieldWidget(
+                labelText: 'Data de inicio',
+                initialValue: _dataInicio,
+                enabled: widget.loteId == null,
+                validator: (value) {
+                  if (value == null) {
+                    return "A data é obrigatória";
+                  }
+                  return null;
+                },  
+                onChanged: (selectedDate) {
+                  setState(() {
+                    _dataInicio = selectedDate;
+                  });
+                  _cadastrarLoteController.setDataInicio(selectedDate);
+                },
+              ),
+              SizedBox(height: 20),
+              CustomDateTimeFieldWidget(
+                labelText: 'Data de Fim',
+                initialValue: _dataFim,
+                enabled: widget.loteId != null,
+                onChanged: (selectedDate) {
+                  setState(() {
+                    _dataFim = selectedDate;
+                  });
+                  _cadastrarLoteController.setDataFim(selectedDate);
+                },
+              ),
+              if (widget.loteId != null)
+              SizedBox(height: 20),
+              if (widget.loteId != null)
+              CustomBooleanFieldWidget(
+                label: 'Encerrado?',
+                value: _encerrado,
+                onChanged: (val) {
+                  setState(() {
+                    _encerrado = val;
+                  });
+                  _cadastrarLoteController.setEncerrado(val);
+                },
+                validator: (val) {
+                  if (val == null) return 'Selecione uma opção';
+                  return null;
+                },
               ),
               SizedBox(height: 20),
               CustomTextFormFieldWidget(

@@ -6,6 +6,8 @@ class CustomDateTimeFieldWidget extends StatefulWidget {
   final ValueChanged<DateTime?> onChanged;
   final DateTime? initialValue;
   final bool showTime;
+  final FormFieldValidator<DateTime?>? validator;  
+  final bool? enabled;
 
   const CustomDateTimeFieldWidget({
     Key? key,
@@ -13,6 +15,8 @@ class CustomDateTimeFieldWidget extends StatefulWidget {
     required this.onChanged,
     this.initialValue,
     this.showTime = false,
+    this.validator,
+    this.enabled = true,
   }) : super(key: key);
 
   @override
@@ -29,7 +33,7 @@ class _CustomDateTimeFieldWidgetState extends State<CustomDateTimeFieldWidget> {
     selectedDate = widget.initialValue;
   }
 
-  Future<void> _selectDate(BuildContext context) async {
+  Future<void> _selectDate(BuildContext context, FormFieldState<DateTime?> state) async {
     final DateTime? pickedDate = await showDatePicker(
       context: context,
       initialDate: selectedDate ?? DateTime.now(),
@@ -54,12 +58,14 @@ class _CustomDateTimeFieldWidgetState extends State<CustomDateTimeFieldWidget> {
           );
           setState(() {
             selectedDate = combined;
+            state.didChange(combined); // Atualiza o valor do FormField
             widget.onChanged(combined);
           });
         }
       } else {
         setState(() {
           selectedDate = pickedDate;
+          state.didChange(pickedDate);
           widget.onChanged(pickedDate);
         });
       }
@@ -68,23 +74,36 @@ class _CustomDateTimeFieldWidgetState extends State<CustomDateTimeFieldWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final displayText = selectedDate != null
-        ? widget.showTime
-            ? '${selectedDate!.day.toString().padLeft(2, '0')}/${selectedDate!.month.toString().padLeft(2, '0')}/${selectedDate!.year} ${selectedDate!.hour.toString().padLeft(2, '0')}:${selectedDate!.minute.toString().padLeft(2, '0')}'
-            : '${selectedDate!.day.toString().padLeft(2, '0')}/${selectedDate!.month.toString().padLeft(2, '0')}/${selectedDate!.year}'
-        : '';
+    return FormField<DateTime?>(
+      initialValue: selectedDate,
+      validator: widget.validator,
+      builder: (state) {
+        final displayText = state.value != null
+            ? widget.showTime
+                ? '${state.value!.day.toString().padLeft(2, '0')}/${state.value!.month.toString().padLeft(2, '0')}/${state.value!.year} ${state.value!.hour.toString().padLeft(2, '0')}:${state.value!.minute.toString().padLeft(2, '0')}'
+                : '${state.value!.day.toString().padLeft(2, '0')}/${state.value!.month.toString().padLeft(2, '0')}/${state.value!.year}'
+            : '';
 
-    return TextField(
-      controller: TextEditingController(text: displayText),
-      onTap: () => _selectDate(context),
-      decoration: InputDecoration(
-        labelText: widget.labelText,
-        suffixIcon: Icon(Icons.calendar_today),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
-      ),
-      readOnly: true,
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            TextFormField(
+              controller: TextEditingController(text: displayText),
+              onTap: widget.enabled! ? () => _selectDate(context, state) : null,
+              decoration: InputDecoration(
+                labelText: widget.labelText,
+                suffixIcon: Icon(Icons.calendar_today),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                errorText: state.errorText,
+              ),
+              readOnly: true,
+              enabled: widget.enabled,
+            ),
+          ],
+        );
+      },
     );
   }
 }

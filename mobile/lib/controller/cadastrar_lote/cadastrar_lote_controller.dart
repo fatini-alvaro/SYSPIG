@@ -31,6 +31,18 @@ class CadastrarLoteController with ChangeNotifier {
   setDataCriacao(DateTime? value) => _dataCriacao = value;
   DateTime? get dataCriacao => _dataCriacao;
 
+  DateTime? _dataInicio;
+  setDataInicio(DateTime? value) => _dataInicio = value;
+  DateTime? get dataInicio => _dataInicio;
+
+  DateTime? _dataFim;
+  setDataFim(DateTime? value) => _dataFim = value;
+  DateTime? get dataFim => _dataFim;
+
+  bool? _encerrado;
+  setEncerrado(bool? value) => _encerrado = value;
+  bool? get encerrado => _encerrado;
+
   void adicionarAnimal(AnimalModel animal) {
     if (!_animaisSelecionados.any((a) => a.id == animal.id)) {
       _animaisSelecionados.add(animal);
@@ -46,6 +58,10 @@ class CadastrarLoteController with ChangeNotifier {
   Future<void> carregarLote(LoteModel lote) async {
     _numero = lote.numeroLote;
     _descricao = lote.descricao;
+    _dataCriacao = lote.data;
+    _dataInicio = lote.dataInicio;
+    _dataFim = lote.dataFim;
+    _encerrado = lote.encerrado;
     _animaisSelecionados.clear();
     _animaisSelecionados.addAll(
       (lote.loteAnimais ?? []).map((loteAnimal) => loteAnimal.animal!)
@@ -58,6 +74,7 @@ class CadastrarLoteController with ChangeNotifier {
       descricao: _descricao,
       numeroLote: _numero,
       data: _dataCriacao,
+      dataInicio: _dataInicio,
       loteAnimais: _animaisSelecionados
           .map((animal) => LoteAnimalModel(animal: animal))
           .toList(),
@@ -98,6 +115,9 @@ class CadastrarLoteController with ChangeNotifier {
             descricao: _descricao,
             numeroLote: _numero,
             data: _dataCriacao,
+            dataInicio: _dataInicio,
+            dataFim: _dataFim,
+            encerrado: _encerrado,
             loteAnimais: _animaisSelecionados
                 .map((animal) => LoteAnimalModel(animal: animal))
                 .toList(),
