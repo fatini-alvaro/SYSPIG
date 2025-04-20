@@ -7,5 +7,5 @@ abstract class InseminacaoRepository {
     required List<InseminacaoModel>inseminacoes,
   });
 
-  Future<List<InseminacaoModel>> getList();
+  Future<List<InseminacaoModel>> getList(int fazendaId);
 }

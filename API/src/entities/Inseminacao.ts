@@ -6,6 +6,7 @@ import { Fazenda } from "./Fazenda";
 import { Animal } from "./Animal";
 import { LoteAnimal } from "./LoteAnimal";
 import { Baia } from "./Baia";
+import { Lote } from "./Lote";
 
 
 @Entity('inseminacao')
@@ -31,6 +32,10 @@ export class Inseminacao {
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   data: Date;
+
+  @ManyToOne(() => Lote, { eager: true })
+  @JoinColumn({ name: 'lote', referencedColumnName: 'id' })
+  lote: Lote;
 
   @ManyToOne(() => LoteAnimal, { eager: true })
   @JoinColumn({ name: 'lote_animal', referencedColumnName: 'id' })

@@ -11,6 +11,5 @@ class MovimentacaoController {
   fetch(int fazendaId) async {
     movimentacoes.value = await _movimentacaoRepository.getList(fazendaId);
   }
-
   
 }

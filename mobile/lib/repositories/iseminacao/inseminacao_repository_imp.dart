@@ -2,6 +2,7 @@ import 'package:logger/logger.dart';
 import 'package:syspig/api/api_client.dart';
 import 'package:syspig/model/inseminacao_model.dart';
 import 'package:syspig/repositories/iseminacao/inseminacao_repository.dart';
+import 'package:syspig/utils/error_handler_util.dart';
 
 class InseminacaoRepositoryImp implements InseminacaoRepository {   
 
@@ -30,14 +31,14 @@ class InseminacaoRepositoryImp implements InseminacaoRepository {
   }
 
   @override
-  Future<List<InseminacaoModel>> getList() async {
+  Future<List<InseminacaoModel>> getList(int fazendaId) async {
     try {
-      var response = await _apiClient.dio.get('/inseminacoes');
-        return (response.data as List).map((e) => InseminacaoModel.fromJson(e)).toList();
+      var response = await _apiClient.dio.get('/inseminacao/$fazendaId');
+      return (response.data as List).map((e) => InseminacaoModel.fromJson(e)).toList();
     } catch (e) {
-      Logger().e(e);
+      String errorMessage = ErrorHandlerUtil.handleDioError(e, 'Erro ao obter lista de inseminações');
+      Logger().e('Erro ao obter lista de inseminações (lista - Inseminações): $e');
+      throw Exception(errorMessage);
     }
-
-    return [];
   }
 }

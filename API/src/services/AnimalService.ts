@@ -5,7 +5,7 @@ import { ValidationService } from "./ValidationService";
 import { ValidationError } from "../utils/validationError";
 import { Usuario } from "../entities/Usuario";
 import { SexoAnimal, StatusAnimal } from "../constants/animalConstants";
-import { IsNull, Not } from "typeorm";
+import { Brackets, IsNull, Not } from "typeorm";
 import { OcupacaoAnimal } from "../entities/OcupacaoAnimal";
 import { StatusOcupacaoAnimal } from "../constants/ocupacaoAnimalConstants";
 import { OcupacaoService } from "./OcupacaoService";
@@ -46,20 +46,22 @@ export class AnimalService {
   }
 
   async listDisponivelParaLote(fazenda_id: number) {
-    return await animalRepository.find({ 
-      where: { 
-        fazenda: { id: fazenda_id },
-        status: StatusAnimal.VIVO,
-        sexo: SexoAnimal.FEMEA,
-        numero_brinco: Not(IsNull()),
-        loteAtual: IsNull(),
-        nascimento: false,
-      },
-      select: ['id', 'numero_brinco'],
-      order: { id: 'ASC' }
-    });
-  }
-
+    const qb = animalRepository.createQueryBuilder('animal')
+      .leftJoin('animal.loteAtual', 'loteAtual')
+      .where('animal.fazenda.id = :fazenda_id', { fazenda_id })
+      .andWhere('animal.status = :status', { status: StatusAnimal.VIVO })
+      .andWhere('animal.sexo = :sexo', { sexo: SexoAnimal.FEMEA })
+      .andWhere('animal.numero_brinco IS NOT NULL')
+      .andWhere('animal.nascimento = false')
+      .andWhere(new Brackets(qb => {
+        qb.where('animal.loteAtual IS NULL')
+          .orWhere('loteAtual.encerrado = true');
+      }))
+      .select(['animal.id', 'animal.numero_brinco'])
+      .orderBy('animal.id', 'ASC');
+  
+    return await qb.getMany();
+  }  
 
   async listNascimentos(ocupacao_id: number) {
     return await animalRepository.find({ 

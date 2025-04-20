@@ -10,13 +10,14 @@ export class InseminacaoController {
     this.inseminacaoService = new InseminacaoService();
   }
 
-  list = async (req: Request, res: Response) => {
+  listByFazenda = async (req: Request, res: Response) => {
     try {
       const { fazenda_id } = req.params;
-      
+      const inseminacoes = await this.inseminacaoService.listByFazenda(Number(fazenda_id));
+      return res.status(200).json(inseminacoes);
     } catch (error) {
-      console.error("Erro ao listar animais:", error);
-      return handleError(error, res, "Erro ao listar animais");
+      console.error("Erro ao listar inseminacoes:", error);
+      return handleError(error, res, "Erro ao listar inseminacoes");
     }
   };
 
@@ -48,6 +49,7 @@ export class InseminacaoController {
           porco_doador_id: Number(m.porco_doador_id),
           lote_animal_id: Number(m.lote_animal_id),
           baia_id: Number(m.baia_id),
+          lote_id: Number(m.lote_id),
           data: new Date(m.data),
         })),
       });

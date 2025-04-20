@@ -126,5 +126,6 @@ routes.get('/movimentacoes/:fazenda_id', movimentacaoController.listByFazenda);
 //Inseminacao
 const inseminacaoController = new InseminacaoController();
 routes.post('/inseminacao', inseminacaoController.inseminarAnimais);
+routes.get('/inseminacao/:fazenda_id', inseminacaoController.listByFazenda);
 
 export default routes

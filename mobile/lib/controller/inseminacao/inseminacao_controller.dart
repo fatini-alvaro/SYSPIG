@@ -8,8 +8,8 @@ class InseminacaoController {
 
   ValueNotifier<List<InseminacaoModel>> inseminacoes = ValueNotifier<List<InseminacaoModel>>([]);
 
-  fetch() async {
-    inseminacoes.value = await _inseminacaoRepository.getList();
+  fetch(int fazendaId) async {
+    inseminacoes.value = await _inseminacaoRepository.getList(fazendaId);
   }
 
   Future<bool> inseminarAnimais({

@@ -311,6 +311,7 @@ class CadastrarInseminacaoPageState extends State<CadastrarInseminacaoPage> {
                                           porcoDoador: porcoSelecionado,
                                           porcaInseminada: lote.animal,
                                           loteAnimal: lote,
+                                          lote: loteSelecionado,
                                           baia: baiaInseminacaoSelecionado,
                                           data: _data,
                                           createdBy: null,

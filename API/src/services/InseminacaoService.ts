@@ -18,6 +18,7 @@ interface InseminacaoData {
   porca_inseminada_id: number;
   porco_doador_id: number;
   lote_animal_id: number;
+  lote_id: number;
   baia_id: number;
   data: Date;
 }
@@ -29,11 +30,18 @@ interface InseminacoesData {
 }
 
 export class InseminacaoService {
+  private inseminacaoRepository = AppDataSource.getRepository(Inseminacao);
 
   private ocupacaoService = new OcupacaoService(); 
 
-  async list(fazenda_id: number) {
-
+  async listByFazenda(fazenda_id: number) {
+    return await this.inseminacaoRepository.find({
+        where: {
+            fazenda: { id: fazenda_id }
+        },
+        relations: ['porcoDoador', 'porcaInseminada', 'baiaInseminacao', 'createdBy', 'lote'],
+        order: { data: "DESC" }
+    });
   }
 
   async inseminarAnimais(data: InseminacoesData) {
@@ -188,6 +196,7 @@ export class InseminacaoService {
         porcaInseminada: { id: data.porca_inseminada_id },
         porcoDoador: { id: data.porco_doador_id },
         loteAnimal: { id: data.lote_animal_id },
+        lote: { id: data.lote_id },
         baiaInseminacao: { id: data.baia_id },
         data: data.data,
         createdBy: usuario,

@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 import 'package:syspig/components/buttons/custom_abrir_tela_adicionar_novo_button_component.dart';
+import 'package:syspig/components/cards/custom_inseminacao_card.dart';
 import 'package:syspig/controller/inseminacao/inseminacao_controller.dart';
+import 'package:syspig/model/inseminacao_model.dart';
 import 'package:syspig/repositories/iseminacao/inseminacao_repository_imp.dart';
+import 'package:syspig/services/prefs_service.dart';
 import 'package:syspig/themes/themes.dart';
 
 class SelecionarInseminacaoPage extends StatefulWidget {
@@ -18,7 +22,16 @@ class SelecionarInseminacaoPageState extends State<SelecionarInseminacaoPage> {
   @override
   void initState() {
     super.initState();
-    _inseminacaoController.fetch();
+    _carregarInseminacoes();
+  }
+
+  Future<void> _carregarInseminacoes() async {
+    int? fazendaId = await PrefsService.getFazendaId();
+    if (fazendaId != null) {
+      _inseminacaoController.fetch(fazendaId);
+    } else {
+      Logger().e('ID da fazenda não encontrado');
+    }
   }
 
   @override
@@ -43,26 +56,19 @@ class SelecionarInseminacaoPageState extends State<SelecionarInseminacaoPage> {
             ),
           ),
           SizedBox(height: 15),
-          // Expanded(
-          //   child: ValueListenableBuilder<List<GranjaModel>>(
-          //     valueListenable: _granjaController.granjas,
-          //     builder: (_, list, __) {
-          //       return ListView.builder(
-          //         itemCount: list.length,
-          //         itemBuilder: (_, idx) => CustomRegistroCard(
-          //           granja: list[idx],
-          //           onEditarPressed: () {
-          //             // Lógica para abrir a tela de edição
-          //           },
-          //           onExcluirPressed: () {
-          //             // Lógica para excluir
-          //           },
-          //           caminhoTelaAoClicar: 'home'
-          //         ),
-          //       );
-          //     },
-          //   ),
-          // ),
+          Expanded(
+            child: ValueListenableBuilder<List<InseminacaoModel>>(
+              valueListenable: _inseminacaoController.inseminacoes,
+              builder: (_, list, __) {
+                return ListView.builder(
+                  itemCount: list.length,
+                  itemBuilder: (_, idx) => CustomInseminacaoCard(
+                    inseminacao: list[idx],      
+                  ),
+                );
+              },
+            ),
+          )
         ],
       ),
     );
