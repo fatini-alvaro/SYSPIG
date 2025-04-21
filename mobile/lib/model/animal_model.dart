@@ -1,5 +1,6 @@
 import 'package:syspig/enums/animal_constants.dart';
 import 'package:syspig/model/fazenda_model.dart';
+import 'package:syspig/model/lote_model.dart';
 import 'package:syspig/model/ocupacao_animal_model.dart';
 import 'package:syspig/model/usuario_model.dart';
 
@@ -10,6 +11,9 @@ class AnimalModel {
   final SexoAnimal? sexo;
   final StatusAnimal? status;
   final DateTime? dataNascimento;
+  final DateTime? dataUltimaInseminacao;
+  final LoteModel? loteAtual;
+  final LoteModel? loteNascimento;
   final UsuarioModel? createdBy;
   final DateTime? createdAt;
   final UsuarioModel? updatedBy;
@@ -25,6 +29,9 @@ class AnimalModel {
     this.status,
     this.dataNascimento,
     this.ocupacaoAnimalAtiva,
+    this.dataUltimaInseminacao,
+    this.loteAtual,
+    this.loteNascimento,
     this.createdBy,
     this.createdAt,
     this.updatedBy,
@@ -46,6 +53,9 @@ class AnimalModel {
       updatedBy: json['updatedBy'] != null ? UsuarioModel.fromJson(json['updatedBy']) : null,
       updatedAt: json['updated_at'] != null ? DateTime.parse(json['updated_at']) : null,
       nascimento: json['nascimento'] ?? false,
+      loteAtual: json['lote_atual'] != null ? LoteModel.fromJson(json['lote_atual']) : null,
+      loteNascimento: json['lote_nascimento'] != null ? LoteModel.fromJson(json['lote_nascimento']) : null,
+      dataUltimaInseminacao: json['data_ultima_inseminacao'] != null ? DateTime.parse(json['data_ultima_inseminacao']) : null,
     );
   }
 
@@ -62,6 +72,9 @@ class AnimalModel {
       'updated_by': updatedBy?.id,
       'updated_at': updatedAt?.toIso8601String(),
       'nascimento': nascimento,
+      'lote_atual_id': loteAtual?.id,
+      'lote_nascimento_id': loteNascimento?.id,
+      'data_ultima_inseminacao': dataUltimaInseminacao?.toIso8601String(),
     };
   }
 

@@ -1,21 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:syspig/components/cards/custom_pre_visualizacao_anotacao_card.dart';
 import 'package:syspig/enums/animal_constants.dart';
+import 'package:syspig/enums/tipo_granja_constants.dart';
+import 'package:syspig/model/baia_model.dart';
 import 'package:syspig/model/ocupacao_model.dart';
 import 'package:syspig/utils/date_format_util.dart';
+import 'package:syspig/utils/gestacao_util.dart';
 import 'package:syspig/view/animal/cadastrar_animal_page.dart';
 import 'package:syspig/widgets/custom_data_table.dart';
 
 class CustomBaiaInformacoesTabCard extends StatefulWidget {
 
   final OcupacaoModel? ocupacao;
+  final BaiaModel? baia;
 
-  CustomBaiaInformacoesTabCard({Key? key, this.ocupacao}) : super(key: key);
+  CustomBaiaInformacoesTabCard({Key? key, this.ocupacao, this.baia}) : super(key: key);
 
   @override
   _CustomBaiaInformacoesTabCardState createState() => _CustomBaiaInformacoesTabCardState();
 }
-
 class _CustomBaiaInformacoesTabCardState extends State<CustomBaiaInformacoesTabCard> with SingleTickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
@@ -51,6 +54,61 @@ class _CustomBaiaInformacoesTabCardState extends State<CustomBaiaInformacoesTabC
               ),
             ),
           ),
+          if (widget.baia!.granja!.tipoGranja!.id == tipoGranjaIdToInt[TipoGranjaId.inseminacao] ||
+              widget.baia!.granja!.tipoGranja!.id == tipoGranjaIdToInt[TipoGranjaId.gestacao]) ...[
+            const SizedBox(height: 7),
+            Builder(
+              builder: (context) {
+                final dataInseminacao = widget.ocupacao?.ocupacaoAnimais?[0].animal?.dataUltimaInseminacao;
+
+                if (dataInseminacao != null) {
+                  final infoGestacao = GestacaoUtil.calcularInfoGestacao(dataInseminacao);
+
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.only(left: 16),
+                        child: Text(
+                          'Porca inseminada em: ${DateFormatUtil.defaultFormat.format(dataInseminacao)} '
+                          '(${infoGestacao.diasDesdeInseminacao} dias atrás)',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 7),
+                      Padding(
+                        padding: EdgeInsets.only(left: 16),
+                        child: Text(
+                          'Previsão de parto: ${infoGestacao.dataPrevistaParto.day.toString().padLeft(2, '0')}/'
+                          '${infoGestacao.dataPrevistaParto.month.toString().padLeft(2, '0')}/'
+                          '${infoGestacao.dataPrevistaParto.year}',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ],
+                  );
+                } else {
+                  return Padding(
+                    padding: EdgeInsets.only(left: 16),
+                    child: Text(
+                      'Data de inseminação não disponível',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontStyle: FontStyle.italic,
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                  );
+                }
+              },
+            ),
+          ],
           SizedBox(height: 10),
           Padding(
             padding: EdgeInsets.all(16),

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:syspig/enums/tipo_granja_constants.dart';
 import 'package:syspig/model/baia_model.dart';
+import 'package:syspig/utils/gestacao_util.dart';
 
 class CustomBaiaCard extends StatelessWidget {
   final BaiaModel baia;
@@ -18,13 +20,32 @@ class CustomBaiaCard extends StatelessWidget {
     double cardWidth = MediaQuery.of(context).size.width * 0.4; // 40% da tela
     double cardHeight = 130; // Altura fixa
 
+    final dataInseminacao = baia.ocupacao?.ocupacaoAnimais?[0].animal?.dataUltimaInseminacao;
+    GestacaoInfo? infoGestacao;
+    if (dataInseminacao != null) {
+      infoGestacao = GestacaoUtil.calcularInfoGestacao(dataInseminacao);
+    }    
+
     return GestureDetector(
-      onTap: baia.vazia! ? onTapVazia : onTapOcupada,
+      onTap: () {
+        if (baia.vazia!) {
+          if (baia.granja!.tipoGranja!.id == tipoGranjaIdToInt[TipoGranjaId.geral]){
+            onTapVazia();
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Não é possivel abrir essa baia por aqui.')),
+            );
+            return;
+          }
+        } else {
+          onTapOcupada();
+        }
+      },
       child: SizedBox(
         width: cardWidth,
         height: cardHeight,
         child: Card(
-          color: baia.vazia! ? Colors.grey : Colors.orange,
+          color: _getBaiaColor(),
           elevation: 5,
           child: Padding(
             padding: const EdgeInsets.all(10.0),
@@ -41,7 +62,26 @@ class CustomBaiaCard extends StatelessWidget {
                     fontSize: 15,
                     fontWeight: FontWeight.bold,
                   ),
-                ),                
+                ),  
+                if (!baia.vazia! && (baia.granja!.tipoGranja!.id == tipoGranjaIdToInt[TipoGranjaId.inseminacao] || baia.granja!.tipoGranja!.id == tipoGranjaIdToInt[TipoGranjaId.gestacao]))...[
+                  Text(
+                    'Inseminado há ${infoGestacao!.diasDesdeInseminacao} dias',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 15,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Parto estimado: ${infoGestacao.dataPrevistaParto.day.toString().padLeft(2, '0')}/'
+                    '${infoGestacao.dataPrevistaParto.month.toString().padLeft(2, '0')}/'
+                    '${infoGestacao.dataPrevistaParto.year}',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 14,
+                    ),
+                  ),
+                ],
                 if (!baia.vazia!)
                   Text(
                     'Ocupação - ${baia.ocupacao?.codigo ?? "N/A"}',
@@ -53,10 +93,10 @@ class CustomBaiaCard extends StatelessWidget {
                     ),
                   ),
                 if (baia.vazia!)
-                  const Column(
+                  Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      const Text(
                         "Vazia",
                         style: TextStyle(
                           color: Colors.white,
@@ -64,7 +104,8 @@ class CustomBaiaCard extends StatelessWidget {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      Text(
+                      if (baia.vazia! && baia.granja!.tipoGranja!.id == tipoGranjaIdToInt[TipoGranjaId.geral])
+                      const Text(
                         "Clique para abrir",
                         style: TextStyle(
                           color: Colors.white,
@@ -80,4 +121,20 @@ class CustomBaiaCard extends StatelessWidget {
       ),
     );
   }
+
+  Color _getBaiaColor() {
+    if (baia.vazia!) return Colors.grey;
+
+    if (baia.granja!.tipoGranja!.id == tipoGranjaIdToInt[TipoGranjaId.inseminacao] ||
+        baia.granja!.tipoGranja!.id == tipoGranjaIdToInt[TipoGranjaId.gestacao]) {
+      final dataInseminacao = baia.ocupacao?.ocupacaoAnimais?[0].animal?.dataUltimaInseminacao;
+      if (dataInseminacao != null) {
+        final info = GestacaoUtil.calcularInfoGestacao(dataInseminacao);
+        return info.corStatus;
+      }
+    }
+
+    return Colors.orange;
+  }
+
 }

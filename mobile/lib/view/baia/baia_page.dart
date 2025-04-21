@@ -95,8 +95,8 @@ class BaiaPageState extends State<BaiaPage> {
           bottom: const TabBar(
             labelColor: Colors.white,
             tabs: [
-              Tab(text: 'Ações'),
               Tab(text: 'Informações'),
+              Tab(text: 'Ações'),
             ],
             indicator: BoxDecoration(
               border: Border(
@@ -112,16 +112,19 @@ class BaiaPageState extends State<BaiaPage> {
         body: TabBarView(
           children: _ocupacao != null
               ? [
+                  CustomBaiaInformacoesTabCard(
+                    ocupacao: _ocupacao,
+                    baia: _baia,                    
+                  ),
                   CustomBaiaAcoesTabCard(
                     baia: _baia,
                     ocupacao: _ocupacao,
                     recarregarDados: recarregarDados,
                   ),
-                  CustomBaiaInformacoesTabCard(ocupacao: _ocupacao),
                 ]
               : [
-                  Center(child: Text("Nenhuma ocupação encontrada", style: TextStyle(fontSize: 18))),
                   Center(child: Text("Nenhuma informação disponível", style: TextStyle(fontSize: 18))),
+                  Center(child: Text("Nenhuma ocupação encontrada", style: TextStyle(fontSize: 18))),
                 ],
         ),
       ),

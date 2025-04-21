@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:logger/logger.dart';
 import 'package:syspig/components/cards/custom_home_card.dart';
 import 'package:syspig/controller/app_controller.dart';
@@ -98,7 +99,7 @@ class HomePageState extends State<HomePage> {
                 ),
                 CustomHomeCard(
                   descricao: 'Animais',
-                  icone: Icons.pets,
+                  icone: FontAwesomeIcons.piggyBank,
                   onTapCallback: () {
                     Navigator.of(context).pushNamed('/selecionarAnimal');
                   },

@@ -67,12 +67,17 @@ export class BaiaService {
       .leftJoinAndSelect("baia.ocupacao", "ocupacao")
       .leftJoinAndSelect("baia.granja", "granja")
       .leftJoinAndSelect("granja.tipoGranja", "tipoGranja")
+      .leftJoinAndSelect("ocupacao.ocupacaoAnimais", "ocupacaoAnimais")
+      .leftJoinAndSelect("ocupacaoAnimais.animal", "animal")
       .select([
         "baia.id", 
         "baia.numero", 
         "baia.vazia", 
         "ocupacao.id",
         "ocupacao.codigo",
+        "ocupacaoAnimais.id",
+        "animal.id",
+        "animal.data_ultima_inseminacao",
         "granja.id",
         "granja.descricao",
         "granja.codigo",

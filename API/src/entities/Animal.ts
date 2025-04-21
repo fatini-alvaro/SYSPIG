@@ -39,6 +39,10 @@ export class Animal {
   @JoinColumn({ name: 'lote_atual_id' })
   loteAtual: Lote | null;
 
+  @ManyToOne(() => Lote, { nullable: true })
+  @JoinColumn({ name: 'lote_nascimento_id' })
+  loteNascimento: Lote | null;
+
   @Column({ type: 'boolean', default: false})
   nascimento: boolean;
 

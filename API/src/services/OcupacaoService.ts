@@ -62,6 +62,16 @@ export class OcupacaoService {
   }
 
   async getByBaiaId(baia_id: number) {
+
+    //verifica se a ocupacao da baia esta vazia e encerra se sim
+    const baia = await AppDataSource.getRepository(Baia).findOne({
+        where: { id: baia_id },
+        relations: ['ocupacao']
+    });
+
+    const manager = AppDataSource.manager;
+    await this.verificaSeOcupacaoEstaVaziaEncerraSeSim(manager, baia_id, baia!.ocupacao!.id);
+
     return await ocupacaoRepository
       .createQueryBuilder("ocupacao")
       .leftJoinAndSelect("ocupacao.baia", "baia")
@@ -256,8 +266,32 @@ export class OcupacaoService {
               throw new ValidationError(`A baia de gestação só pode receber femeas. O animal ${animal!.numero_brinco} é macho`);
             }
 
+            if (animal?.data_ultima_inseminacao ) {
+              throw new ValidationError(`Crie a inseminação pela rotina de inseminação para alocar um animal aqui`);
+            }
+
             if (baiaDestino?.vazia === false) {
               throw new ValidationError(`A baia de gestação ${baiaDestino!.numero} já está ocupada`);
+            }
+          }
+
+          if (baiaDestino!.granja!.tipoGranja.id === TipoGranjaId.INSEMINACAO) {
+            if (animal!.sexo !== SexoAnimal.FEMEA) {
+              throw new ValidationError(`A baia de inseminação só pode receber femeas. O animal ${animal!.numero_brinco} é macho`);
+            }
+            
+            if (animal?.data_ultima_inseminacao ) {
+              throw new ValidationError(`Crie a inseminação pela rotina de inseminação para alocar um animal aqui`);
+            }
+
+            if (baiaDestino?.vazia === false) {
+              throw new ValidationError(`A baia de inseminação ${baiaDestino!.numero} já está ocupada`);
+            }
+          }
+
+          if (baiaDestino!.granja!.tipoGranja.id === TipoGranjaId.CRECHE) {
+            if (animal!.nascimento === false) {
+              throw new ValidationError(`A baia de creche só pode receber leitoes. O animal ${animal!.numero_brinco} não é`);
             }
           }
   
@@ -484,5 +518,46 @@ export class OcupacaoService {
     });
 
     return await manager.save(movimentacao);
+  }
+
+  async verificaSeOcupacaoEstaVaziaEncerraSeSim(
+      manager: EntityManager,
+      baia_id: number,
+      ocupacaoId: number,
+  ): Promise<boolean | null> {
+    const ocupacao = await manager.findOne(Ocupacao, {
+        where: { id: ocupacaoId },
+        relations: ['ocupacaoAnimais']
+    });
+
+    if (!ocupacao) {
+        return null;
+    }
+
+    const animaisAtivos = await manager.count(OcupacaoAnimal, {
+        where: { 
+            ocupacao: { id: ocupacao.id },
+            status: StatusOcupacaoAnimal.ATIVO
+        }
+    });
+
+    if (animaisAtivos === 0) {
+      ocupacao.status = StatusOcupacao.FINALIZADA;
+      await manager.save(ocupacao);
+
+      // Atualizar a baia - remover vínculo e marcar como vazia
+      const baia = await manager.findOne(Baia, { where: { id: baia_id } });
+
+      if (baia) {
+        baia.vazia = true;
+        baia.ocupacao = null; // Remove o vínculo com a ocupação
+        await manager.save(baia);
+      }
+
+      return true;
+    }
+
+    return false;
+    
   }
 }
