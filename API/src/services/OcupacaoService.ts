@@ -266,7 +266,7 @@ export class OcupacaoService {
               throw new ValidationError(`A baia de gestação só pode receber femeas. O animal ${animal!.numero_brinco} é macho`);
             }
 
-            if (animal?.data_ultima_inseminacao ) {
+            if (!animal?.data_ultima_inseminacao) {
               throw new ValidationError(`Crie a inseminação pela rotina de inseminação para alocar um animal aqui`);
             }
 
@@ -280,7 +280,7 @@ export class OcupacaoService {
               throw new ValidationError(`A baia de inseminação só pode receber femeas. O animal ${animal!.numero_brinco} é macho`);
             }
             
-            if (animal?.data_ultima_inseminacao ) {
+            if (!animal?.data_ultima_inseminacao ) {
               throw new ValidationError(`Crie a inseminação pela rotina de inseminação para alocar um animal aqui`);
             }
 

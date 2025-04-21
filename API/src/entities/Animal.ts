@@ -7,6 +7,7 @@ import { ocupacaoAnimalRepository } from "../repositories/ocupacaoAnimalReposito
 import { StatusOcupacaoAnimal } from "../constants/ocupacaoAnimalConstants";
 import { StatusOcupacao } from "../constants/ocupacaoConstants";
 import { Lote } from "./Lote";
+import { LoteAnimal } from "./LoteAnimal";
 
 @Entity('animal')
 export class Animal {
@@ -39,9 +40,17 @@ export class Animal {
   @JoinColumn({ name: 'lote_atual_id' })
   loteAtual: Lote | null;
 
+  @ManyToOne(() => LoteAnimal, { nullable: true })
+  @JoinColumn({ name: 'lote_animal_atual_id' })
+  loteAnimalAtual: LoteAnimal | null;
+
   @ManyToOne(() => Lote, { nullable: true })
   @JoinColumn({ name: 'lote_nascimento_id' })
   loteNascimento: Lote | null;
+
+  @ManyToOne(() => LoteAnimal, { nullable: true })
+  @JoinColumn({ name: 'lote_animal_nascimento_id' })
+  loteAnimalNascimento: LoteAnimal | null;
 
   @Column({ type: 'boolean', default: false})
   nascimento: boolean;

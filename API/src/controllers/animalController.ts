@@ -152,17 +152,18 @@ export class AnimalController {
   };
 
   createNascimento = async (req: Request, res: Response) => {
-    const { data_nascimento, status, quantidade, baia_id } = req.body;
+    const { data_nascimento, status, quantidade, baia_id, matriz_id } = req.body;
     const fazenda_id = req.headers['fazenda-id'];
     const usuario_id = req.headers['user-id'];
 
-    if (!fazenda_id || !status || !quantidade || !data_nascimento || !baia_id) {
+    if (!fazenda_id || !status || !quantidade || !data_nascimento || !baia_id || !matriz_id) {
       return res.status(400).json({ message: 'Parâmetros não informados' });
     }
 
     try {
       const nascimentoData = {
         baia_id: Number(baia_id),
+        matriz_id: Number(matriz_id),
         quantidade,
         status,
         data_nascimento, 

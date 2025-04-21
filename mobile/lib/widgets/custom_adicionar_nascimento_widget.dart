@@ -43,6 +43,7 @@ class _CustomAdicionarNascimentoWidgetState extends State<CustomAdicionarNascime
   @override
   void initState() {
     super.initState();
+    _carregarMatriz();
     _carregarNascimentos();
   }
 
@@ -61,9 +62,20 @@ class _CustomAdicionarNascimentoWidgetState extends State<CustomAdicionarNascime
     return '${data.day.toString().padLeft(2, '0')}/${data.month.toString().padLeft(2, '0')}/${data.year} ${data.hour.toString().padLeft(2, '0')}:${data.minute.toString().padLeft(2, '0')}';
   }
 
+  Future<void> _carregarMatriz() async {
+    final ocupacaoAtualizada = await widget.getOcupacao();
+
+    if (ocupacaoAtualizada != null) {
+      _matriz = ocupacaoAtualizada.ocupacaoAnimaisSemNascimento?[0].animal;
+    }
+    
+    setState(() {});
+  }
+
   DateTime _dataNascimento = DateTime.now();
   int _quantidade = 0;
   StatusAnimal? _statusSelecionado;
+  AnimalModel? _matriz;
 
   void _salvarNascimento() async {
     if (!_formKey.currentState!.validate()) return;
@@ -76,6 +88,7 @@ class _CustomAdicionarNascimentoWidgetState extends State<CustomAdicionarNascime
           quantidade: _quantidade,
           status: _statusSelecionado!,
           baia: widget.baia,
+          matrizId: _matriz!.id!,
         );
       },
       loadingMessage: 'Salvando nascimento...',
@@ -194,7 +207,7 @@ class _CustomAdicionarNascimentoWidgetState extends State<CustomAdicionarNascime
                 borderRadius: BorderRadius.circular(5),
               ),
             ),
-            onPressed: () => _salvarNascimento(),
+            onPressed: _matriz != null ? () => _salvarNascimento() : null,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [

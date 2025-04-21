@@ -23,6 +23,7 @@ interface AnimalCreateOrUpdateData {
 
 interface AnimalAdicionarNascimentoData {
   baia_id: number,
+  matriz_id: number,
   quantidade: number,
   status: StatusAnimal;
   data_nascimento: Date;
@@ -120,6 +121,20 @@ export class AnimalService {
         throw new ValidationError('Ocupação ativa não encontrada para o animal.');
       }
 
+      //recupera a matriz (porca mae) para vincular no nascimento
+      const matriz = await transactionalEntityManager.findOne(Animal, {
+        where: { id: adicionarNascimentoData.matriz_id },
+        relations: ['loteAtual', 'loteAnimalAtual'],
+      });
+
+      if (!matriz) {
+        throw new ValidationError('Não foi possivel vincular o nascimento a matriz.');
+      }
+
+      if (!matriz.loteAtual || !matriz.loteAnimalAtual) {
+        throw new ValidationError('A matriz informada não possui um lote vinculado.');
+      }
+
       const resultados = [];
       const erros = [];
 
@@ -129,7 +144,11 @@ export class AnimalService {
           const animal = transactionalEntityManager.create(Animal, {        
             fazenda: fazenda,
             status: adicionarNascimentoData.status,
-            nascimento: true
+            nascimento: true,
+            data_nascimento: adicionarNascimentoData.data_nascimento,
+            loteNascimento: matriz!.loteAtual!,
+            loteAnimalNascimento: matriz!.loteAnimalAtual!,
+            createdBy: usuario!,
           });
 
           await transactionalEntityManager.save(animal);

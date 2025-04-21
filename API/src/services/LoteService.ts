@@ -101,6 +101,7 @@ export class LoteService {
             { id: loteAnimal.animal.id },
             {
               loteAtual: null,
+              loteAnimalAtual: null,
               updated_at: new Date()
             }
           );
@@ -126,6 +127,8 @@ export class LoteService {
             { id: animal.id },
             { 
               loteAtual: { id: lote.id },
+              loteAnimalAtual: newLoteAnimal,
+              updatedBy: createdBy ?? lote.updatedBy,
               updated_at: new Date()
             }
           );
@@ -155,6 +158,8 @@ export class LoteService {
           { id: loteAnimal.animal.id },
           {
             loteAtual: null,
+            loteAnimalAtual: null,
+            updatedBy: loteAnimal.updatedBy,
             updated_at: new Date()
           }
         );

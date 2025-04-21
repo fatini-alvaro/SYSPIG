@@ -18,6 +18,7 @@ abstract class AnimalRepository {
     required StatusAnimal status,
     required int quantidade,
     required int baiaId,
+    required int matrizId,
   });
 
   Future<AnimalModel> update(AnimalModel animal);

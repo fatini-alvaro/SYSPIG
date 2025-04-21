@@ -104,6 +104,7 @@ class AnimalRepositoryImp implements AnimalRepository {
     required StatusAnimal status,
     required int quantidade,
     required int baiaId,
+    required int matrizId,
   }) async {
     try {
       final response = await _apiClient.dio.post(
@@ -113,6 +114,7 @@ class AnimalRepositoryImp implements AnimalRepository {
           'status': statusAnimalToInt[status],
           'quantidade': quantidade,
           'baia_id': baiaId,
+          'matriz_id': matrizId,
         },
       );
 

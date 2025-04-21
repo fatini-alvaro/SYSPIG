@@ -47,17 +47,21 @@ class AnimalController {
     }
   }
 
-  Future<bool> createNascimentos({required DateTime data,
+  Future<bool> createNascimentos({
+    required DateTime data,
     required int quantidade,
     required StatusAnimal status,
-    required BaiaModel baia}) 
+    required BaiaModel baia,
+    required int matrizId,
+    }) 
     async {
 
     bool criouNascimentos = await  _animalRepository.adicionarNascimentos(
       dataNascimento: data,
       status: status,
       quantidade: quantidade,
-      baiaId: baia.id!
+      baiaId: baia.id!,
+      matrizId: matrizId,
     );
 
     return criouNascimentos;

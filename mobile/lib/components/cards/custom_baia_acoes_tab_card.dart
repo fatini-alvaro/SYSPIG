@@ -4,6 +4,7 @@ import 'package:syspig/components/cards/custom_baia_acao_card.dart';
 import 'package:syspig/controller/cadastrar_movimentacao_baia/cadastrar_movimentacao_baia_controller.dart';
 import 'package:syspig/controller/ocupacao/ocupacao_controller.dart';
 import 'package:syspig/enums/tipo_granja_constants.dart';
+import 'package:syspig/model/animal_model.dart';
 import 'package:syspig/model/baia_model.dart';
 import 'package:syspig/model/ocupacao_model.dart';
 import 'package:syspig/repositories/ocupacao/ocupacao_repository_imp.dart';

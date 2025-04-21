@@ -13,6 +13,8 @@ class AnimalModel {
   final DateTime? dataNascimento;
   final DateTime? dataUltimaInseminacao;
   final LoteModel? loteAtual;
+  final LoteModel? loteAnimalAtual;
+  final LoteModel? loteAnimalNascimento;
   final LoteModel? loteNascimento;
   final UsuarioModel? createdBy;
   final DateTime? createdAt;
@@ -32,6 +34,8 @@ class AnimalModel {
     this.dataUltimaInseminacao,
     this.loteAtual,
     this.loteNascimento,
+    this.loteAnimalAtual,
+    this.loteAnimalNascimento,
     this.createdBy,
     this.createdAt,
     this.updatedBy,
@@ -56,6 +60,8 @@ class AnimalModel {
       loteAtual: json['lote_atual'] != null ? LoteModel.fromJson(json['lote_atual']) : null,
       loteNascimento: json['lote_nascimento'] != null ? LoteModel.fromJson(json['lote_nascimento']) : null,
       dataUltimaInseminacao: json['data_ultima_inseminacao'] != null ? DateTime.parse(json['data_ultima_inseminacao']) : null,
+      loteAnimalAtual: json['lote_animal_atual'] != null ? LoteModel.fromJson(json['lote_animal_atual']) : null,
+      loteAnimalNascimento: json['lote_animal_nascimento'] != null ? LoteModel.fromJson(json['lote_animal_nascimento']) : null,
     );
   }
 
@@ -74,12 +80,14 @@ class AnimalModel {
       'nascimento': nascimento,
       'lote_atual_id': loteAtual?.id,
       'lote_nascimento_id': loteNascimento?.id,
+      'lote_animal_atual_id': loteAnimalAtual?.id,
+      'lote_animal_nascimento_id': loteAnimalNascimento?.id,
       'data_ultima_inseminacao': dataUltimaInseminacao?.toIso8601String(),
     };
   }
 
   @override
   String toString() {
-    return 'id: $id, numero_brinco: $numeroBrinco, sexo: ${sexoAnimalDescriptions[sexo]}, status: ${statusAnimalDescriptions[status]}, fazenda: $fazenda, data_nascimento: $dataNascimento, createdBy: $createdBy, created_at: $createdAt, updatedBy: $updatedBy, updated_at: $updatedAt, ocupacao_animal_ativa: $ocupacaoAnimalAtiva, nascimento: $nascimento';
+    return 'id: $id, numero_brinco: $numeroBrinco, sexo: ${sexoAnimalDescriptions[sexo]}, status: ${statusAnimalDescriptions[status]}, fazenda: $fazenda, data_nascimento: $dataNascimento, createdBy: $createdBy, created_at: $createdAt, updatedBy: $updatedBy, updated_at: $updatedAt, ocupacao_animal_ativa: $ocupacaoAnimalAtiva, nascimento: $nascimento, lote_atual: $loteAtual, lote_nascimento: $loteNascimento, data_ultima_inseminacao: $dataUltimaInseminacao, lote_animal_atual: $loteAnimalAtual, lote_animal_nascimento: $loteAnimalNascimento';
   }
 }
