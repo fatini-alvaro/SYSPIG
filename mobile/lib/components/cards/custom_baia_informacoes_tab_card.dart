@@ -26,100 +26,7 @@ class _CustomBaiaInformacoesTabCardState extends State<CustomBaiaInformacoesTabC
       child: ListView(
         shrinkWrap: true, // Faz com que o ListView ocupe apenas o espaço necessário
         children: [
-          const SizedBox(height: 20),
-          Padding(
-            padding: EdgeInsets.only(left: 16),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                'Aberta em: ${widget.ocupacao?.dataAbertura != null ? DateFormatUtil.defaultFormat.format(widget.ocupacao!.dataAbertura!) : "Data não disponível"}',
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(height: 7),
-          Padding(
-            padding: EdgeInsets.only(left: 16),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                'Aberta por: ${widget.ocupacao?.createdBy != null ? widget.ocupacao!.createdBy!.nome : "Informação não disponivel"}',
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ),
-          if ((widget.baia!.granja!.tipoGranja!.id == tipoGranjaIdToInt[TipoGranjaId.inseminacao] ||
-              widget.baia!.granja!.tipoGranja!.id == tipoGranjaIdToInt[TipoGranjaId.gestacao]) && (widget.ocupacao?.ocupacaoAnimaisSemNascimento?.length ?? 0) > 0) ...[
-            const SizedBox(height: 7),
-            Builder(
-              builder: (context) {
-                final dataInseminacao = widget.ocupacao?.ocupacaoAnimaisSemNascimento?[0].animal?.dataUltimaInseminacao;
-
-                if (dataInseminacao != null) {
-                  final infoGestacao = GestacaoUtil.calcularInfoGestacao(dataInseminacao);
-
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.only(left: 16),
-                        child: Text(
-                          'Porca inseminada em: ${DateFormatUtil.defaultFormat.format(dataInseminacao)} '
-                          '(${infoGestacao.diasDesdeInseminacao} dias atrás)',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 7),
-                      Padding(
-                        padding: EdgeInsets.only(left: 16),
-                        child: Text(
-                          'Previsão de parto: ${infoGestacao.dataPrevistaParto.day.toString().padLeft(2, '0')}/'
-                          '${infoGestacao.dataPrevistaParto.month.toString().padLeft(2, '0')}/'
-                          '${infoGestacao.dataPrevistaParto.year}',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                    ],
-                  );
-                } else {
-                  return Padding(
-                    padding: EdgeInsets.only(left: 16),
-                    child: Text(
-                      'Data de inseminação não disponível',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontStyle: FontStyle.italic,
-                        color: Colors.grey[600],
-                      ),
-                    ),
-                  );
-                }
-              },
-            ),
-            const SizedBox(height: 7),
-            Padding(
-              padding: EdgeInsets.only(left: 16),
-              child: Text(
-                'Quantidade de nascimentos: ${widget.ocupacao?.ocupacaoAnimaisNascimento != null ? widget.ocupacao!.ocupacaoAnimaisNascimento.length : "Informação não disponivel"}',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ),
-          ],
+          _buildInfoSection(),
           SizedBox(height: 10),
           Padding(
             padding: EdgeInsets.all(16),
@@ -178,4 +85,85 @@ class _CustomBaiaInformacoesTabCardState extends State<CustomBaiaInformacoesTabC
       ),
     );
   }
+
+  Widget _buildInfoItem({required IconData icon, required String label, required String value}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: Row(
+        children: [
+          Icon(icon, color: Colors.grey[700], size: 20),
+          SizedBox(width: 8),
+          Text(
+            "$label: ",
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          Expanded(
+            child: Text(value),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInfoSection() {
+    final dataAbertura = widget.ocupacao?.dataAbertura != null
+        ? DateFormatUtil.defaultFormat.format(widget.ocupacao!.dataAbertura!)
+        : "Data não disponível";
+    final abertaPor = widget.ocupacao?.createdBy?.nome ?? "Informação não disponível";
+
+    final ocupacoesSemNascimento = widget.ocupacao?.ocupacaoAnimaisSemNascimento ?? [];
+    final animalComInseminacao = ocupacoesSemNascimento.isNotEmpty
+        ? ocupacoesSemNascimento.first.animal
+        : null;
+    final dataInseminacao = animalComInseminacao?.dataUltimaInseminacao;
+
+    final infoGestacao = dataInseminacao != null
+        ? GestacaoUtil.calcularInfoGestacao(dataInseminacao)
+        : null;
+
+    return Card(
+      margin: const EdgeInsets.all(16),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      elevation: 2,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text("Informações da Ocupação", style: Theme.of(context).textTheme.titleMedium),
+            const Divider(),
+
+            _buildInfoItem(icon: Icons.calendar_today, label: "Aberta em", value: dataAbertura),
+            _buildInfoItem(icon: Icons.person, label: "Aberta por", value: abertaPor),
+
+            if ((widget.baia!.granja!.tipoGranja!.id == tipoGranjaIdToInt[TipoGranjaId.inseminacao] ||
+                widget.baia!.granja!.tipoGranja!.id == tipoGranjaIdToInt[TipoGranjaId.gestacao]) &&
+                dataInseminacao != null &&
+                infoGestacao != null) ...[
+              const SizedBox(height: 10),
+              _buildInfoItem(
+                icon: Icons.pets,
+                label: "Inseminação",
+                value: "${DateFormatUtil.defaultFormat.format(dataInseminacao)} "
+                    "(${infoGestacao.diasDesdeInseminacao} dias atrás)",
+              ),
+              _buildInfoItem(
+                icon: Icons.child_care,
+                label: "Previsão de parto",
+                value: "${infoGestacao.dataPrevistaParto.day.toString().padLeft(2, '0')}/"
+                        "${infoGestacao.dataPrevistaParto.month.toString().padLeft(2, '0')}/"
+                        "${infoGestacao.dataPrevistaParto.year}",
+              ),
+              _buildInfoItem(
+                icon: Icons.cake,
+                label: "Qtd. de nascimentos",
+                value: widget.ocupacao!.ocupacaoAnimaisNascimento.length.toString(),
+              ),
+            ]
+          ],
+        ),
+      ),
+    );
+  }
+
 }
