@@ -20,11 +20,16 @@ class CustomBaiaCard extends StatelessWidget {
     double cardWidth = MediaQuery.of(context).size.width * 0.4; // 40% da tela
     double cardHeight = 130; // Altura fixa
 
-    final dataInseminacao = baia.ocupacao?.ocupacaoAnimais?[0].animal?.dataUltimaInseminacao;
+    final animaisSemNascimento = baia.ocupacao?.ocupacaoAnimaisSemNascimento;
+
+    final dataInseminacao = (animaisSemNascimento != null && animaisSemNascimento.isNotEmpty)
+        ? animaisSemNascimento[0].animal?.dataUltimaInseminacao
+        : null;
+
     GestacaoInfo? infoGestacao;
     if (dataInseminacao != null) {
       infoGestacao = GestacaoUtil.calcularInfoGestacao(dataInseminacao);
-    }    
+    } 
 
     return GestureDetector(
       onTap: () {
@@ -45,7 +50,7 @@ class CustomBaiaCard extends StatelessWidget {
         width: cardWidth,
         height: cardHeight,
         child: Card(
-          color: _getBaiaColor(),
+          color: _getBaiaColor(infoGestacao),
           elevation: 5,
           child: Padding(
             padding: const EdgeInsets.all(10.0),
@@ -63,7 +68,7 @@ class CustomBaiaCard extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                   ),
                 ),  
-                if (!baia.vazia! && (baia.granja!.tipoGranja!.id == tipoGranjaIdToInt[TipoGranjaId.inseminacao] || baia.granja!.tipoGranja!.id == tipoGranjaIdToInt[TipoGranjaId.gestacao]))...[
+                if (!baia.vazia! && infoGestacao != null && (baia.granja!.tipoGranja!.id == tipoGranjaIdToInt[TipoGranjaId.inseminacao] || baia.granja!.tipoGranja!.id == tipoGranjaIdToInt[TipoGranjaId.gestacao]))...[
                   Text(
                     'Inseminado há ${infoGestacao!.diasDesdeInseminacao} dias',
                     style: const TextStyle(
@@ -122,12 +127,12 @@ class CustomBaiaCard extends StatelessWidget {
     );
   }
 
-  Color _getBaiaColor() {
+  Color _getBaiaColor(infoGestacao) {
     if (baia.vazia!) return Colors.grey;
 
-    if (baia.granja!.tipoGranja!.id == tipoGranjaIdToInt[TipoGranjaId.inseminacao] ||
-        baia.granja!.tipoGranja!.id == tipoGranjaIdToInt[TipoGranjaId.gestacao]) {
-      final dataInseminacao = baia.ocupacao?.ocupacaoAnimais?[0].animal?.dataUltimaInseminacao;
+    if (infoGestacao != null && (baia.granja!.tipoGranja!.id == tipoGranjaIdToInt[TipoGranjaId.inseminacao] ||
+        baia.granja!.tipoGranja!.id == tipoGranjaIdToInt[TipoGranjaId.gestacao])) {
+      final dataInseminacao = baia.ocupacao?.ocupacaoAnimaisSemNascimento?[0].animal?.dataUltimaInseminacao;
       if (dataInseminacao != null) {
         final info = GestacaoUtil.calcularInfoGestacao(dataInseminacao);
         return info.corStatus;

@@ -10,6 +10,8 @@ import { OcupacaoAnimal } from "../entities/OcupacaoAnimal";
 import { StatusOcupacaoAnimal } from "../constants/ocupacaoAnimalConstants";
 import { OcupacaoService } from "./OcupacaoService";
 import { isNull } from "util";
+import { Nascimento } from "../entities/nascimento";
+import { StatusOcupacao } from "../constants/ocupacaoConstants";
 
 interface AnimalCreateOrUpdateData {
   numero_brinco: string;
@@ -32,6 +34,8 @@ interface AnimalAdicionarNascimentoData {
 }
 
 export class AnimalService {
+
+  private ocupacaoService = new OcupacaoService(); 
 
   async list(fazenda_id: number) {
     return await animalRepository.find({ 
@@ -163,6 +167,22 @@ export class AnimalService {
 
           await transactionalEntityManager.save(novaOcupacaoAnimal);
 
+          const novoNascimento = transactionalEntityManager.create(Nascimento, {
+            fazenda: fazenda,
+            animal: { id: animal.id },
+            matriz: { id: matriz.id },
+            baia: { id: ocupacao.baia.id },
+            data_nascimento: adicionarNascimentoData.data_nascimento,
+            loteNascimento: matriz.loteAtual,
+            loteAnimalNascimento: matriz.loteAnimalAtual,
+          });
+
+          await transactionalEntityManager.save(novoNascimento);
+
+          matriz.data_ultima_cria = adicionarNascimentoData.data_nascimento;
+          matriz.updatedBy = usuario!;
+          await transactionalEntityManager.save(matriz);
+
           resultados.push({ 
             animal_id: animal.id,
             success: true,
@@ -250,7 +270,17 @@ export class AnimalService {
 
   async deletarNascimento(animalId: number, usuarioIdAcao: number) {
     return await AppDataSource.transaction(async transactionalEntityManager => {
-      const usuario = await ValidationService.validateAndReturnUsuario(usuarioIdAcao);
+      let usuarioAcao = await ValidationService.validateAndReturnUsuario(usuarioIdAcao);
+
+      const ocupacaoAtual = await transactionalEntityManager.findOne(OcupacaoAnimal, {
+          where: { 
+              animal: { id: animalId },
+              status: StatusOcupacaoAnimal.ATIVO
+          },
+          relations: ['ocupacao', 'ocupacao.baia']
+      });
+
+      if (!ocupacaoAtual) return null;
   
       // Busca o animal com as ocupações
       const animal = await transactionalEntityManager.findOne(Animal, {
@@ -264,7 +294,11 @@ export class AnimalService {
       if (!animal.nascimento) {
         throw new Error(`Animal com ID ${animalId} não é um nascimento e não pode ser excluído por este método.`);
       }
-  
+
+      await transactionalEntityManager.delete(Nascimento, {
+        animal: { id: animal.id }
+      });
+    
       // Remove as ocupações associadas ao animal
       await transactionalEntityManager.delete(OcupacaoAnimal, {
         animal: { id: animal.id }
@@ -272,7 +306,14 @@ export class AnimalService {
   
       // Remove o animal
       await transactionalEntityManager.delete(Animal, { id: animal.id });
-  
+
+      await this.ocupacaoService.verificaSeOcupacaoEstaVaziaEncerraSeSim(
+        transactionalEntityManager,
+        ocupacaoAtual.ocupacao.baia.id,
+        ocupacaoAtual.ocupacao.id,
+        usuarioAcao!.id,
+      );
+
       return {
         success: true,
         message: 'Nascimento excluído com sucesso',
@@ -331,6 +372,16 @@ export class AnimalService {
   async editarStatusNascimento(animalId: number, novoStatus: StatusAnimal, usuarioIdAcao: number) {
     return await AppDataSource.transaction(async transactionalEntityManager => {
       const usuario = await ValidationService.validateAndReturnUsuario(usuarioIdAcao);
+
+      const ocupacaoAtual = await transactionalEntityManager.findOne(OcupacaoAnimal, {
+        where: { 
+          animal: { id: animalId },
+          status: StatusOcupacaoAnimal.ATIVO
+        },
+        relations: ['ocupacao', 'ocupacao.baia']
+      });
+
+      if (!ocupacaoAtual) return null;
   
       const animal = await transactionalEntityManager.findOne(Animal, {
         where: { id: animalId }
@@ -352,6 +403,13 @@ export class AnimalService {
       animal.updatedBy = usuario!;
   
       await transactionalEntityManager.save(animal);
+
+      await this.ocupacaoService.verificaSeOcupacaoEstaVaziaEncerraSeSim(
+        transactionalEntityManager,
+        ocupacaoAtual.ocupacao.baia.id,
+        ocupacaoAtual.ocupacao.id,
+        usuarioIdAcao
+      );
   
       return {
         success: true,

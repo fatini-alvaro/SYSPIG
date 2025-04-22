@@ -76,7 +76,8 @@ export class OcupacaoController {
   getByBaiaId = async (req: Request, res: Response) => {
     try {      
       const { baia_id } = req.params;
-      const ocupacao = await this.ocupacaoService.getByBaiaId(Number(baia_id));
+      const usuario_id = req.headers['user-id'];
+      const ocupacao = await this.ocupacaoService.getByBaiaId(Number(baia_id), Number(usuario_id));
   
       if (!ocupacao) {
         return res.status(200).json({});

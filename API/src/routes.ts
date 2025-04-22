@@ -73,7 +73,6 @@ routes.get('/baias/byFazenda/:fazenda_id', baiaController.listByFazenda);
 routes.get('/baias/baia/:baia_id', baiaController.getById);
 routes.get('/baias/byFazendaAndTipo/:fazenda_id/:tipoGranja_id', baiaController.listByFazendaAndTipo);
 
-
 //Cidade
 const cidadeController = new CidadeController();
 routes.get('/cidades', cidadeController.list);

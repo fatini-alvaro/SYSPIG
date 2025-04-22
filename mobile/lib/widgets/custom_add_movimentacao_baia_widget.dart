@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:syspig/controller/cadastrar_movimentacao_baia/cadastrar_movimentacao_baia_controller.dart';
+import 'package:syspig/enums/animal_constants.dart';
 import 'package:syspig/model/animal_model.dart';
 import 'package:syspig/model/baia_model.dart';
 import 'package:syspig/model/ocupacao_model.dart';
+import 'package:syspig/widgets/custom_quantidade_field_widget.dart';
 import 'package:syspig/widgets/custom_text_form_field_widget.dart';
 
 enum MovimentacaoTipo {
@@ -16,12 +18,14 @@ class CustomMovimentacaoBaiaWidget extends StatefulWidget {
   final OcupacaoModel ocupacao;
   final BaiaModel baia;
   final VoidCallback onClose;
+  final bool isNascimento;  
 
   const CustomMovimentacaoBaiaWidget({
     Key? key,
     required this.ocupacao,
     required this.baia,
     required this.onClose,
+    this.isNascimento = false,
   }) : super(key: key);
 
   @override
@@ -42,18 +46,19 @@ class _CustomMovimentacaoBaiaWidgetState extends State<CustomMovimentacaoBaiaWid
   @override
   Widget build(BuildContext context) {
     final controller = Provider.of<MovimentacaoBaiaController>(context, listen: false);
-    final animais = widget.ocupacao.ocupacaoAnimaisSemNascimento?.map((oa) => oa.animal!).toList() ?? [];
 
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildOptionsSelector(),
-          const SizedBox(height: 20),
-          _buildSelectedOptionContent(controller, animais),
-          const SizedBox(height: 20),
-          _buildActionButtons(controller, animais),
-        ],
+        children: widget.isNascimento
+            ? _buildNascimentoContent(controller)
+            : [
+                _buildOptionsSelector(),
+                const SizedBox(height: 20),
+                _buildSelectedOptionContent(controller, _getAnimais()),
+                const SizedBox(height: 20),
+                _buildActionButtons(controller, _getAnimais()),
+              ],
       ),
     );
   }
@@ -312,9 +317,9 @@ class _CustomMovimentacaoBaiaWidgetState extends State<CustomMovimentacaoBaiaWid
 
     setState(() => _isProcessing = true);
 
-    final animaisParaMovimentar = _selectedOption == MovimentacaoTipo.selecionarIndividualmente
-    ? controller.selectedAnimals
-    : animais;
+    final animaisParaMovimentar = widget.isNascimento || _selectedOption == MovimentacaoTipo.selecionarIndividualmente
+      ? controller.selectedAnimals
+      : animais;
 
     try {
       final success = await controller.movimentarAnimais(
@@ -341,4 +346,71 @@ class _CustomMovimentacaoBaiaWidgetState extends State<CustomMovimentacaoBaiaWid
       }
     }
   }
+
+  List<Widget> _buildNascimentoContent(MovimentacaoBaiaController controller) {
+    final totalLeitoes = _getQuantidadeAnimais();
+
+    return [
+      Text('Quantidade de leitões disponíveis: $totalLeitoes'),
+      const SizedBox(height: 10),
+
+      CustomQuantidadeFormFieldWidget(
+        label: 'Quantidade para movimentar',
+        hintText: 'Digite a quantidade',
+        onChanged: (value) {
+          final quantidade = int.tryParse(value) ?? 0;
+          if (quantidade <= totalLeitoes) {
+            controller.setQuantidadeNascimento(quantidade);
+            final animaisSelecionados = _getAnimais().take(quantidade).toList();
+            controller.setSelectedAnimals(animaisSelecionados);
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Quantidade maior que o disponível')),
+            );
+          }
+        },
+        controller: controller.quantidadeController,
+        maxValue: totalLeitoes
+      ),
+
+      const SizedBox(height: 10),
+
+      Align(
+        alignment: Alignment.centerRight,
+        child: ElevatedButton.icon(
+          onPressed: () {
+            controller.quantidadeController.text = totalLeitoes.toString();
+            controller.setQuantidadeNascimento(totalLeitoes);
+            final animaisSelecionados = _getAnimais().take(totalLeitoes).toList();
+            controller.setSelectedAnimals(animaisSelecionados);
+          },
+          icon: const Icon(Icons.all_inclusive),
+          label: const Text('Movimentar todos'),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+          ),
+        ),
+      ),
+
+      const SizedBox(height: 20),
+      const Text('Selecione a baia de destino:'),
+      const SizedBox(height: 10),
+      _buildTodosParaMesmaBaia(controller),
+      const SizedBox(height: 20),
+      _buildActionButtons(controller, controller.selectedAnimals),
+    ];
+  }
+
+  List<AnimalModel> _getAnimais() {
+    final animais = widget.isNascimento
+        ? widget.ocupacao.ocupacaoAnimaisNascimento?.map((oa) => oa.animal!).toList() ?? []
+        : widget.ocupacao.ocupacaoAnimaisSemNascimento?.map((oa) => oa.animal!).toList() ?? [];
+
+    return animais.where((animal) => animal.status == StatusAnimal.vivo).toList();
+  }
+
+  int _getQuantidadeAnimais() {
+    return _getAnimais().length;
+  }
+
 }

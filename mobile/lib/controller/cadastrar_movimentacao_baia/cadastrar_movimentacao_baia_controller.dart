@@ -23,8 +23,21 @@ class MovimentacaoBaiaController with ChangeNotifier {
     notifyListeners();
   }
 
+  int quantidadeNascimento = 0;
+  final quantidadeController = TextEditingController();
+
+  void setQuantidadeNascimento(int quantidade) {
+    quantidadeNascimento = quantidade;
+    notifyListeners();
+  }
+
   List<AnimalModel> _selectedAnimals = [];
   List<AnimalModel> get selectedAnimals => _selectedAnimals;
+
+  void setSelectedAnimals(List<AnimalModel> animais) {
+    _selectedAnimals = animais;
+    notifyListeners();
+  }
 
   bool _isBaiaSearchFocused = false;
   bool get isBaiaSearchFocused => _isBaiaSearchFocused;

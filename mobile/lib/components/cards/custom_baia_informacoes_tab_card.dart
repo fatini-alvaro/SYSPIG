@@ -54,12 +54,12 @@ class _CustomBaiaInformacoesTabCardState extends State<CustomBaiaInformacoesTabC
               ),
             ),
           ),
-          if (widget.baia!.granja!.tipoGranja!.id == tipoGranjaIdToInt[TipoGranjaId.inseminacao] ||
-              widget.baia!.granja!.tipoGranja!.id == tipoGranjaIdToInt[TipoGranjaId.gestacao]) ...[
+          if ((widget.baia!.granja!.tipoGranja!.id == tipoGranjaIdToInt[TipoGranjaId.inseminacao] ||
+              widget.baia!.granja!.tipoGranja!.id == tipoGranjaIdToInt[TipoGranjaId.gestacao]) && (widget.ocupacao?.ocupacaoAnimaisSemNascimento?.length ?? 0) > 0) ...[
             const SizedBox(height: 7),
             Builder(
               builder: (context) {
-                final dataInseminacao = widget.ocupacao?.ocupacaoAnimais?[0].animal?.dataUltimaInseminacao;
+                final dataInseminacao = widget.ocupacao?.ocupacaoAnimaisSemNascimento?[0].animal?.dataUltimaInseminacao;
 
                 if (dataInseminacao != null) {
                   final infoGestacao = GestacaoUtil.calcularInfoGestacao(dataInseminacao);
@@ -107,6 +107,17 @@ class _CustomBaiaInformacoesTabCardState extends State<CustomBaiaInformacoesTabC
                   );
                 }
               },
+            ),
+            const SizedBox(height: 7),
+            Padding(
+              padding: EdgeInsets.only(left: 16),
+              child: Text(
+                'Quantidade de nascimentos: ${widget.ocupacao?.ocupacaoAnimaisNascimento != null ? widget.ocupacao!.ocupacaoAnimaisNascimento.length : "Informação não disponivel"}',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
             ),
           ],
           SizedBox(height: 10),

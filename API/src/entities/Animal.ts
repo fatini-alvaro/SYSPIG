@@ -30,6 +30,9 @@ export class Animal {
   @Column({ type: 'enum', enum: StatusAnimal, default: StatusAnimal.VIVO })
   status: StatusAnimal;
 
+  @Column({ type: 'timestamp', nullable: true })
+  data_ultima_cria: Date;
+
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', nullable: true })
   data_nascimento: Date;
 

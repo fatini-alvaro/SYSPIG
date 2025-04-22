@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:syspig/controller/animal/animal_controller.dart';
+import 'package:syspig/controller/baia/baia_controller.dart';
 import 'package:syspig/enums/animal_constants.dart';
 import 'package:syspig/model/animal_model.dart';
 import 'package:syspig/model/baia_model.dart';
 import 'package:syspig/model/ocupacao_model.dart';
 import 'package:syspig/repositories/animal/animal_repository_imp.dart';
+import 'package:syspig/repositories/baia/baia_repository_imp.dart';
 import 'package:syspig/utils/async_handler_util.dart';
 import 'package:syspig/widgets/custom_data_table.dart';
 import 'package:syspig/widgets/custom_date_time_field_widget.dart';
@@ -33,6 +35,9 @@ class _CustomAdicionarNascimentoWidgetState extends State<CustomAdicionarNascime
 
   final AnimalController _animalController =
       AnimalController(AnimalRepositoryImp());
+
+  final BaiaController _baiaController = 
+      BaiaController(BaiaRepositoryImp());
       
   List<AnimalModel> _nascimentos = [];
 
@@ -65,7 +70,7 @@ class _CustomAdicionarNascimentoWidgetState extends State<CustomAdicionarNascime
   Future<void> _carregarMatriz() async {
     final ocupacaoAtualizada = await widget.getOcupacao();
 
-    if (ocupacaoAtualizada != null) {
+    if (ocupacaoAtualizada != null &&  ocupacaoAtualizada.ocupacaoAnimaisSemNascimento?.length != 0) {
       _matriz = ocupacaoAtualizada.ocupacaoAnimaisSemNascimento?[0].animal;
     }
     
@@ -116,6 +121,25 @@ class _CustomAdicionarNascimentoWidgetState extends State<CustomAdicionarNascime
       loadingMessage: 'Excluindo nascimento...',
       successMessage: 'Nascimento excluido com sucesso!',
     );
+
+    // Buscar informações atualizadas da baia
+    final baiaAtualizada = await _baiaController.fetchBaiaById(widget.baia!.id!);
+
+    if (baiaAtualizada.vazia == true) {
+      if (!mounted) return;
+
+      // Mostrar mensagem
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Baia foi encerrada pois está vazia.')),
+      );
+
+      // Fechar a tela atual
+      Future.delayed(const Duration(milliseconds: 300), () {
+        if (mounted) {
+          Navigator.pop(context);
+        }
+      });
+    }
 
     await _carregarNascimentos();
   }
@@ -280,6 +304,25 @@ class _CustomAdicionarNascimentoWidgetState extends State<CustomAdicionarNascime
                             loadingMessage: 'Atualizando status...',
                             successMessage: 'Status atualizado com sucesso!',
                           );
+
+                          // Buscar informações atualizadas da baia
+                          final baiaAtualizada = await _baiaController.fetchBaiaById(widget.baia!.id!);
+
+                          if (baiaAtualizada.vazia == true) {
+                            if (!mounted) return;
+
+                            // Mostrar mensagem
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Baia foi encerrada pois está vazia.')),
+                            );
+
+                            // Fechar a tela atual
+                            Future.delayed(const Duration(milliseconds: 300), () {
+                              if (mounted) {
+                                Navigator.pop(context);
+                              }
+                            });
+                          }
 
                           await _carregarNascimentos();
                         },

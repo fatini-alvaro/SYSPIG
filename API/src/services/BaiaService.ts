@@ -4,6 +4,7 @@ import { ValidationService } from "./ValidationService";
 import { ValidationError } from "../utils/validationError";
 import { Usuario } from "../entities/Usuario";
 import { baiaRepository } from "../repositories/baiaRepository";
+import { StatusOcupacaoAnimal } from "../constants/ocupacaoAnimalConstants";
 
 interface BaiaCreateOrUpdateData {
   numero: string;
@@ -44,12 +45,19 @@ export class BaiaService {
     return await baiaRepository.createQueryBuilder("baia")
       .leftJoinAndSelect("baia.ocupacao", "ocupacao")
       .leftJoinAndSelect("baia.granja", "granja")
+      .leftJoinAndSelect("granja.tipoGranja", "tipoGranja")
+      .leftJoinAndSelect("ocupacao.ocupacaoAnimais", "ocupacaoAnimais", "ocupacaoAnimais.status = :statusAtivo", { statusAtivo: StatusOcupacaoAnimal.ATIVO })
+      .leftJoinAndSelect("ocupacaoAnimais.animal", "animal")
       .select([
         "baia.id", 
         "baia.numero", 
         "baia.vazia", 
         "ocupacao.id",
         "ocupacao.codigo",
+        "ocupacaoAnimais.id",
+        "animal.id",
+        "animal.data_ultima_inseminacao",
+        "animal.nascimento",
         "granja.id",
         "granja.descricao",
         "granja.tipo_granja_id",
@@ -67,7 +75,7 @@ export class BaiaService {
       .leftJoinAndSelect("baia.ocupacao", "ocupacao")
       .leftJoinAndSelect("baia.granja", "granja")
       .leftJoinAndSelect("granja.tipoGranja", "tipoGranja")
-      .leftJoinAndSelect("ocupacao.ocupacaoAnimais", "ocupacaoAnimais")
+      .leftJoinAndSelect("ocupacao.ocupacaoAnimais", "ocupacaoAnimais", "ocupacaoAnimais.status = :statusAtivo", { statusAtivo: StatusOcupacaoAnimal.ATIVO })
       .leftJoinAndSelect("ocupacaoAnimais.animal", "animal")
       .select([
         "baia.id", 
@@ -78,6 +86,7 @@ export class BaiaService {
         "ocupacaoAnimais.id",
         "animal.id",
         "animal.data_ultima_inseminacao",
+        "animal.nascimento",
         "granja.id",
         "granja.descricao",
         "granja.codigo",
@@ -97,12 +106,18 @@ export class BaiaService {
       .leftJoinAndSelect("baia.ocupacao", "ocupacao")
       .leftJoinAndSelect("baia.granja", "granja")
       .leftJoinAndSelect("granja.tipoGranja", "tipoGranja")
+      .leftJoinAndSelect("ocupacao.ocupacaoAnimais", "ocupacaoAnimais", "ocupacaoAnimais.status = :statusAtivo", { statusAtivo: StatusOcupacaoAnimal.ATIVO })
+      .leftJoinAndSelect("ocupacaoAnimais.animal", "animal")
       .select([
         "baia.id", 
         "baia.numero", 
         "baia.vazia", 
         "ocupacao.id",
         "ocupacao.codigo",
+        "ocupacaoAnimais.id",
+        "animal.id",
+        "animal.data_ultima_inseminacao",
+        "animal.nascimento",
         "granja.id",
         "granja.descricao",
         "granja.codigo",
@@ -116,8 +131,7 @@ export class BaiaService {
         "baia.numero": "DESC" 
       })
       .getMany();
-  }
-  
+  }  
 
   async delete(baia_id: number): Promise<void> {
     if (!baia_id) {

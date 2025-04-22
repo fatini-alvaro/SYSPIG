@@ -15,7 +15,7 @@ import { Fazenda } from "../entities/Fazenda";
 import { Movimentacao } from "../entities/movimentacao";
 import { StatusMovimentacao, TipoMovimentacao } from "../constants/movimentacaoConstants";
 import { TipoGranjaId } from "../constants/tipoGranjaConstants";
-import { SexoAnimal } from "../constants/animalConstants";
+import { SexoAnimal, StatusAnimal } from "../constants/animalConstants";
 
 interface OcupacaoCreateOrUpdateData {
   fazenda_id: number;
@@ -61,7 +61,7 @@ export class OcupacaoService {
       .getOne();
   }
 
-  async getByBaiaId(baia_id: number) {
+  async getByBaiaId(baia_id: number, usuarioIdAcao: number) {
 
     //verifica se a ocupacao da baia esta vazia e encerra se sim
     const baia = await AppDataSource.getRepository(Baia).findOne({
@@ -70,7 +70,12 @@ export class OcupacaoService {
     });
 
     const manager = AppDataSource.manager;
-    await this.verificaSeOcupacaoEstaVaziaEncerraSeSim(manager, baia_id, baia!.ocupacao!.id);
+    await this.verificaSeOcupacaoEstaVaziaEncerraSeSim(
+      manager, 
+      baia_id, 
+      baia!.ocupacao!.id, 
+      usuarioIdAcao
+    );
 
     return await ocupacaoRepository
       .createQueryBuilder("ocupacao")
@@ -294,6 +299,11 @@ export class OcupacaoService {
               throw new ValidationError(`A baia de creche só pode receber leitoes. O animal ${animal!.numero_brinco} não é`);
             }
           }
+
+          //se for leitao ele so pode ser transferido para baia de creche
+          if (animal!.nascimento === true && baiaDestino!.granja!.tipoGranja.id !== TipoGranjaId.CRECHE) {
+            throw new ValidationError(`O animal ${animal!.numero_brinco} é um leitao e só pode ser transferido para baia de creche`);
+          }
   
           // Verificar se o animal já está na baia de destino
           const ocupacaoAtiva = await transactionalEntityManager.findOne(OcupacaoAnimal, {
@@ -397,8 +407,9 @@ export class OcupacaoService {
     // Verificar se a baia de origem ficou vazia
     const animaisAtivos = await manager.count(OcupacaoAnimal, {
         where: { 
-            ocupacao: { id: ocupacaoAtual.ocupacao.id },
-            status: StatusOcupacaoAnimal.ATIVO
+          ocupacao: { id: ocupacaoAtual.ocupacao.id },
+          status: StatusOcupacaoAnimal.ATIVO,
+          animal: { status: StatusAnimal.VIVO }
         }
     });
 
@@ -411,6 +422,7 @@ export class OcupacaoService {
         const baia = ocupacaoAtual.ocupacao.baia;
         baia.vazia = true;
         baia.ocupacao = null; // Remove o vínculo com a ocupação
+        baia.updatedBy = usuario;
         await manager.save(baia);
     }
 
@@ -524,7 +536,11 @@ export class OcupacaoService {
       manager: EntityManager,
       baia_id: number,
       ocupacaoId: number,
+      usuarioIdAcao: number,
   ): Promise<boolean | null> {
+
+    let usuarioAcao = await ValidationService.validateAndReturnUsuario(usuarioIdAcao);
+
     const ocupacao = await manager.findOne(Ocupacao, {
         where: { id: ocupacaoId },
         relations: ['ocupacaoAnimais']
@@ -536,8 +552,9 @@ export class OcupacaoService {
 
     const animaisAtivos = await manager.count(OcupacaoAnimal, {
         where: { 
-            ocupacao: { id: ocupacao.id },
-            status: StatusOcupacaoAnimal.ATIVO
+          ocupacao: { id: ocupacao.id },
+          status: StatusOcupacaoAnimal.ATIVO,
+          animal: { status: StatusAnimal.VIVO }
         }
     });
 
@@ -551,6 +568,7 @@ export class OcupacaoService {
       if (baia) {
         baia.vazia = true;
         baia.ocupacao = null; // Remove o vínculo com a ocupação
+        baia.updatedBy = usuarioAcao!;
         await manager.save(baia);
       }
 

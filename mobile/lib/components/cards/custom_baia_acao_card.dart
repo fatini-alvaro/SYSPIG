@@ -35,11 +35,14 @@ class CustomBaiaAcaoCard extends StatelessWidget {
                 SizedBox(height: 10),
                 Text(
                   descricao,
+                  textAlign: TextAlign.center, // centraliza o texto
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 18,
+                    fontSize: 16, // diminuir um pouco ajuda a caber melhor
                     fontWeight: FontWeight.bold,
                   ),
+                  maxLines: 2, // limita a 2 linhas
+                  overflow: TextOverflow.ellipsis, // mostra reticências se passar
                 ),
               ],
             ),

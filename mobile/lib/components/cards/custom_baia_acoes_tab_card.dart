@@ -79,6 +79,59 @@ class _CustomBaiaAcoesTabCardState extends State<CustomBaiaAcoesTabCard> with Si
     );
   }
 
+  void _abrirDialogMovimentacaoNascimento() {
+    showDialog(
+      context: context,
+      builder: (context) => ChangeNotifierProvider(
+        create: (_) => MovimentacaoBaiaController()..loadBaias(),
+        child: AlertDialog(
+          title: const Text('Movimentar Leitões'),
+          content: SizedBox(
+            width: double.maxFinite,
+            child: CustomMovimentacaoBaiaWidget(
+              ocupacao: widget.ocupacao!,
+              baia: widget.baia!,
+              isNascimento: true,
+              onClose: () async {
+                Navigator.pop(context);
+                try {
+                  await widget.recarregarDados?.call();
+
+                  if (mounted) {
+                    setState(() {});
+                  }
+
+                  if (widget.baia?.vazia == true) {
+                    Future.delayed(Duration(milliseconds: 100), () {
+                      if (mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Baia foi encerrada pois está vazia.')),
+                        );
+                      }
+                    });
+
+                    Future.delayed(Duration(milliseconds: 400), () {
+                      if (mounted) {
+                        Navigator.pop(context);
+                      }
+                    });
+                  }
+                } catch (e) {
+                  Navigator.pop(context);
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Erro ao recarregar dados: $e')),
+                    );
+                  }
+                }
+              }
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -110,19 +163,30 @@ class _CustomBaiaAcoesTabCardState extends State<CustomBaiaAcoesTabCard> with Si
                     ),
                   ],
                 ),
-                if (widget.baia?.granja?.tipoGranja?.id == tipoGranjaIdToInt[TipoGranjaId.gestacao])
-                const SizedBox(height: 20),
-                if (widget.baia?.granja?.tipoGranja?.id == tipoGranjaIdToInt[TipoGranjaId.gestacao])
-                CustomBaiaAcaoCard(
-                  descricao: 'Nascimento',
-                  icone: Icons.child_friendly_outlined,
-                  onTapCallback: () {
-                    setState(() {
-                      isAddingNascimento = true;
-                      isAddingAnotacao = false;
-                    });
-                  },
-                ),
+                if (widget.baia?.granja?.tipoGranja?.id == tipoGranjaIdToInt[TipoGranjaId.gestacao]) ...[
+                  const SizedBox(width: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [                      
+                      CustomBaiaAcaoCard(
+                        descricao: 'Nascimentos',
+                        icone: Icons.child_friendly_outlined,
+                        onTapCallback: () {
+                          setState(() {
+                            isAddingNascimento = true;
+                            isAddingAnotacao = false;
+                          });
+                        },
+                      ),
+                      const SizedBox(width: 20),
+                      CustomBaiaAcaoCard(
+                        descricao: 'Movimentar Leitões',
+                        icone: Icons.compare_arrows,
+                        onTapCallback: _abrirDialogMovimentacaoNascimento,
+                      ),                
+                    ]
+                  ),
+                ]
               ],
             ),
           ),
