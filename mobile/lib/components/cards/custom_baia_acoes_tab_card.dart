@@ -145,6 +145,7 @@ class _CustomBaiaAcoesTabCardState extends State<CustomBaiaAcoesTabCard> with Si
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
+                    const SizedBox(width: 20),
                     CustomBaiaAcaoCard(
                       descricao: 'Criar Anotação',
                       icone: Icons.note_alt_outlined,
@@ -155,8 +156,8 @@ class _CustomBaiaAcoesTabCardState extends State<CustomBaiaAcoesTabCard> with Si
                         });
                       },
                     ),
-                    const SizedBox(width: 20),
                     if (widget.baia?.granja?.tipoGranja?.id != tipoGranjaIdToInt[TipoGranjaId.creche]) ...[
+                      const SizedBox(width: 20),
                       CustomBaiaAcaoCard(
                         descricao: 'Movimentar',
                         icone: Icons.compare_arrows,
@@ -166,36 +167,41 @@ class _CustomBaiaAcoesTabCardState extends State<CustomBaiaAcoesTabCard> with Si
                   ],
                 ),
                 if (widget.baia?.granja?.tipoGranja?.id == tipoGranjaIdToInt[TipoGranjaId.gestacao] || widget.baia?.granja?.tipoGranja?.id == tipoGranjaIdToInt[TipoGranjaId.creche]) ...[
-                  const SizedBox(width: 20),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: [                      
-                      CustomBaiaAcaoCard(
-                        descricao: 'Nascimentos',
-                        icone: Icons.child_friendly_outlined,
-                        onTapCallback: () {
-                          setState(() {
-                            isAddingNascimento = true;
-                            isAddingAnotacao = false;
-                          });
-                        },
-                      ),
-                      const SizedBox(width: 20),
-                      CustomBaiaAcaoCard(
-                        descricao: 'Movimentar Leitões',
-                        icone: Icons.compare_arrows,
-                        onTapCallback: _abrirDialogMovimentacaoNascimento,
-                      ),                
+                    children: [
+                      if (widget.baia?.granja?.tipoGranja?.id == tipoGranjaIdToInt[TipoGranjaId.gestacao]) ...[
+                        const SizedBox(width: 20),
+                        CustomBaiaAcaoCard(
+                          descricao: 'Nascimentos',
+                          icone: Icons.child_friendly_outlined,
+                          onTapCallback: () {
+                            setState(() {
+                              isAddingNascimento = true;
+                              isAddingAnotacao = false;
+                            });
+                          },
+                        ),
+                      ],
+                      if (widget.baia?.granja?.tipoGranja?.id == tipoGranjaIdToInt[TipoGranjaId.gestacao] || widget.baia?.granja?.tipoGranja?.id == tipoGranjaIdToInt[TipoGranjaId.creche]) ...[
+                        const SizedBox(width: 20),
+                        CustomBaiaAcaoCard(
+                          descricao: 'Movimentar Leitões',
+                          icone: Icons.compare_arrows,
+                          onTapCallback: _abrirDialogMovimentacaoNascimento,
+                        ),
+                      ],
+                      if (widget.baia?.granja?.tipoGranja?.id == tipoGranjaIdToInt[TipoGranjaId.creche]) ...[
+                        const SizedBox(width: 20),
+                        CustomBaiaAcaoCard(
+                          descricao: 'Vender Leitões (Baixa)',
+                          icone: Icons.monetization_on,
+                          onTapCallback: _abrirDialogMovimentacao,
+                        ),
+                      ]
                     ]
                   ),
-                ],
-                if (widget.baia?.granja?.tipoGranja?.id == tipoGranjaIdToInt[TipoGranjaId.creche]) ...[
-                  CustomBaiaAcaoCard(
-                    descricao: 'Vender Leitões (Baixa)',
-                    icone: Icons.monetization_on,
-                    onTapCallback: _abrirDialogMovimentacao,
-                  ),
-                ]
+                ],                
               ],
             ),
           ),
