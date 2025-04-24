@@ -1,25 +1,93 @@
 import 'package:flutter/material.dart';
 import 'package:syspig/components/cards/custom_pre_visualizacao_anotacao_card.dart';
+import 'package:syspig/controller/animal/animal_controller.dart';
+import 'package:syspig/controller/baia/baia_controller.dart';
 import 'package:syspig/enums/animal_constants.dart';
 import 'package:syspig/enums/tipo_granja_constants.dart';
+import 'package:syspig/model/animal_model.dart';
 import 'package:syspig/model/baia_model.dart';
 import 'package:syspig/model/ocupacao_model.dart';
+import 'package:syspig/repositories/animal/animal_repository_imp.dart';
+import 'package:syspig/repositories/baia/baia_repository_imp.dart';
+import 'package:syspig/utils/async_handler_util.dart';
 import 'package:syspig/utils/date_format_util.dart';
 import 'package:syspig/utils/gestacao_util.dart';
 import 'package:syspig/view/animal/cadastrar_animal_page.dart';
 import 'package:syspig/widgets/custom_data_table.dart';
 
 class CustomBaiaInformacoesTabCard extends StatefulWidget {
-
   final OcupacaoModel? ocupacao;
   final BaiaModel? baia;
+  final Future<OcupacaoModel> Function() getOcupacao;
 
-  CustomBaiaInformacoesTabCard({Key? key, this.ocupacao, this.baia}) : super(key: key);
+  CustomBaiaInformacoesTabCard({
+    Key? key, 
+    this.ocupacao, 
+    this.baia,
+    required this.getOcupacao,
+    }) : super(key: key);
 
   @override
   _CustomBaiaInformacoesTabCardState createState() => _CustomBaiaInformacoesTabCardState();
 }
 class _CustomBaiaInformacoesTabCardState extends State<CustomBaiaInformacoesTabCard> with SingleTickerProviderStateMixin {
+  final AnimalController _animalController =
+      AnimalController(AnimalRepositoryImp());
+
+  final BaiaController _baiaController = 
+      BaiaController(BaiaRepositoryImp());
+  
+  List<AnimalModel> _nascimentos = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _carregarNascimentos();
+  }
+
+  Future<void> _carregarNascimentos() async {
+    final ocupacaoAtualizada = await widget.getOcupacao();
+    _nascimentos = ocupacaoAtualizada.ocupacaoAnimaisNascimento != null
+        ? ocupacaoAtualizada.ocupacaoAnimaisNascimento!
+            .map((ocupacaoAnimal) => ocupacaoAnimal.animal!)
+            .toList()
+        : [];
+    setState(() {});
+  }
+
+  void _excluirNascimento(AnimalModel animal) async{
+
+    await AsyncHandler.execute(
+      context: context,
+      action: () async {
+        return await _animalController.deleteNascimento(animal.id!);
+      },
+      loadingMessage: 'Excluindo nascimento...',
+      successMessage: 'Nascimento excluido com sucesso!',
+    );
+
+    // Buscar informações atualizadas da baia
+    final baiaAtualizada = await _baiaController.fetchBaiaById(widget.baia!.id!);
+
+    if (baiaAtualizada.vazia == true) {
+      if (!mounted) return;
+
+      // Mostrar mensagem
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Baia foi encerrada pois está vazia.')),
+      );
+
+      // Fechar a tela atual
+      Future.delayed(const Duration(milliseconds: 300), () {
+        if (mounted) {
+          Navigator.pop(context);
+        }
+      });
+    }
+
+    await _carregarNascimentos();
+  }
+  
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -30,33 +98,114 @@ class _CustomBaiaInformacoesTabCardState extends State<CustomBaiaInformacoesTabC
           SizedBox(height: 10),
           Padding(
             padding: EdgeInsets.all(16),
-            child: CustomDataTable(
-              title: 'Animais na baia',
-              columns: const [
-                DataColumn(
-                  label: Text(
-                    'Nº Brinco',
-                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-                  ),
-                ),
-                DataColumn(
-                  label: Text(
-                    'Sexo',
-                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ],
-              data: widget.ocupacao?.ocupacaoAnimaisSemNascimento ?? [],
-              generateRows: (animais) {
-                return animais.map((ocupacaoAnimal) {
-                  return DataRow(
-                    cells: [
-                      DataCell(Text(ocupacaoAnimal.animal!.numeroBrinco)),
-                      DataCell(Text(ocupacaoAnimal.animal!.sexo == SexoAnimal.macho ? 'Macho' : 'Fêmea')),
+            child: Column(
+              children: [
+                if (widget.baia?.granja?.tipoGranja?.id != tipoGranjaIdToInt[TipoGranjaId.creche])
+                  CustomDataTable(
+                    title: 'Animais na baia',
+                    columns: const [
+                      DataColumn(
+                        label: Text(
+                          'Nº Brinco',
+                          style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      DataColumn(
+                        label: Text(
+                          'Sexo',
+                          style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                        ),
+                      ),
                     ],
-                  );
-                }).toList();
-              },
+                    data: widget.ocupacao?.ocupacaoAnimaisSemNascimento ?? [],
+                    generateRows: (animais) {
+                      return animais.map((ocupacaoAnimal) {
+                        return DataRow(
+                          cells: [
+                            DataCell(Text(ocupacaoAnimal.animal!.numeroBrinco)),
+                            DataCell(Text(ocupacaoAnimal.animal!.sexo == SexoAnimal.macho ? 'Macho' : 'Fêmea')),
+                          ],
+                        );
+                      }).toList();
+                    },
+                  ),
+                if (widget.baia?.granja?.tipoGranja?.id == tipoGranjaIdToInt[TipoGranjaId.creche])
+                  CustomDataTable(
+                    title: 'Leitões na baia (${_nascimentos.length} animais)',
+                    maxTableHeight: 600,
+                    columns: const [
+                      DataColumn(
+                        label: Text(
+                          'Data de Nascimento',
+                          style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      DataColumn(
+                        label: Text(
+                          'Status',
+                          style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ],
+                    data: _nascimentos,
+                    generateRows: (animais) {
+                      return animais.map((animal) {
+                        return DataRow(
+                          cells: [
+                            DataCell(Text(animal!.dataNascimento != null
+                                ? DateFormatUtil.defaultFormat.format(animal!.dataNascimento!)
+                                : "Data não disponível")),
+                            DataCell(
+                              DropdownButton<StatusAnimal>(
+                                value: animal.status,
+                                items: StatusAnimal.values
+                                    .where((status) => status == StatusAnimal.vivo || status == StatusAnimal.morto)
+                                    .map((status) => DropdownMenuItem(
+                                          value: status,
+                                          child: Text(statusAnimalDescriptions[status]!),
+                                        ))
+                                    .toList(),
+                                onChanged: (novoStatus) async {
+                                  if (novoStatus == null || novoStatus == animal.status) return;
+                                  
+                                  await AsyncHandler.execute(
+                                    context: context,
+                                    action: () async {
+                                      await _animalController.atualizarStatusNascimento(animal.id!, novoStatus);
+                                    },
+                                    loadingMessage: 'Atualizando status...',
+                                    successMessage: 'Status atualizado com sucesso!',
+                                  );
+
+                                  // Buscar informações atualizadas da baia
+                                  final baiaAtualizada = await _baiaController.fetchBaiaById(widget.baia!.id!);
+
+                                  if (baiaAtualizada.vazia == true) {
+                                    if (!mounted) return;
+
+                                    // Mostrar mensagem
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(content: Text('Baia foi encerrada pois está vazia.')),
+                                    );
+
+                                    // Fechar a tela atual
+                                    Future.delayed(const Duration(milliseconds: 300), () {
+                                      if (mounted) {
+                                        Navigator.pop(context);
+                                      }
+                                    });
+                                  }
+
+                                  await _carregarNascimentos();
+                                },
+                              ),
+                            ),
+                          ],
+                        );
+                      }).toList();
+                    },
+                  ),
+              ],
             ),
           ),
          SizedBox(height: 15),

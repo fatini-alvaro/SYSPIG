@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:syspig/components/cards/custom_baia_acoes_tab_card.dart';
 import 'package:syspig/components/cards/custom_baia_informacoes_tab_card.dart';
+import 'package:syspig/controller/ocupacao/ocupacao_controller.dart';
 import 'package:syspig/controller/ocupacao_baia_tela/ocupacao_baia_tela_controller.dart';
 import 'package:syspig/model/baia_model.dart';
 import 'package:syspig/model/ocupacao_model.dart';
+import 'package:syspig/repositories/ocupacao/ocupacao_repository_imp.dart';
 import 'package:syspig/themes/themes.dart';
 
 class BaiaPage extends StatefulWidget {
@@ -114,7 +116,10 @@ class BaiaPageState extends State<BaiaPage> {
               ? [
                   CustomBaiaInformacoesTabCard(
                     ocupacao: _ocupacao,
-                    baia: _baia,                    
+                    baia: _baia,
+                    getOcupacao: () async {
+                      return await OcupacaoController(OcupacaoRepositoryImp()).fetchOcupacaoById(_ocupacao!.id!);
+                    },             
                   ),
                   CustomBaiaAcoesTabCard(
                     baia: _baia,

@@ -249,18 +249,12 @@ class _CustomAdicionarNascimentoWidgetState extends State<CustomAdicionarNascime
           ),
           SizedBox(height: 20),
           CustomDataTable(
-            title: 'Nascimentos',
+            title: 'Nascimentos (${_nascimentos.length} animais)',
             maxTableHeight: 950,
             columns: const [
               DataColumn(
                 label: Text(
                   'Data e Hora',
-                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-                ),
-              ),
-              DataColumn(
-                label: Text(
-                  'Qtd',
                   style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                 ),
               ),
@@ -282,7 +276,6 @@ class _CustomAdicionarNascimentoWidgetState extends State<CustomAdicionarNascime
                 return DataRow(
                   cells: [
                     DataCell(Text(_formatarData(animal.dataNascimento))),
-                    DataCell(Text('1')),
                     DataCell(
                       DropdownButton<StatusAnimal>(
                         value: animal.status,

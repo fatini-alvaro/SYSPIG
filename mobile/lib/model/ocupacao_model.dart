@@ -48,12 +48,31 @@ class OcupacaoModel {
         [];
   }
 
-  /// Lista apenas os animais da ocupação que **são nascimentos**
   List<OcupacaoAnimalModel> get ocupacaoAnimaisNascimento {
-    return ocupacaoAnimais
+    final animaisNascimento = ocupacaoAnimais
             ?.where((oa) => oa.animal?.nascimento == true)
             .toList() ??
         [];
+
+    animaisNascimento.sort((a, b) {
+      final dataA = a.animal?.dataNascimento;
+      final dataB = b.animal?.dataNascimento;
+
+      if (dataA == null && dataB == null) return 0;
+      if (dataA == null) return 1;
+      if (dataB == null) return -1;
+
+      final comparacaoData = dataB.compareTo(dataA); // mais novo primeiro
+
+      if (comparacaoData != 0) return comparacaoData;
+
+      // Critério secundário de desempate (por exemplo, pelo id do animal)
+      final idA = a.animal?.id ?? 0;
+      final idB = b.animal?.id ?? 0;
+      return idA.compareTo(idB); // ordem crescente de ID
+    });
+
+    return animaisNascimento;
   }
 
   factory OcupacaoModel.fromJson(Map<String, dynamic> json) {
