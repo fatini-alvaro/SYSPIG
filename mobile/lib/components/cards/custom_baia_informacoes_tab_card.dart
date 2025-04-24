@@ -39,6 +39,9 @@ class _CustomBaiaInformacoesTabCardState extends State<CustomBaiaInformacoesTabC
   
   List<AnimalModel> _nascimentos = [];
 
+  int _quantidadeVivos = 0;
+  int _quantidadeMortos = 0;
+
   @override
   void initState() {
     super.initState();
@@ -47,49 +50,23 @@ class _CustomBaiaInformacoesTabCardState extends State<CustomBaiaInformacoesTabC
 
   Future<void> _carregarNascimentos() async {
     final ocupacaoAtualizada = await widget.getOcupacao();
+
     _nascimentos = ocupacaoAtualizada.ocupacaoAnimaisNascimento != null
         ? ocupacaoAtualizada.ocupacaoAnimaisNascimento!
             .map((ocupacaoAnimal) => ocupacaoAnimal.animal!)
             .toList()
         : [];
+    
+    _quantidadeVivos = _nascimentos.where((animal) => animal.status == StatusAnimal.vivo).length;
+    _quantidadeMortos = _nascimentos.where((animal) => animal.status == StatusAnimal.morto).length;
     setState(() {});
-  }
-
-  void _excluirNascimento(AnimalModel animal) async{
-
-    await AsyncHandler.execute(
-      context: context,
-      action: () async {
-        return await _animalController.deleteNascimento(animal.id!);
-      },
-      loadingMessage: 'Excluindo nascimento...',
-      successMessage: 'Nascimento excluido com sucesso!',
-    );
-
-    // Buscar informações atualizadas da baia
-    final baiaAtualizada = await _baiaController.fetchBaiaById(widget.baia!.id!);
-
-    if (baiaAtualizada.vazia == true) {
-      if (!mounted) return;
-
-      // Mostrar mensagem
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Baia foi encerrada pois está vazia.')),
-      );
-
-      // Fechar a tela atual
-      Future.delayed(const Duration(milliseconds: 300), () {
-        if (mounted) {
-          Navigator.pop(context);
-        }
-      });
-    }
-
-    await _carregarNascimentos();
   }
   
   @override
   Widget build(BuildContext context) {
+
+    final tipoGranjaId = widget.baia!.granja!.tipoGranja!.id;
+
     return Card(
       child: ListView(
         shrinkWrap: true, // Faz com que o ListView ocupe apenas o espaço necessário
@@ -131,7 +108,7 @@ class _CustomBaiaInformacoesTabCardState extends State<CustomBaiaInformacoesTabC
                   ),
                 if (widget.baia?.granja?.tipoGranja?.id == tipoGranjaIdToInt[TipoGranjaId.creche])
                   CustomDataTable(
-                    title: 'Leitões na baia (${_nascimentos.length} animais)',
+                    title: 'Nascimentos (Total: ${_quantidadeVivos + _quantidadeMortos})',
                     maxTableHeight: 600,
                     columns: const [
                       DataColumn(
@@ -260,6 +237,11 @@ class _CustomBaiaInformacoesTabCardState extends State<CustomBaiaInformacoesTabC
         : "Data não disponível";
     final abertaPor = widget.ocupacao?.createdBy?.nome ?? "Informação não disponível";
 
+    final tipoGranjaId = widget.baia?.granja?.tipoGranja?.id;
+    final isInseminacao = tipoGranjaId == tipoGranjaIdToInt[TipoGranjaId.inseminacao];
+    final isGestacao = tipoGranjaId == tipoGranjaIdToInt[TipoGranjaId.gestacao];
+    final isCreche = tipoGranjaId == tipoGranjaIdToInt[TipoGranjaId.creche];
+
     final ocupacoesSemNascimento = widget.ocupacao?.ocupacaoAnimaisSemNascimento ?? [];
     final animalComInseminacao = ocupacoesSemNascimento.isNotEmpty
         ? ocupacoesSemNascimento.first.animal
@@ -285,11 +267,7 @@ class _CustomBaiaInformacoesTabCardState extends State<CustomBaiaInformacoesTabC
             _buildInfoItem(icon: Icons.calendar_today, label: "Aberta em", value: dataAbertura),
             _buildInfoItem(icon: Icons.person, label: "Aberta por", value: abertaPor),
 
-            if ((widget.baia!.granja!.tipoGranja!.id == tipoGranjaIdToInt[TipoGranjaId.inseminacao] ||
-                widget.baia!.granja!.tipoGranja!.id == tipoGranjaIdToInt[TipoGranjaId.gestacao]) &&
-                dataInseminacao != null &&
-                infoGestacao != null) ...[
-              const SizedBox(height: 10),
+            if ((isInseminacao || isGestacao) && dataInseminacao != null && infoGestacao != null) ...[
               _buildInfoItem(
                 icon: Icons.pets,
                 label: "Inseminação",
@@ -300,13 +278,29 @@ class _CustomBaiaInformacoesTabCardState extends State<CustomBaiaInformacoesTabC
                 icon: Icons.child_care,
                 label: "Previsão de parto",
                 value: "${infoGestacao.dataPrevistaParto.day.toString().padLeft(2, '0')}/"
-                        "${infoGestacao.dataPrevistaParto.month.toString().padLeft(2, '0')}/"
-                        "${infoGestacao.dataPrevistaParto.year}",
+                    "${infoGestacao.dataPrevistaParto.month.toString().padLeft(2, '0')}/"
+                    "${infoGestacao.dataPrevistaParto.year}",
               ),
               _buildInfoItem(
                 icon: Icons.cake,
-                label: "Qtd. de nascimentos",
-                value: widget.ocupacao!.ocupacaoAnimaisNascimento.length.toString(),
+                label: "Quantidade de nascimentos vivos",
+                value: _quantidadeVivos.toString(),
+              ),
+              _buildInfoItem(
+                icon: Icons.bloodtype,
+                label: "Quantidade de nascimentos mortos",
+                value: _quantidadeMortos.toString(),
+              ),
+            ] else if (isCreche) ...[
+              _buildInfoItem(
+                icon: Icons.cake,
+                label: "Quantidade de nascimentos vivos",
+                value: _quantidadeVivos.toString(),
+              ),
+              _buildInfoItem(
+                icon: Icons.bloodtype,
+                label: "Quantidade de nascimentos mortos",
+                value: _quantidadeMortos.toString(),
               ),
             ]
           ],

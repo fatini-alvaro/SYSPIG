@@ -45,6 +45,9 @@ class _CustomAdicionarNascimentoWidgetState extends State<CustomAdicionarNascime
 
   late final Future<OcupacaoModel> Function() getOcupacao;
 
+  int _quantidadeVivos = 0;
+  int _quantidadeMortos = 0;
+
   @override
   void initState() {
     super.initState();
@@ -54,11 +57,15 @@ class _CustomAdicionarNascimentoWidgetState extends State<CustomAdicionarNascime
 
   Future<void> _carregarNascimentos() async {
     final ocupacaoAtualizada = await widget.getOcupacao();
+
     _nascimentos = ocupacaoAtualizada.ocupacaoAnimaisNascimento != null
         ? ocupacaoAtualizada.ocupacaoAnimaisNascimento!
             .map((ocupacaoAnimal) => ocupacaoAnimal.animal!)
             .toList()
         : [];
+    
+    _quantidadeVivos = _nascimentos.where((animal) => animal.status == StatusAnimal.vivo).length;
+    _quantidadeMortos = _nascimentos.where((animal) => animal.status == StatusAnimal.morto).length;
     setState(() {});
   }
 
@@ -249,7 +256,7 @@ class _CustomAdicionarNascimentoWidgetState extends State<CustomAdicionarNascime
           ),
           SizedBox(height: 20),
           CustomDataTable(
-            title: 'Nascimentos (${_nascimentos.length} animais)',
+            title: 'Nascimentos (Total: ${_quantidadeVivos + _quantidadeMortos})',
             maxTableHeight: 950,
             columns: const [
               DataColumn(
