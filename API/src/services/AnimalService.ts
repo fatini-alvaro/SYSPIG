@@ -254,6 +254,31 @@ export class AnimalService {
       animal.updatedBy = updatedBy ?? animal.updatedBy;
 
       await transactionalEntityManager.save(animal);
+
+      const ocupacaoAtual = await transactionalEntityManager.findOne(OcupacaoAnimal, {
+        where: { 
+          animal: { id: animal.id },
+          status: StatusOcupacaoAnimal.ATIVO
+        },
+        relations: ['ocupacao', 'ocupacao.baia']
+      });
+
+      if (ocupacaoAtual && animalData.status === StatusAnimal.MORTO) {      
+        
+        // Se o animal foi atualizado para "MORTO", encerra a ocupacao animal do mesmo
+        ocupacaoAtual.status = StatusOcupacaoAnimal.REMOVIDO;
+        ocupacaoAtual.updatedBy = animal.updatedBy;
+        await transactionalEntityManager.save(ocupacaoAtual);
+
+        // Verifica se a ocupacao da baia esta vazia e encerra se sim
+        await this.ocupacaoService.verificaSeOcupacaoEstaVaziaEncerraSeSim(
+          transactionalEntityManager,
+          ocupacaoAtual.ocupacao.baia.id,
+          ocupacaoAtual.ocupacao.id,
+          animal.updatedBy.id
+        );
+      }
+      
       return animal;
     });
   }

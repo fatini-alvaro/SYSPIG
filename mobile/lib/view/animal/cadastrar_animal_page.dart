@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:syspig/components/buttons/custom_salvar_cadastro_button_component.dart';
 import 'package:syspig/controller/cadastrar_animal/cadastrar_animal_controller.dart';
 import 'package:syspig/enums/animal_constants.dart';
@@ -40,6 +41,8 @@ class CadastrarAnimalPageState extends State<CadastrarAnimalPage> {
     final animal = await _cadastrarAnimalController.fetchAnimalById(animalId);
     if (animal != null) {
       _preencherCamposParaEdicao(animal);
+      //seta o animal no controller para mostrar no _buildAnimalInfoCard
+      _cadastrarAnimalController.setAnimal(animal);       
     }
   }
 
@@ -87,6 +90,8 @@ class CadastrarAnimalPageState extends State<CadastrarAnimalPage> {
           key: _formKey,
           child: Column(
             children: [
+              if (widget.animalId != null)
+                _buildAnimalInfoCard(_cadastrarAnimalController.animal!),
               const SizedBox(height: 20),
               CustomTextFormFieldWidget(
                 controller: _numeroBrincoController,
@@ -121,6 +126,7 @@ class CadastrarAnimalPageState extends State<CadastrarAnimalPage> {
               const SizedBox(height: 20),
               CustomDropdownButtonFormFieldWidget(
                 items: StatusAnimal.values
+                    .where((status) => status == StatusAnimal.vivo || status == StatusAnimal.morto)
                     .map((status) => DropdownMenuItem(
                           value: status,
                           child: Text(statusAnimalDescriptions[status]!),
@@ -188,6 +194,33 @@ class CadastrarAnimalPageState extends State<CadastrarAnimalPage> {
         ),
       ),
     );
+  }
+
+  Widget _buildAnimalInfoCard(AnimalModel animal) {
+    return Card(
+      elevation: 4,
+      margin: const EdgeInsets.only(top: 16.0),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Informações do Animal', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            Divider(),
+            Text('Número do Brinco: ${animal.numeroBrinco}'),
+            Text('Baia Atual: ${animal.ocupacaoAnimalAtiva?.ocupacao?.baia?.numero ?? "Sem baia vinculada"}'),
+            Text('Data de Entrada: ${animal.ocupacaoAnimalAtiva?.dataEntrada != null ? DateFormat('dd/MM/yyyy HH:mm').format(animal.ocupacaoAnimalAtiva!.dataEntrada!) : "Não informado"}'),
+            Text('Tempo na Baia: ${animal.ocupacaoAnimalAtiva?.dataEntrada != null ? _calcularTempoNaBaia(animal.ocupacaoAnimalAtiva?.dataEntrada) : "Não informado"}'),
+          ],
+        ),
+      ),
+    );
+  }
+
+  String _calcularTempoNaBaia(DateTime? dataEntrada) {
+    if (dataEntrada == null) return "Não disponível";
+    final Duration diferenca = DateTime.now().difference(dataEntrada);
+    return "${diferenca.inDays} dias";
   }
 
   @override

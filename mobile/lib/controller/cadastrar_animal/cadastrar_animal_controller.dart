@@ -27,6 +27,10 @@ class CadastrarAnimalController with ChangeNotifier {
   setNascimento(DateTime? value) => _dataNascimento = value;
   DateTime? get dataNascimento => _dataNascimento;
 
+  AnimalModel? _animal;
+  setAnimal(AnimalModel? value) => _animal = value;
+  AnimalModel? get animal => _animal;
+
   Future<AnimalModel> createAnimal() async {
     return AnimalModel(
       numeroBrinco: _numeroBrinco!,
