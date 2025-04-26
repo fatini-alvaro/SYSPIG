@@ -8,6 +8,8 @@ import 'package:syspig/model/fazenda_model.dart';
 import 'package:syspig/model/usuario_model.dart';
 import 'package:syspig/repositories/home/home_repository_imp.dart';
 import 'package:syspig/services/prefs_service.dart';
+import 'package:syspig/view/home/acoes_page.dart';
+import 'package:syspig/view/home/dashboard_page.dart';
 import 'package:syspig/widgets/custom_appbar_widget.dart';
 import 'package:syspig/widgets/custom_drawer_widget.dart';
 
@@ -22,6 +24,12 @@ class HomePageState extends State<HomePage> {
 
   UsuarioModel? _user;
   FazendaModel? _fazenda;
+  int _selectedIndex = 0;
+
+  final List<Widget> _pages = [
+    DashboardPage(),
+    AcoesPage(), 
+  ];
 
   @override
   void initState() {
@@ -45,15 +53,18 @@ class HomePageState extends State<HomePage> {
     }
   }
 
-  @override
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
   Widget build(BuildContext context) {
     return Scaffold(
       drawer: CustomDrawerWidget(
-        accountName: _user != null ? _user!.nome : 'nome',
-        accountEmail: _user != null ? _user!.email : 'email',
-        onHomeTap: () {
-          Logger().e('Home tapped');
-        },
+        accountName: _user?.nome ?? 'nome',
+        accountEmail: _user?.email ?? 'email',
+        onHomeTap: () => Logger().e('Home tapped'),
         onSelecionarFazendaTap: () {
           Navigator.of(context).pushNamedAndRemoveUntil('/selecionarFazenda', (_) => true);
         },
@@ -61,86 +72,30 @@ class HomePageState extends State<HomePage> {
           PrefsService.logout();
         },
       ),
-      appBar: CustomAppBarWidget(titulo: Text(_fazenda != null ? _fazenda!.nome : 'Fazenda')),      
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                CustomHomeCard(
-                  descricao: 'Baias',
-                  icone: Icons.panorama_horizontal_select_outlined,
-                  onTapCallback: () {
-                    Navigator.of(context).pushNamed('/selecionarBaia');
-                  },
-                ),   
-                CustomHomeCard(
-                  descricao: 'Movimentação',
-                  icone: Icons.compare_arrows,
-                  onTapCallback: () {
-                    Navigator.of(context).pushNamed('/selecionarMovimentacao');
-                  },
-                ),         
-              ]
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                
-                SizedBox(height: 20),
-                CustomHomeCard(
-                  descricao: 'Granjas',
-                  icone: Icons.house_siding,
-                  onTapCallback: () {
-                    Navigator.of(context).pushNamed('/selecionarGranja');
-                  },
-                ),
-                CustomHomeCard(
-                  descricao: 'Animais',
-                  icone: FontAwesomeIcons.piggyBank,
-                  onTapCallback: () {
-                    Navigator.of(context).pushNamed('/selecionarAnimal');
-                  },
-                ),
-              ]
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                CustomHomeCard(
-                  descricao: 'Anotações',
-                  icone: Icons.note_alt_outlined,
-                  onTapCallback: () {
-                    Navigator.of(context).pushNamed('/selecionarAnotacao');
-                  },
-                ),
-                SizedBox(height: 20),
-                CustomHomeCard(
-                  descricao: 'lotes',
-                  icone: Icons.note,
-                  onTapCallback: () {
-                    Navigator.of(context).pushNamed('/selecionarLote');
-                  },
-                ),
-              ]
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                SizedBox(height: 20,),
-                CustomHomeCard(
-                  descricao: 'Inseminação',
-                  icone: Icons.vaccines,
-                  onTapCallback: () {
-                    Navigator.of(context).pushNamed('/selecionarInseminacao');
-                  },
-                ),
-              ]
-            ),
-          ]
-        ),
+      appBar: CustomAppBarWidget(
+        titulo: Text(_fazenda?.nome ?? 'Fazenda'),
+      ),
+      body: _pages[_selectedIndex],
+      bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: Colors.orange,
+        selectedItemColor: Colors.white,
+        unselectedItemColor: Colors.white70,
+        iconSize: 28,
+        selectedFontSize: 14,
+        unselectedFontSize: 12,
+        type: BottomNavigationBarType.fixed,
+        currentIndex: _selectedIndex,
+        onTap: _onItemTapped,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.dashboard),
+            label: 'Dashboard',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.apps),
+            label: 'Ações',
+          ),
+        ],
       ),
     );
   }

@@ -15,6 +15,7 @@ import { AuthController } from "./controllers/authController";
 import { CidadeController } from "./controllers/cidadeController";
 import { MovimentacaoController } from "./controllers/movimentacaoController";
 import { InseminacaoController } from "./controllers/inseminacaoController";
+import { DashboardController } from "./controllers/dashboardController";
 const routes = Router();
 
 // Configuração do CORS
@@ -126,5 +127,9 @@ routes.get('/movimentacoes/:fazenda_id', movimentacaoController.listByFazenda);
 const inseminacaoController = new InseminacaoController();
 routes.post('/inseminacao', inseminacaoController.inseminarAnimais);
 routes.get('/inseminacao/:fazenda_id', inseminacaoController.listByFazenda);
+
+//Dashboard
+const dashboardController = new DashboardController();
+routes.get('/dashboard/:fazenda_id', dashboardController.list);
 
 export default routes

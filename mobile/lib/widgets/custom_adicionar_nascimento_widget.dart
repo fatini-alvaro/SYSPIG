@@ -254,7 +254,9 @@ class _CustomAdicionarNascimentoWidgetState extends State<CustomAdicionarNascime
               ],
             ),
           ),
-          SizedBox(height: 20),
+          SizedBox(height: 5),
+          _buildInfoSection(),
+          SizedBox(height: 5),
           CustomDataTable(
             title: 'Nascimentos (Total: ${_quantidadeVivos + _quantidadeMortos})',
             maxTableHeight: 950,
@@ -348,6 +350,51 @@ class _CustomAdicionarNascimentoWidgetState extends State<CustomAdicionarNascime
             },
           )
           // CustomAdicionarNascimentoDataTable(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInfoSection() {
+    return Card(
+      margin: const EdgeInsets.all(10),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      elevation: 2,
+      child: Padding(
+        padding: const EdgeInsets.all(10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildInfoItem(
+              icon: Icons.cake,
+              label: "Quantidade de nascimentos vivos",
+              value: _quantidadeVivos.toString(),
+            ),
+            _buildInfoItem(
+              icon: Icons.bloodtype,
+              label: "Quantidade de nascimentos mortos",
+              value: _quantidadeMortos.toString(),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInfoItem({required IconData icon, required String label, required String value}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 2),
+      child: Row(
+        children: [
+          Icon(icon, color: Colors.grey[700], size: 20),
+          SizedBox(width: 8),
+          Text(
+            "$label: ",
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          Expanded(
+            child: Text(value),
+          ),
         ],
       ),
     );
