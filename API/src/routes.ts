@@ -18,15 +18,13 @@ import { InseminacaoController } from "./controllers/inseminacaoController";
 import { DashboardController } from "./controllers/dashboardController";
 const routes = Router();
 
-// Configuração do CORS
 const corsOptions = {
-    origin: 'http://localhost:3000',
-    methods: ['GET', 'POST', 'PUT', 'DELETE'], // Métodos permitidos
-    allowedHeaders: ['Content-Type', 'Authorization'], // Cabeçalhos permitidos
-    credentials: true, // Permite o envio de cookies/credenciais
+    origin: ['http://localhost:3000', 'http://localhost:3001'], // Agora aceita ambos
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true, // Permite cookies/credenciais
 };
 
-// Aplica CORS globalmente a todas as rotas
 routes.use(cors(corsOptions));
 
 // Usuario Routes - Sem necessidade de autenticação
