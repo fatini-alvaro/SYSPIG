@@ -231,7 +231,7 @@ class _DashboardPageState extends State<DashboardPage> {
               _buildIndicatorCard('Lotes ativos', '${dashboardData!.lotesAtivos}', FontAwesomeIcons.listCheck),
               _buildIndicatorCard('Matrizes gestando', '${dashboardData!.matrizesGestando}', FontAwesomeIcons.female),
               _buildIndicatorCard('Leitões em creche', '${dashboardData!.leitoesEmCreche}', FontAwesomeIcons.child),
-              _buildIndicatorCard('Movimentações', '${dashboardData!.movimentacoes}', FontAwesomeIcons.arrowRightArrowLeft),
+              _buildIndicatorCard('Movimentações', '${dashboardData!.totalMovimentacoes}', FontAwesomeIcons.arrowRightArrowLeft),
             ],
           ),
           SizedBox(height: 4),

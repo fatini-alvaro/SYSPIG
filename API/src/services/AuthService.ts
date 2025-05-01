@@ -6,7 +6,11 @@ import { ValidationError } from "../utils/validationError";
 export class AuthService {
 
   async auth(email: string, senha: string) {
-    const usuario = await usuarioRepository.findOneBy({ email });
+    const usuario = await usuarioRepository.findOne({
+      where: { email },
+      relations: ['tipoUsuario']
+    });
+    
     if (!usuario) {
       throw new ValidationError('Usuário não encontrado.');
     }

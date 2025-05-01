@@ -9,7 +9,7 @@ class DashboardModel {
   final int lotesAtivos;
   final int matrizesGestando;
   final int leitoesEmCreche;
-  final int movimentacoes;
+  final int totalMovimentacoes;
   final int baiasOcupadas;
   final int baiasLivres;
   final List<AnotacaoModel>? anotacoes;
@@ -23,7 +23,7 @@ class DashboardModel {
     required this.lotesAtivos,
     required this.matrizesGestando,
     required this.leitoesEmCreche,
-    required this.movimentacoes,
+    required this.totalMovimentacoes,
     required this.baiasOcupadas,
     required this.baiasLivres,
     this.anotacoes,
@@ -31,7 +31,7 @@ class DashboardModel {
 
   factory DashboardModel.fromJson(Map<String, dynamic> json) {
     return DashboardModel(
-      inseminacoesHoje: json['inseminacoesHoje'],
+      inseminacoesHoje: json['totalInseminacoes'],
       nascimentosVivos: json['nascimentosVivos'],
       nascimentosMortos: json['nascimentosMortos'],
       animaisEmBaias: json['animaisEmBaias'],
@@ -42,7 +42,7 @@ class DashboardModel {
       lotesAtivos: json['lotesAtivos'],
       matrizesGestando: json['matrizesGestando'],
       leitoesEmCreche: json['leitoesEmCreche'],
-      movimentacoes: json['movimentacoes'],
+      totalMovimentacoes: json['totalMovimentacoes'],
       baiasOcupadas: json['ocupacaoBaias']['ocupadas'],
       baiasLivres: json['ocupacaoBaias']['livres'],
     );

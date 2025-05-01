@@ -3,9 +3,14 @@ import type { NextRequest } from 'next/server';
 
 export function middleware(request: NextRequest) {
   const accessToken = request.cookies.get('accessToken');
+  const selectedFarmId = request.cookies.get('selectedFarmId');
 
   const isAuth = !!accessToken;
-  const isLoginPage = request.nextUrl.pathname === '/login';
+  const hasSelectedFarm = !!selectedFarmId;
+
+  const pathname = request.nextUrl.pathname;
+  const isLoginPage = pathname === '/login';
+  const isSelecionarFazendaPage = pathname === '/selecionar-fazenda';
 
   if (!isAuth && !isLoginPage) {
     const loginUrl = new URL('/login', request.url);
@@ -13,6 +18,16 @@ export function middleware(request: NextRequest) {
   }
 
   if (isAuth && isLoginPage) {
+    const homeUrl = new URL('/', request.url);
+    return NextResponse.redirect(homeUrl);
+  }
+
+  if (isAuth && !hasSelectedFarm && !isSelecionarFazendaPage) {
+    const selecionarFazendaUrl = new URL('/selecionar-fazenda', request.url);
+    return NextResponse.redirect(selecionarFazendaUrl);
+  }
+
+  if (isAuth && hasSelectedFarm && isSelecionarFazendaPage) {
     const homeUrl = new URL('/', request.url);
     return NextResponse.redirect(homeUrl);
   }

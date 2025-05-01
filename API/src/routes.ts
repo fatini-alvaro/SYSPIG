@@ -19,7 +19,7 @@ import { DashboardController } from "./controllers/dashboardController";
 const routes = Router();
 
 const corsOptions = {
-    origin: ['http://localhost:3000', 'http://localhost:3001'], // Agora aceita ambos
+    origin: ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002'], // Agora aceita ambos
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true, // Permite cookies/credenciais
