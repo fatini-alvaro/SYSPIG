@@ -3,8 +3,8 @@
 import { useState, useEffect } from "react"
 import Cookie from "js-cookie"
 import apiClient from "@/apiClient"
-import { Chart, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement } from "chart.js"
-import { Bar, Doughnut } from "react-chartjs-2"
+import { Chart, CategoryScale, LinearScale, BarElement, Title, PointElement, LineElement, Tooltip, Legend, ArcElement } from "chart.js"
+import { Bar, Doughnut, Line } from "react-chartjs-2"
 import {
   Calendar,
   TrendingUp,
@@ -28,7 +28,7 @@ import DatePicker from "react-datepicker"
 import "react-datepicker/dist/react-datepicker.css"
 
 // Registrar componentes do Chart.js
-Chart.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement)
+Chart.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend, ArcElement)
 
 // Adicionar interfaces para os novos dados
 interface Movimentacao {
@@ -213,6 +213,34 @@ const DashboardPage = () => {
     ],
   }
 
+  const salesLineData = {
+    labels: ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"],
+    datasets: [
+      {
+        label: "Valor de Vendas (R$)",
+        data: [
+          dashboardData?.vendasPorMes?.jan || 0,
+          dashboardData?.vendasPorMes?.fev || 0,
+          dashboardData?.vendasPorMes?.mar || 0,
+          dashboardData?.vendasPorMes?.abr || 0,
+          dashboardData?.vendasPorMes?.mai || 0,
+          dashboardData?.vendasPorMes?.jun || 0,
+          dashboardData?.vendasPorMes?.jul || 0,
+          dashboardData?.vendasPorMes?.ago || 0,
+          dashboardData?.vendasPorMes?.set || 0,
+          dashboardData?.vendasPorMes?.out || 0,
+          dashboardData?.vendasPorMes?.nov || 0,
+          dashboardData?.vendasPorMes?.dez || 0,
+        ],
+        borderColor: "rgba(75, 192, 192, 1)",
+        backgroundColor: "rgba(75, 192, 192, 0.2)",
+        borderWidth: 2,
+        fill: true,
+        tension: 0.4,
+      },
+    ],
+  };  
+
   // Dados para o gráfico de rosca
   const doughnutData = {
     labels: ["Nascimentos Vivos", "Nascimentos Mortos"],
@@ -240,9 +268,39 @@ const DashboardPage = () => {
     },
   }
 
+  const lineChartOptions = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: "bottom" as const,
+      },
+      title: {
+        display: true,
+        text: "Vendas Mensais",
+      },
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+      },
+    },
+  };
+
   // Função para formatar números
   const formatNumber = (num: number) => {
     return new Intl.NumberFormat("pt-BR").format(num || 0)
+  }
+
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+    }).format(value || 0)
+  }
+
+  // Função para formatar weight values
+  const formatWeight = (weight: number) => {
+    return `${new Intl.NumberFormat("pt-BR").format(weight || 0)} kg`
   }
 
   // Calcular taxa de mortalidade
@@ -446,6 +504,202 @@ const DashboardPage = () => {
                 <div className="bg-teal-100 p-3 rounded-full">
                   <Home className="text-teal-500" size={24} />
                 </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Sales Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-6">
+            {/* Total Sales Value */}
+            <div className="bg-gradient-to-br from-green-50 to-white p-6 rounded-xl shadow-md border-l-4 border-green-500 hover:shadow-lg transition-shadow">
+              <div className="flex justify-between items-start">
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-700 mb-1">Valor Total de Vendas</h3>
+                  <p className="text-3xl font-bold text-green-500">{formatCurrency(dashboardData.totalSales)}</p>
+                  <p className="text-sm text-gray-500 mt-2">No período selecionado</p>
+                </div>
+                <div className="bg-green-100 p-3 rounded-full">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-6 w-6 text-green-500"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            {/* Quantity Sold */}
+            <div className="bg-gradient-to-br from-blue-50 to-white p-6 rounded-xl shadow-md border-l-4 border-blue-500 hover:shadow-lg transition-shadow">
+              <div className="flex justify-between items-start">
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-700 mb-1">Quantidade Vendida</h3>
+                  <p className="text-3xl font-bold text-blue-500">{formatNumber(dashboardData.totalQuantity)}</p>
+                  <p className="text-sm text-gray-500 mt-2">Animais vendidos</p>
+                </div>
+                <div className="bg-blue-100 p-3 rounded-full">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-6 w-6 text-blue-500"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"
+                    />
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            {/* Total Weight */}
+            <div className="bg-gradient-to-br from-purple-50 to-white p-6 rounded-xl shadow-md border-l-4 border-purple-500 hover:shadow-lg transition-shadow">
+              <div className="flex justify-between items-start">
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-700 mb-1">Peso Total</h3>
+                  <p className="text-3xl font-bold text-purple-500">{formatWeight(dashboardData.totalWeight)}</p>
+                  <p className="text-sm text-gray-500 mt-2">Peso total vendido</p>
+                </div>
+                <div className="bg-purple-100 p-3 rounded-full">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-6 w-6 text-purple-500"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"
+                    />
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            {/* Average Price */}
+            <div className="bg-gradient-to-br from-amber-50 to-white p-6 rounded-xl shadow-md border-l-4 border-amber-500 hover:shadow-lg transition-shadow">
+              <div className="flex justify-between items-start">
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-700 mb-1">Preço Médio</h3>
+                  <p className="text-3xl font-bold text-amber-500">{formatCurrency(dashboardData.averagePrice)}</p>
+                  <p className="text-sm text-gray-500 mt-2">Por kg</p>
+                </div>
+                <div className="bg-amber-100 p-3 rounded-full">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-6 w-6 text-amber-500"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                    />
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Sales Charts and Recent Sales */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
+            {/* Sales Line Chart */}
+            <div className="bg-white p-6 rounded-xl shadow-md lg:col-span-2">
+              <h3 className="text-xl font-semibold text-gray-700 mb-4 flex items-center">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5 mr-2 text-green-500"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"
+                  />
+                </svg>
+                Vendas Mensais
+              </h3>
+              <div className="h-80">
+                <Line data={salesLineData} options={lineChartOptions} />
+              </div>
+            </div>
+
+            {/* Recent Sales */}
+            <div className="bg-white p-6 rounded-xl shadow-md">
+              <h3 className="text-xl font-semibold text-gray-700 mb-4 flex items-center">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5 mr-2 text-blue-500"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                  />
+                </svg>
+                Vendas Recentes
+              </h3>
+              <div className="overflow-y-auto max-h-72">
+                {dashboardData.recentSales.length > 0 ? (
+                  <ul className="space-y-3">
+                    {dashboardData.recentSales.map((sale: any) => (
+                      <li key={sale.venda_id} className="border-b border-gray-100 pb-3 last:border-0">
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <p className="font-medium text-gray-800">{formatNumber(sale.venda_quantidade_vendida)} animais</p>
+                            <p className="text-sm text-gray-500">
+                              {formatWeight(sale.venda_peso_venda)} • {new Date(sale.venda_data_venda).toLocaleDateString("pt-BR")}
+                            </p>
+                          </div>
+                          <span className="font-semibold text-green-600">{formatCurrency(sale.venda_valor_venda)}</span>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <div className="text-center py-8 text-gray-500">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-12 w-12 mx-auto text-gray-300 mb-3"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
+                      />
+                    </svg>
+                    <p>Nenhuma venda recente encontrada</p>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -727,29 +981,33 @@ const DashboardPage = () => {
                   Matrizes Próximas do Parto
                 </h3>
                 <div className="space-y-3">
-                  {matrizesProximasParto.map((matriz) => (
-                    <div
-                      key={matriz.id}
-                      className="flex items-center justify-between p-3 bg-orange-50 rounded-lg border border-orange-100"
-                    >
-                      <div>
-                        <div className="flex items-center">
-                          <PiggyBank size={18} className="text-orange-500 mr-2" />
-                          <span className="font-medium text-gray-800">{matriz.brinco}</span>
-                          <span className="ml-2 px-2 py-0.5 bg-orange-100 text-orange-700 text-xs rounded-full">
-                            {matriz.paridade}ª cria
-                          </span>
+                  {matrizesProximasParto.length > 0 ? (
+                    matrizesProximasParto.map((matriz) => (
+                      <div
+                        key={matriz.id}
+                        className="flex items-center justify-between p-3 bg-orange-50 rounded-lg border border-orange-100"
+                      >
+                        <div>
+                          <div className="flex items-center">
+                            <PiggyBank size={18} className="text-orange-500 mr-2" />
+                            <span className="font-medium text-gray-800">{matriz.brinco}</span>
+                            <span className="ml-2 px-2 py-0.5 bg-orange-100 text-orange-700 text-xs rounded-full">
+                              {matriz.paridade}ª cria
+                            </span>
+                          </div>
+                          <div className="text-sm text-gray-600 mt-1">
+                            <span className="font-medium">Baia:</span> {matriz.baia}
+                          </div>
                         </div>
-                        <div className="text-sm text-gray-600 mt-1">
-                          <span className="font-medium">Baia:</span> {matriz.baia}
+                        <div className="text-right">
+                          <div className="text-sm font-medium text-gray-900">{formatDate(matriz.dataPrevisaoParto)}</div>
+                          <div className="text-xs text-orange-600 font-medium">Faltam {matriz.diasRestantes} dias</div>
                         </div>
                       </div>
-                      <div className="text-right">
-                        <div className="text-sm font-medium text-gray-900">{formatDate(matriz.dataPrevisaoParto)}</div>
-                        <div className="text-xs text-orange-600 font-medium">Faltam {matriz.diasRestantes} dias</div>
-                      </div>
-                    </div>
-                  ))}
+                    ))
+                  ) : (
+                    <div className="text-center text-gray-500">Não há matrizes próximas do parto.</div>
+                  )}
                 </div>
               </div>
             </div>

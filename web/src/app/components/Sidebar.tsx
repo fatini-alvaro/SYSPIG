@@ -134,7 +134,7 @@ const Sidebar = () => {
       {/* Botão de toggle para mobile */}
       <button
         onClick={toggleSidebar}
-        className="fixed bottom-4 right-4 z-30 lg:hidden bg-orange-500 text-white p-3 rounded-full shadow-lg"
+        className="fixed bottom-4 right-4 z-30 lg:hidden bg-orange-600 text-white p-3 rounded-full shadow-lg border-2 border-white"
         aria-label="Toggle sidebar"
       >
         {isMobileOpen ? <X size={24} /> : <Menu size={24} />}

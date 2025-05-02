@@ -13,6 +13,7 @@ import { Nascimento } from "../entities/nascimento";
 import { OcupacaoAnimal } from "../entities/OcupacaoAnimal";
 import { Animal } from "../entities/Animal";
 import { addDays, subDays } from "date-fns";
+import { Venda } from "../entities/Venda";
 
 export class DashboardService {
 
@@ -24,21 +25,23 @@ export class DashboardService {
   private baiaRepository = AppDataSource.getRepository(Baia);
   private movimentacaoRepository = AppDataSource.getRepository(Movimentacao);
   private animalRepository = AppDataSource.getRepository(Animal);
+  private vendaRepository = AppDataSource.getRepository(Venda);
 
   async returnData(fazenda_id: number, startDate?: Date, endDate?: Date) {
 
     const hoje = new Date();
-    const inicioDoDiaHoje = new Date(hoje.setHours(0, 0, 0, 0));
-    const fimDoDiaHoje = new Date(hoje.setHours(23, 59, 59, 999));
 
-    const todayStart = startDate || hoje;
-    todayStart.setHours(0, 0, 0, 0);
+    const dataInicio = startDate || hoje;
+    dataInicio.setHours(0, 0, 0, 0);
 
-    const todayEnd = endDate || hoje;
-    todayEnd.setHours(23, 59, 59, 999);
+    const dataFim = endDate || hoje;
+    dataFim.setHours(23, 59, 59, 999);
+
+    const inicioDoAno = new Date(hoje.getFullYear(), 0, 1);
+    const fimDoAno = new Date(hoje.getFullYear(), 11, 31, 23, 59, 59, 999);
 
     const totalInseminacoes = await this.inseminacaoRepository.count({
-      where: { fazenda: { id: fazenda_id }, data: Between(todayStart, todayEnd) }
+      where: { fazenda: { id: fazenda_id }, data: Between(dataInicio, dataFim) }
     });
 
     const nascimentosVivos = await this.nascimentoRepository
@@ -46,8 +49,8 @@ export class DashboardService {
       .innerJoin("nascimento.animal", "animal")
       .where("nascimento.fazenda_id = :fazenda_id", { fazenda_id })
       .andWhere("nascimento.data_nascimento BETWEEN :startDate AND :endDate", {
-        startDate: todayStart,
-        endDate: todayEnd,
+        startDate: dataInicio,
+        endDate: dataFim,
       })
       .andWhere("animal.status = :status", { status: StatusAnimal.VIVO })
       .getCount();
@@ -57,8 +60,8 @@ export class DashboardService {
       .innerJoin("nascimento.animal", "animal")
       .where("nascimento.fazenda_id = :fazenda_id", { fazenda_id })
       .andWhere("nascimento.data_nascimento BETWEEN :startDate AND :endDate", {
-        startDate: todayStart,
-        endDate: todayEnd,
+        startDate: dataInicio,
+        endDate: dataFim,
       })
       .andWhere("animal.status = :status", { status: StatusAnimal.MORTO })
       .getCount();
@@ -82,7 +85,7 @@ export class DashboardService {
     const movimentacoes = await this.movimentacaoRepository.find({
         where: {
           fazenda: { id: fazenda_id },
-          dataMovimentacao: Between(todayStart, todayEnd),
+          dataMovimentacao: Between(dataInicio, dataFim),
         },
         relations: ['animal', 'baiaOrigem', 'baiaDestino', 'usuario'],
         take: 10,
@@ -92,12 +95,12 @@ export class DashboardService {
     const movimentacoesCount = await this.movimentacaoRepository.find({
         where: {
           fazenda: { id: fazenda_id },
-          dataMovimentacao: Between(todayStart, todayEnd),
+          dataMovimentacao: Between(dataInicio, dataFim),
         },
       }).then(movimentacoes => movimentacoes.length)
 
     const anotacoes = await this.anotacaoRepository.find({
-      where: { fazenda: { id: fazenda_id }, data: Between(todayStart, todayEnd) },
+      where: { fazenda: { id: fazenda_id }, data: Between(dataInicio, dataFim) },
       relations: ["baia",  "animal", "createdBy"],
     });
 
@@ -260,7 +263,102 @@ export class DashboardService {
         ...matriz,
         totalPartos: dados?.partos ?? 0,
       };
-    });   
+    });
+
+    const vendas = await this.vendaRepository
+      .createQueryBuilder("venda")
+      .select("EXTRACT(MONTH FROM venda.data_venda)", "mes")
+      .addSelect("SUM(venda.valor_venda)", "total")
+      .where("venda.fazenda_id = :fazenda_id", { fazenda_id })
+      .andWhere("venda.data_venda BETWEEN :start AND :end", {
+        start: inicioDoAno,
+        end: fimDoAno
+      })      
+      .groupBy("mes")
+      .getRawMany();
+
+    const vendasPorMes: { [key: string]: number } = {
+      jan: 0, fev: 0, mar: 0, abr: 0,
+      mai: 0, jun: 0, jul: 0, ago: 0,
+      set: 0, out: 0, nov: 0, dez: 0,
+    };
+
+    for (const venda of vendas) {
+      const mes = parseInt(venda.mes);
+      const total = parseFloat(venda.total);
+
+      const nomes = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"];
+      vendasPorMes[nomes[mes - 1]] = total;
+    }
+
+    const recentSales = await this.vendaRepository
+      .createQueryBuilder("venda")
+      .select([
+        "venda.id",
+        "venda.quantidade_vendida",
+        "venda.peso_venda",
+        "venda.data_venda",
+        "venda.valor_venda"
+      ])
+      .where("venda.fazenda_id = :fazenda_id", { fazenda_id })
+      .orderBy("venda.data_venda", "DESC")
+      .limit(10)
+      .getRawMany();
+
+    const vendasComPeso = await this.vendaRepository
+      .createQueryBuilder("venda")
+      .select("SUM(venda.valor_venda)", "total_venda")
+      .addSelect("SUM(venda.peso_venda)", "total_peso")
+      .where("venda.fazenda_id = :fazenda_id", { fazenda_id })
+      .andWhere("venda.data_venda BETWEEN :start AND :end", {
+        start: dataInicio,
+        end: dataFim
+      })
+      .getRawOne();
+    
+    let averagePrice = 0;
+    if (vendasComPeso.total_peso > 0) {
+      averagePrice = parseFloat(vendasComPeso.total_venda) / parseFloat(vendasComPeso.total_peso);
+    }
+
+    const pesoTotalVendido = await this.vendaRepository
+      .createQueryBuilder("venda")
+      .select("SUM(venda.peso_venda)", "total_peso")
+      .where("venda.fazenda_id = :fazenda_id", { fazenda_id })
+      .andWhere("venda.data_venda BETWEEN :start AND :end", {
+        start: dataInicio,
+        end: dataFim
+      })
+      .getRawOne();
+
+    let totalWeight = 0;
+    if (pesoTotalVendido.total_peso > 0) {
+      totalWeight = parseFloat(pesoTotalVendido.total_peso);
+    }
+
+    const quantidadeVendida = await this.vendaRepository
+      .createQueryBuilder("venda")
+      .select("SUM(venda.quantidade_vendida)", "total_quantidade")
+      .where("venda.fazenda_id = :fazenda_id", { fazenda_id })
+      .andWhere("venda.data_venda BETWEEN :start AND :end", { start: dataInicio, end: dataFim })
+      .getRawOne();
+
+    let totalQuantity = 0;
+    if (quantidadeVendida.total_quantidade > 0) {
+      totalQuantity = parseInt(quantidadeVendida.total_quantidade);
+    }
+
+    const totalSales = await this.vendaRepository
+      .createQueryBuilder("venda")
+      .select("SUM(venda.valor_venda)", "total_sales")
+      .where("venda.fazenda_id = :fazenda_id", { fazenda_id })
+      .andWhere("venda.data_venda BETWEEN :start AND :end", { start: dataInicio, end: dataFim })
+      .getRawOne();
+
+    let totalSalesValue = 0;
+    if (totalSales.total_sales > 0) {
+      totalSalesValue = parseFloat(totalSales.total_sales);
+    }
 
     return {
       totalInseminacoes,
@@ -289,7 +387,13 @@ export class DashboardService {
       leitoesEmCrecheObj: {
         total: leitoesEmCreche,
         idadeMedia: mediaIdadeDias
-      }
+      },
+      vendasPorMes,
+      recentSales,
+      averagePrice,
+      totalWeight,
+      totalQuantity,
+      totalSales: totalSalesValue,
     };    
   }
 }

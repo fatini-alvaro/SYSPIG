@@ -15,8 +15,8 @@ export class DashboardController {
       const { fazenda_id } = req.params;
       const { startDate, endDate } = req.query;
 
-      const parsedStartDate = typeof startDate === 'string' ? new Date(startDate) : undefined;
-      const parsedEndDate = typeof endDate === 'string' ? new Date(endDate) : undefined;
+      const parsedStartDate = typeof startDate === 'string' ? new Date(startDate + 'T00:00:00Z') : undefined;
+      const parsedEndDate = typeof endDate === 'string' ? new Date(endDate + 'T23:59:59Z') : undefined;
 
       const dashboardData = await this.dashboardService.returnData(Number(fazenda_id), parsedStartDate, parsedEndDate);
 
