@@ -79,6 +79,14 @@ class AcoesPage extends StatelessWidget {
                   Navigator.of(context).pushNamed('/selecionarInseminacao');
                 },
               ),
+              SizedBox(height: 20),
+              CustomHomeCard(
+                descricao: 'Vender Leitões',
+                icone: Icons.sell,
+                onTapCallback: () {
+                  Navigator.of(context).pushNamed('/visualizarVenda');
+                },
+              ),
             ],
           ),
         ],

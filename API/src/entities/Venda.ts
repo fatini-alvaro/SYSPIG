@@ -1,16 +1,10 @@
 import { Column, CreateDateColumn, Entity, JoinColumn, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { UsuarioFazenda } from "./UsuarioFazenda";
 import { Usuario } from "./Usuario";
-import { Cidade } from "./Cidade";
 import { Fazenda } from "./Fazenda";
-import { Animal } from "./Animal";
-import { LoteAnimal } from "./LoteAnimal";
-import { Baia } from "./Baia";
-import { Lote } from "./Lote";
 
 
 @Entity('venda')
-export class Inseminacao {
+export class Venda {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -20,6 +14,15 @@ export class Inseminacao {
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   data_venda: Date;
+
+  @Column({ type: 'int', nullable: true })
+  quantidade_vendida: number;
+
+  @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
+  valor_venda: number;
+
+  @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
+  peso_venda: number;
 
   @ManyToOne(() => Usuario, { eager: true, nullable: true })
   @JoinColumn({ name: 'created_by', referencedColumnName: 'id' }) 

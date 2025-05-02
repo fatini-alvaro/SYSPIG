@@ -16,6 +16,7 @@ import { CidadeController } from "./controllers/cidadeController";
 import { MovimentacaoController } from "./controllers/movimentacaoController";
 import { InseminacaoController } from "./controllers/inseminacaoController";
 import { DashboardController } from "./controllers/dashboardController";
+import { VendaController } from "./controllers/vendaController";
 const routes = Router();
 
 const corsOptions = {
@@ -71,6 +72,7 @@ routes.get('/baias/:granja_id', baiaController.listByGranja);
 routes.get('/baias/byFazenda/:fazenda_id', baiaController.listByFazenda);
 routes.get('/baias/baia/:baia_id', baiaController.getById);
 routes.get('/baias/byFazendaAndTipo/:fazenda_id/:tipoGranja_id', baiaController.listByFazendaAndTipo);
+routes.get('/baias/crechescomleitoes/:fazenda_id', baiaController.listBaiasComLeitoesParaVenda);
 
 //Cidade
 const cidadeController = new CidadeController();
@@ -129,5 +131,10 @@ routes.get('/inseminacao/:fazenda_id', inseminacaoController.listByFazenda);
 //Dashboard
 const dashboardController = new DashboardController();
 routes.get('/dashboard/:fazenda_id', dashboardController.list);
+
+//Venda
+const vendaController = new VendaController();
+routes.get('/vendas/:fazenda_id', vendaController.list);
+routes.post('/vendas', vendaController.createVenda);
 
 export default routes

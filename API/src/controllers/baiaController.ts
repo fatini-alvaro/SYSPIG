@@ -122,6 +122,23 @@ export class BaiaController {
     }
   }
 
+  listBaiasComLeitoesParaVenda = async (req: Request, res: Response) => {
+    try {      
+      const { fazenda_id } = req.params;
+
+      if (!fazenda_id)
+        return res.status(400).json({ message: 'Parametros não informado'});      
+
+      const baias = await this.baiaService.listBaiasComLeitoesParaVenda(Number(fazenda_id));
+
+      return res.status(200).json(baias);
+      
+    } catch (error) {
+      console.error("Erro ao buscar o Anotação:", error);
+      return handleError(error, res, "Erro ao buscar o Anotação");
+    }
+  }
+
   delete = async (req: Request, res: Response) => {
     const baia_id = req.params.baia_id;
 

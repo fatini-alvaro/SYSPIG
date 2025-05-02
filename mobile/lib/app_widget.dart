@@ -23,6 +23,8 @@ import 'package:syspig/view/selecionar_inseminacao/selecionar_inseminacao_page.d
 import 'package:syspig/view/selecionar_lote/selecionar_lote_page.dart';
 import 'package:syspig/view/selecionar_movimentacao/selecionar_movimentacao_page.dart';
 import 'package:syspig/view/splash/splash_page.dart';
+import 'package:syspig/view/venda/cadastrar_venda_page.dart';
+import 'package:syspig/view/visualizar_venda/visualizar_venda_page.dart';
 
 import 'view/home/home_page.dart';
 
@@ -76,6 +78,9 @@ class AppWidget extends StatelessWidget {
           //Inseminacao
           '/selecionarInseminacao': (context) => SelecionarInseminacaoPage(),
           '/abrirTelaCadastroInseminacao': (context) => CadastrarInseminacaoPage(),
+          //Venda
+          '/visualizarVenda': (context) => VisualizarVendaPage(),
+          '/abrirTelaCadastrarVenda': (context) => CadastrarVendaPage(),
         },
       );  
     });

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:syspig/components/cards/custom_baia_acao_card.dart';
+import 'package:syspig/components/cards/custom_home_card.dart';
 import 'package:syspig/controller/cadastrar_movimentacao_baia/cadastrar_movimentacao_baia_controller.dart';
 import 'package:syspig/controller/ocupacao/ocupacao_controller.dart';
 import 'package:syspig/enums/tipo_granja_constants.dart';
@@ -193,10 +194,12 @@ class _CustomBaiaAcoesTabCardState extends State<CustomBaiaAcoesTabCard> with Si
                       ],
                       if (widget.baia?.granja?.tipoGranja?.id == tipoGranjaIdToInt[TipoGranjaId.creche]) ...[
                         const SizedBox(width: 20),
-                        CustomBaiaAcaoCard(
-                          descricao: 'Vender Leitões (Baixa)',
-                          icone: Icons.monetization_on,
-                          onTapCallback: _abrirDialogMovimentacao,
+                        CustomHomeCard(
+                          descricao: 'Vender Leitões',
+                          icone: Icons.sell,
+                          onTapCallback: () {
+                            Navigator.of(context).pushNamed('/abrirTelaCadastrarVenda');
+                          },
                         ),
                       ]
                     ]

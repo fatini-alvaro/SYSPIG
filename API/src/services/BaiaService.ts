@@ -5,6 +5,8 @@ import { ValidationError } from "../utils/validationError";
 import { Usuario } from "../entities/Usuario";
 import { baiaRepository } from "../repositories/baiaRepository";
 import { StatusOcupacaoAnimal } from "../constants/ocupacaoAnimalConstants";
+import { TipoGranjaId } from "../constants/tipoGranjaConstants";
+import { StatusAnimal } from "../constants/animalConstants";
 
 interface BaiaCreateOrUpdateData {
   numero: string;
@@ -132,6 +134,35 @@ export class BaiaService {
       })
       .getMany();
   }  
+
+  async listBaiasComLeitoesParaVenda(fazenda_id: number,) {
+    return await baiaRepository.createQueryBuilder("baia")
+      .leftJoinAndSelect("baia.granja", "granja")
+      .leftJoinAndSelect("granja.tipoGranja", "tipoGranja")
+      .leftJoinAndSelect("baia.ocupacao", "ocupacao")
+      .leftJoinAndSelect("ocupacao.ocupacaoAnimais", "ocupacaoAnimais")
+      .leftJoinAndSelect("ocupacaoAnimais.animal", "animal")
+      .where("baia.fazenda_id = :fazenda_id", { fazenda_id: fazenda_id })
+      .andWhere("tipoGranja.id = :tipoCreche", { tipoCreche: TipoGranjaId.CRECHE })
+      .andWhere("animal.status = :statusVivo", { statusVivo: StatusAnimal.VIVO })
+      .select([
+        "baia.id",
+        "baia.numero",
+        "baia.vazia",
+        "granja.id",
+        "granja.descricao",
+        "tipoGranja.id",
+        "tipoGranja.descricao",
+        "ocupacao.id",
+        "ocupacao.codigo",
+        "ocupacaoAnimais.id",
+        "animal.id",
+        "animal.nascimento",
+        "animal.status"
+      ])
+      .orderBy("baia.numero", "ASC")
+      .getMany();
+  }
 
   async delete(baia_id: number): Promise<void> {
     if (!baia_id) {

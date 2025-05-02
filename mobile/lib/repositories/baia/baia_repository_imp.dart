@@ -1,6 +1,7 @@
 import 'package:logger/logger.dart';
 import 'package:syspig/api/api_client.dart';
 import 'package:syspig/enums/tipo_granja_constants.dart';
+import 'package:syspig/model/baia_com_leitoes_model.dart';
 import 'package:syspig/model/baia_model.dart';
 import 'package:syspig/repositories/baia/baia_repository.dart';
 import 'package:syspig/utils/error_handler_util.dart';
@@ -33,6 +34,20 @@ class BaiaRepositoryImp implements BaiaRepository {
     } catch (e) {
       String errorMessage = ErrorHandlerUtil.handleDioError(e, 'Erro ao obter lista de baias');
       Logger().e('Erro ao obter lista de baias (listaall - baias): $e');
+      throw Exception(errorMessage);
+    }
+  }
+
+  @override
+  Future<List<BaiaComLeitoesModel>> getListBaiasComLeitoesParaVenda(int fazendaId) async {
+    try {
+      var response = await _apiClient.dio.get('/baias/crechescomleitoes/$fazendaId');
+      return (response.data as List)
+          .map((e) => BaiaComLeitoesModel.fromJson(e))
+          .toList();
+    } catch (e) {
+      String errorMessage = ErrorHandlerUtil.handleDioError(e, 'Erro ao obter lista de baias com leitões');
+      Logger().e('Erro ao obter lista de baias com leitões: $e');
       throw Exception(errorMessage);
     }
   }

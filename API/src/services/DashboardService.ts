@@ -1,6 +1,6 @@
 
 import { Between } from "typeorm";
-import { StatusAnimal } from "../constants/animalConstants";
+import { SexoAnimal, StatusAnimal } from "../constants/animalConstants";
 import { StatusOcupacaoAnimal } from "../constants/ocupacaoAnimalConstants";
 import { TipoGranjaId } from "../constants/tipoGranjaConstants";
 import { AppDataSource } from "../data-source";
@@ -144,6 +144,7 @@ export class DashboardService {
         status: StatusAnimal.VIVO,
         nascimento: false,
         fazenda: { id: fazenda_id },
+        sexo: SexoAnimal.FEMEA,
         data_ultima_inseminacao: Between(dataInicial, dataFinal),
       },
     });

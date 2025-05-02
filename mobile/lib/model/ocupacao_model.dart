@@ -1,3 +1,4 @@
+import 'package:syspig/enums/animal_constants.dart';
 import 'package:syspig/enums/ocupacao_constants.dart';
 import 'package:syspig/model/animal_model.dart';
 import 'package:syspig/model/anotacao_model.dart';
@@ -73,6 +74,34 @@ class OcupacaoModel {
     });
 
     return animaisNascimento;
+  }
+
+  List<OcupacaoAnimalModel> get ocupacaoAnimaisNascimentoVivos {
+    final animaisVivosNascimento = ocupacaoAnimais
+            ?.where((oa) =>
+                oa.animal?.dataNascimento != null &&
+                oa.animal?.status == StatusAnimal.vivo)
+            .toList() ??
+        [];
+
+    animaisVivosNascimento.sort((a, b) {
+      final dataA = a.animal?.dataNascimento;
+      final dataB = b.animal?.dataNascimento;
+
+      if (dataA == null && dataB == null) return 0;
+      if (dataA == null) return 1;
+      if (dataB == null) return -1;
+
+      final comparacaoData = dataB.compareTo(dataA); // mais novo primeiro
+
+      if (comparacaoData != 0) return comparacaoData;
+
+      final idA = a.animal?.id ?? 0;
+      final idB = b.animal?.id ?? 0;
+      return idA.compareTo(idB);
+    });
+
+    return animaisVivosNascimento;
   }
 
   factory OcupacaoModel.fromJson(Map<String, dynamic> json) {
