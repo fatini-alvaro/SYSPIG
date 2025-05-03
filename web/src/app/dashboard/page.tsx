@@ -801,12 +801,12 @@ const DashboardPage = () => {
                 </tbody>
               </table>
             </div>
-            <div className="mt-4 text-right">
+            {/* <div className="mt-4 text-right">
               <button className="text-orange-500 hover:text-orange-600 text-sm font-medium flex items-center justify-end w-full">
                 Ver todas as anotações
                 <ArrowRight size={16} className="ml-1" />
               </button>
-            </div>
+            </div> */}
           </div>
 
           {/* Matrizes com Melhores Estatísticas */}
@@ -945,12 +945,12 @@ const DashboardPage = () => {
                   </tbody>
                 </table>
               </div>
-              <div className="mt-4 text-right">
+              {/* <div className="mt-4 text-right">
                 <button className="text-orange-500 hover:text-orange-600 text-sm font-medium flex items-center justify-end w-full">
                   Ver todas as movimentações
                   <ArrowRight size={16} className="ml-1" />
                 </button>
-              </div>
+              </div> */}
             </div>
 
             {/* Leitões em Creche e Matrizes */}
