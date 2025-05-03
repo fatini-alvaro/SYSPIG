@@ -21,4 +21,26 @@ export class UsuarioController {
     }
   }
 
+  listByFazenda = async (req: Request, res: Response) => {
+    try {
+      const {fazenda_id} = req.params;
+      const usuarios = await this.usuarioService.listByFazenda(Number(fazenda_id));
+      return res.status(200).json(usuarios);
+    } catch (error) {
+      console.error("Erro ao listar usuarios:", error);
+      return handleError(error, res, "Erro ao listar usuarios");
+    }
+  }
+
+  getPerfilUsuario = async (req: Request, res: Response) => {
+    try {
+      const { id } = req.params;
+      const usuario = await this.usuarioService.getPerfilUsuario(Number(id));
+      return res.status(200).json(usuario);
+    } catch (error) {
+      console.error("Erro ao obter perfil do usuario:", error);
+      return handleError(error, res, "Erro ao obter perfil do usuario");
+    }
+  }
+
 }

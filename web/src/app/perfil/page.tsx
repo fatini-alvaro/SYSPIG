@@ -95,30 +95,25 @@ const PerfilPage = () => {
 
   useEffect(() => {
     const fetchTiposUsuario = async () => {
-      try {
-        const response = await apiClient.get("/tiposusuario")
-        setTiposUsuario(response.data)
-        
-        // Se for criação, selecionar o primeiro tipo por padrão
-        if (isCreating && response.data.length > 0) {
-          setEditedProfile((prev) => ({
-            ...prev,
-            tipoUsuarioId: response.data[0].id,
-          }))
-        }
-      } catch (error) {
-        console.error("Erro ao buscar tipos de usuário:", error)
-      }
+      const tipos = [
+        { id: 1, descricao: "Dono" },
+        { id: 2, descricao: "Funcionário" },
+      ]
+  
+      setTiposUsuario(tipos)
     }
 
     const fetchUserProfile = async () => {
       setLoading(true)
       try {
         let userData;
+
+        debugger;
         
         if (isEditing && userId) {
+          debugger;
           // Buscar dados do usuário específico para edição
-          const response = await apiClient.get(`/usuarios/${userId}`)
+          const response = await apiClient.get(`/usuarios/perfil/${userId}`)
           userData = response.data
           setTipoUsuarioLabel(userData.tipoUsuario?.descricao || "Tipo desconhecido")
         } else if (isOwnProfile) {
@@ -523,7 +518,7 @@ const PerfilPage = () => {
                           value={editedProfile.nome}
                           onChange={handleProfileChange}
                           disabled={!(isCreating || isEditing || editMode)}
-                          className={`w-full pl-10 pr-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors ${
+                          className={`w-full pl-10 pr-3 py-2 bg-white border text-gray-700 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors ${
                             !(isCreating || isEditing || editMode) ? "bg-gray-50" : ""
                           }`}
                         />
@@ -546,7 +541,7 @@ const PerfilPage = () => {
                           value={editedProfile.email}
                           onChange={handleProfileChange}
                           disabled={!(isCreating || isEditing || editMode)}
-                          className={`w-full pl-10 pr-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors ${
+                          className={`w-full pl-10 text-gray-700 pr-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors ${
                             !(isCreating || isEditing || editMode) ? "bg-gray-50" : ""
                           }`}
                         />
@@ -554,7 +549,7 @@ const PerfilPage = () => {
                     </div>
 
                     {/* Tipo de Usuário */}
-                    {(isCreating || isEditing) ? (
+                    {(isCreating) ? (
                       <div>
                         <label htmlFor="tipoUsuarioId" className="block text-sm font-medium text-gray-700 mb-1">
                           Tipo de Usuário <span className="text-red-500">*</span>
@@ -568,7 +563,7 @@ const PerfilPage = () => {
                             name="tipoUsuarioId"
                             value={editedProfile.tipoUsuarioId}
                             onChange={handleProfileChange}
-                            className="w-full pl-10 pr-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors appearance-none"
+                            className="w-full pl-10 pr-3 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors appearance-none"
                           >
                             <option value="">Selecione um tipo</option>
                             {tiposUsuario.map((tipo) => (
@@ -596,7 +591,7 @@ const PerfilPage = () => {
                             id="tipoUsuario"
                             value={tipoUsuarioLabel}
                             disabled
-                            className="w-full pl-10 pr-3 py-2 bg-gray-50 border border-gray-300 rounded-lg"
+                            className="w-full pl-10 text-gray-700 pr-3 py-2 bg-gray-50 border border-gray-300 rounded-lg"
                           />
                         </div>
                       </div>
@@ -619,7 +614,7 @@ const PerfilPage = () => {
                               name="senha"
                               value={editedProfile.senha}
                               onChange={handleProfileChange}
-                              className="w-full pl-10 pr-10 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors"
+                              className="w-full pl-10 text-gray-700 pr-10 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors"
                             />
                             <button
                               type="button"
@@ -650,7 +645,7 @@ const PerfilPage = () => {
                               name="confirmarSenha"
                               value={editedProfile.confirmarSenha}
                               onChange={handleProfileChange}
-                              className="w-full pl-10 pr-10 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors"
+                              className="w-full pl-10 pr-10 text-gray-700 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors"
                             />
                             <button
                               type="button"
@@ -681,7 +676,7 @@ const PerfilPage = () => {
                               type="text"
                               value={profile?.created_at ? formatDate(profile.created_at) : "N/A"}
                               disabled
-                              className="w-full pl-10 pr-3 py-2 bg-gray-50 border border-gray-300 rounded-lg"
+                              className="w-full pl-10 text-gray-700 pr-3 py-2 bg-gray-50 border border-gray-300 rounded-lg"
                             />
                           </div>
                         </div>
@@ -695,7 +690,7 @@ const PerfilPage = () => {
                               type="text"
                               value={profile?.updated_at ? formatDate(profile.updated_at) : "N/A"}
                               disabled
-                              className="w-full pl-10 pr-3 py-2 bg-gray-50 border border-gray-300 rounded-lg"
+                              className="w-full pl-10 text-gray-700 pr-3 py-2 bg-gray-50 border border-gray-300 rounded-lg"
                             />
                           </div>
                         </div>
@@ -752,8 +747,43 @@ const PerfilPage = () => {
             </div>
           </div>
 
-          {/* Coluna da direita - Alterar senha e Fazendas */}
-          {isOwnProfile && profile && (
+          {/* Coluna da direita - Fazendas */}          
+          <div className="space-y-6">
+            {/* Fazendas Associadas */}
+            <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+              <div className="bg-gradient-to-r from-green-500 to-green-600 px-6 py-4">
+                <h2 className="text-xl font-semibold text-white">Fazendas Associadas</h2>
+              </div>
+
+              <div className="p-6">
+                {profile?.usuarioFazendas && profile.usuarioFazendas.length > 0 ? (
+                  <ul className="space-y-3">
+                    {profile.usuarioFazendas.map((uf) => (
+                      <li
+                        key={uf.id}
+                        className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200"
+                      >
+                        <Building2 className="text-green-500 flex-shrink-0 mt-0.5" size={20} />
+                        <div>
+                          <h3 className="font-medium text-gray-800">{uf.fazenda.nome}</h3>
+                          {uf.fazenda.cidade && (
+                            <p className="text-sm text-gray-600">
+                              {uf.fazenda.cidade.nome} - {uf.fazenda.cidade.uf?.sigla}
+                            </p>
+                          )}
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <div className="text-center py-4">
+                    <Building2 size={32} className="mx-auto text-gray-400 mb-2" />
+                    <p className="text-gray-500">Nenhuma fazenda associada</p>
+                  </div>
+                )}
+              </div>
+            </div>
+
             <div className="space-y-6">
               {/* Alterar Senha */}
               <div className="bg-white rounded-xl shadow-sm overflow-hidden">
@@ -769,7 +799,7 @@ const PerfilPage = () => {
                         Senha Atual
                       </label>
                       <div className="relative">
-                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <div className="absolute inset-y-0 left-0 text-gray-700 pl-3 flex items-center pointer-events-none">
                           <Lock size={18} className="text-gray-400" />
                         </div>
                         <input
@@ -793,14 +823,14 @@ const PerfilPage = () => {
                         </button>
                       </div>
                     </div>
-
+            
                     {/* Nova Senha */}
                     <div>
                       <label htmlFor="novaSenha" className="block text-sm font-medium text-gray-700 mb-1">
                         Nova Senha
                       </label>
                       <div className="relative">
-                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <div className="absolute inset-y-0 text-gray-700 left-0 pl-3 flex items-center pointer-events-none">
                           <Lock size={18} className="text-gray-400" />
                         </div>
                         <input
@@ -824,7 +854,7 @@ const PerfilPage = () => {
                         </button>
                       </div>
                     </div>
-
+            
                     {/* Confirmar Senha */}
                     <div>
                       <label htmlFor="confirmarSenha" className="block text-sm font-medium text-gray-700 mb-1">
@@ -840,7 +870,7 @@ const PerfilPage = () => {
                           name="confirmarSenha"
                           value={passwordForm.confirmarSenha}
                           onChange={handlePasswordChange}
-                          className="w-full pl-10 pr-10 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                          className="w-full pl-10 text-gray-700 pr-10 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                         />
                         <button
                           type="button"
@@ -855,7 +885,7 @@ const PerfilPage = () => {
                         </button>
                       </div>
                     </div>
-
+            
                     <div className="pt-2">
                       <button
                         type="submit"
@@ -892,43 +922,8 @@ const PerfilPage = () => {
                   </form>
                 </div>
               </div>
-
-              {/* Fazendas Associadas */}
-              <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-                <div className="bg-gradient-to-r from-green-500 to-green-600 px-6 py-4">
-                  <h2 className="text-xl font-semibold text-white">Fazendas Associadas</h2>
-                </div>
-
-                <div className="p-6">
-                  {profile?.usuarioFazendas && profile.usuarioFazendas.length > 0 ? (
-                    <ul className="space-y-3">
-                      {profile.usuarioFazendas.map((uf) => (
-                        <li
-                          key={uf.id}
-                          className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200"
-                        >
-                          <Building2 className="text-green-500 flex-shrink-0 mt-0.5" size={20} />
-                          <div>
-                            <h3 className="font-medium text-gray-800">{uf.fazenda.nome}</h3>
-                            {uf.fazenda.cidade && (
-                              <p className="text-sm text-gray-600">
-                                {uf.fazenda.cidade.nome} - {uf.fazenda.cidade.uf?.sigla}
-                              </p>
-                            )}
-                          </div>
-                        </li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <div className="text-center py-4">
-                      <Building2 size={32} className="mx-auto text-gray-400 mb-2" />
-                      <p className="text-gray-500">Nenhuma fazenda associada</p>
-                    </div>
-                  )}
-                </div>
-              </div>
             </div>
-          )}
+          </div>
         </div>
       </div>
     </div>

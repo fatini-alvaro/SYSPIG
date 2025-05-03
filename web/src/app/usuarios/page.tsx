@@ -20,6 +20,7 @@ import {
   AlertCircle,
   ChevronDown,
 } from "lucide-react"
+import Cookie from "js-cookie"
 
 interface Usuario {
   id: number
@@ -29,7 +30,7 @@ interface Usuario {
     id: number
     descricao: string
   }
-  created_at: string
+  createdAt: string
 }
 
 interface TipoUsuario {
@@ -40,6 +41,7 @@ interface TipoUsuario {
 const UsuariosPage = () => {
   const router = useRouter()
   const [usuarios, setUsuarios] = useState<Usuario[]>([])
+  const fazenda_id = Cookie.get("selectedFarmId")
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState("")
   const [tiposUsuario, setTiposUsuario] = useState<TipoUsuario[]>([])
@@ -58,8 +60,8 @@ const UsuariosPage = () => {
   const fetchUsuarios = async () => {
     setLoading(true)
     try {
-      // Em um ambiente real, você usaria paginação e filtros na API
-      const response = await apiClient.get("/usuarios")
+      debugger;
+      const response = await apiClient.get(`/usuarios/${fazenda_id}`)
       setUsuarios(response.data)
 
       // Simulando paginação no cliente
@@ -76,13 +78,13 @@ const UsuariosPage = () => {
     }
   }
 
-  const fetchTiposUsuario = async () => {
-    try {
-      const response = await apiClient.get("/tiposusuario")
-      setTiposUsuario(response.data)
-    } catch (error) {
-      console.error("Erro ao buscar tipos de usuário:", error)
-    }
+  const fetchTiposUsuario = async () => {   
+    const tipos = [
+      { id: 1, descricao: "Dono" },
+      { id: 2, descricao: "Funcionário" },
+    ]
+
+    setTiposUsuario(tipos)
   }
 
   useEffect(() => {
@@ -120,11 +122,6 @@ const UsuariosPage = () => {
 
   const handleEditUser = (id: number) => {
     router.push(`/perfil?mode=edit&userId=${id}`)
-  }
-
-  const confirmDelete = (usuario: Usuario) => {
-    setUsuarioParaExcluir(usuario)
-    setShowDeleteModal(true)
   }
 
   const handleDeleteUser = async () => {
@@ -183,8 +180,8 @@ const UsuariosPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen bg-gray-50 py-2 px-4">
+      <div className="max-w-9xl mx-auto">
         {/* Cabeçalho */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
           <div>
@@ -233,7 +230,7 @@ const UsuariosPage = () => {
                 placeholder="Buscar por nome ou email..."
                 value={searchTerm}
                 onChange={handleSearch}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 text-gray-700 focus:border-orange-500"
               />
             </div>
             <div className="md:w-64">
@@ -244,7 +241,7 @@ const UsuariosPage = () => {
                 <select
                   value={filtroTipoUsuario}
                   onChange={handleFilterChange}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 appearance-none bg-white"
+                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 appearance-none bg-white"
                 >
                   <option value="">Todos os tipos</option>
                   {tiposUsuario.map((tipo) => (
@@ -342,7 +339,7 @@ const UsuariosPage = () => {
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {usuario.created_at ? formatDate(usuario.created_at) : "N/A"}
+                        {usuario.createdAt ? formatDate(usuario.createdAt) : "N/A"}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <div className="flex justify-end gap-2">
@@ -352,13 +349,6 @@ const UsuariosPage = () => {
                             title="Editar"
                           >
                             <Edit size={18} />
-                          </button>
-                          <button
-                            onClick={() => confirmDelete(usuario)}
-                            className="text-red-600 hover:text-red-900 p-1 rounded-full hover:bg-red-50"
-                            title="Excluir"
-                          >
-                            <Trash2 size={18} />
                           </button>
                         </div>
                       </td>

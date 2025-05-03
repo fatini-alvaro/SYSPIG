@@ -130,7 +130,6 @@ const DashboardPage = () => {
   const [matrizesProximasParto, setMatrizesProximasParto] = useState<MatrizProximaParto[]>([])
   const [anotacoes, setAnotacoes] = useState<Anotacao[]>([])
   const [matrizesEstatisticas, setMatrizesEstatisticas] = useState<MatrizEstatistica[]>([])
-
   const fetchDashboardData = async (startDate: Date, endDate: Date) => {
     const formattedStartDate = startDate.toISOString().split("T")[0]
     const formattedEndDate = endDate.toISOString().split("T")[0]

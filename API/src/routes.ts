@@ -43,6 +43,9 @@ routes.post('/auth/logout', authController.logout);
 // Middleware global para todas as rotas, exceto a de login
 routes.use(verifyToken);
 
+routes.get('/usuarios/:fazenda_id', usuarioController.listByFazenda);
+routes.get('/usuarios/perfil/:id', usuarioController.getPerfilUsuario);
+
 //fazenda rotas
 const fazendaController = new FazendaController();
 routes.post('/fazendas', fazendaController.createOrUpdate);
