@@ -66,4 +66,17 @@ export class UsuarioFazendaService {
       usuarioInstancia,
     };
   }
+
+  async deleteById(usuarioFazendaId: number) {
+    const usuarioFazenda = await usuarioFazendaRepository.findOne({
+      where: { id: usuarioFazendaId },
+    });
+  
+    if (!usuarioFazenda) {
+      throw new ValidationError("Relação usuário-fazenda não encontrada.");
+    }
+  
+    await usuarioFazendaRepository.remove(usuarioFazenda);
+  }
+  
 }

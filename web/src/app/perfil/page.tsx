@@ -6,7 +6,7 @@ import { useState, useEffect } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import Cookie from "js-cookie"
 import apiClient from "@/apiClient"
-import { User, Mail, Lock, Building2, Calendar, Save, X, CheckCircle2, AlertCircle, Eye, EyeOff, UserCog, Clock, ArrowLeft, ChevronDown } from 'lucide-react'
+import { User, Mail, Plus, Lock, Building2, Calendar, Save, X, CheckCircle2, AlertCircle, Eye, EyeOff, UserCog, Clock, ArrowLeft, ChevronDown, Search, Trash2 } from 'lucide-react'
 
 interface UserProfile {
   id: number
@@ -31,6 +31,17 @@ interface UserProfile {
       }
     }
   }>
+}
+
+interface Fazenda {
+  id: number
+  nome: string
+  cidade?: {
+    nome: string
+    uf?: {
+      sigla: string
+    }
+  }
 }
 
 interface TipoUsuario {
@@ -85,6 +96,8 @@ const PerfilPage = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmNewPassword, setShowConfirmNewPassword] = useState(false)
+  const [availableFarms, setAvailableFarms] = useState<Fazenda[]>([])
+  const [showAddFarmModal, setShowAddFarmModal] = useState(false)
   const [notification, setNotification] = useState<{
     type: "success" | "error"
     message: string
@@ -92,6 +105,118 @@ const PerfilPage = () => {
   const [changingPassword, setChangingPassword] = useState(false)
   const [savingProfile, setSavingProfile] = useState(false)
   const [tipoUsuarioLabel, setTipoUsuarioLabel] = useState<string>("");
+  const userLogadoCookie = Cookie.get("user")
+  const userLogado = userLogadoCookie ? JSON.parse(userLogadoCookie) : null
+  const [removingFarmId, setRemovingFarmId] = useState<number | null>(null)
+  const [searchFarmTerm, setSearchFarmTerm] = useState("")
+  const [addingFarm, setAddingFarm] = useState(false)
+
+  const fetchAvailableFarms = async () => {
+    try {
+      // Get farms that the user doesn't already have
+      const response = await apiClient.get(`/fazendas/${userLogado.id}`)
+      const allFarms = response.data
+
+      // Filter out farms that the user already has
+      const userFarmIds = profile?.usuarioFazendas?.map((uf) => uf.fazenda.id) || []
+      const availableFarmsFiltered = allFarms.filter((farm: Fazenda) => !userFarmIds.includes(farm.id))
+
+      setAvailableFarms(availableFarmsFiltered)
+    } catch (error) {
+      console.error("Erro ao buscar fazendas disponíveis:", error)
+      setNotification({
+        type: "error",
+        message: "Não foi possível carregar as fazendas disponíveis",
+      })
+    }
+  }
+
+  const handleRemoveFarm = async (farmId: number) => {
+    if (!profile) return
+
+    setRemovingFarmId(farmId)
+    try {
+      // Find the usuarioFazenda entry to delete
+      const usuarioFazenda = profile.usuarioFazendas?.find((uf) => uf.fazenda.id === farmId)
+      if (!usuarioFazenda) {
+        throw new Error("Relação usuário-fazenda não encontrada")
+      }
+
+      await apiClient.delete(`/usuariofazendas/${usuarioFazenda.id}`)
+
+      // Update the profile to remove the farm
+      if (profile) {
+        const updatedProfile = { ...profile }
+        const removedFarm = updatedProfile.usuarioFazendas?.find((uf) => uf.fazenda.id === farmId)?.fazenda
+
+        updatedProfile.usuarioFazendas = updatedProfile.usuarioFazendas?.filter((uf) => uf.fazenda.id !== farmId) || []
+
+        setProfile(updatedProfile)
+
+        // Add the farm back to available farms if it exists
+        if (removedFarm) {
+          setAvailableFarms([...availableFarms, removedFarm])
+        }
+      }
+
+      setNotification({
+        type: "success",
+        message: "Fazenda desvinculada com sucesso!",
+      })
+    } catch (error) {
+      console.error("Erro ao desvincular fazenda:", error)
+      setNotification({
+        type: "error",
+        message: "Não foi possível desvincular a fazenda",
+      })
+    } finally {
+      setRemovingFarmId(null)
+    }
+  }
+
+  const handleAddFarm = async (farmId: number) => {
+    if (!profile) return
+
+    setAddingFarm(true)
+    try {
+      await apiClient.post(`/usuariofazendas`, {
+        usuarioId: profile.id,
+        fazendaId: farmId,
+      })
+
+      // Update the profile to include the new farm
+      const selectedFarm = availableFarms.find((farm) => farm.id === farmId)
+      if (selectedFarm && profile) {
+        const updatedProfile = { ...profile }
+        updatedProfile.usuarioFazendas = [
+          ...(updatedProfile.usuarioFazendas || []),
+          {
+            id: Date.now(), // Temporary ID until we refresh
+            fazenda: selectedFarm,
+          },
+        ]
+        setProfile(updatedProfile)
+
+        // Remove the farm from available farms
+        setAvailableFarms(availableFarms.filter((farm) => farm.id !== farmId))
+      }
+
+      setNotification({
+        type: "success",
+        message: "Fazenda adicionada com sucesso!",
+      })
+      setShowAddFarmModal(false)
+    } catch (error) {
+      console.error("Erro ao adicionar fazenda:", error)
+      setNotification({
+        type: "error",
+        message: "Não foi possível adicionar a fazenda",
+      })
+    } finally {
+      setAddingFarm(false)
+    }
+  }
+
 
   useEffect(() => {
     const fetchTiposUsuario = async () => {
@@ -111,21 +236,8 @@ const PerfilPage = () => {
         debugger;
         
         if (isEditing && userId) {
-          debugger;
           // Buscar dados do usuário específico para edição
           const response = await apiClient.get(`/usuarios/perfil/${userId}`)
-          userData = response.data
-          setTipoUsuarioLabel(userData.tipoUsuario?.descricao || "Tipo desconhecido")
-        } else if (isOwnProfile) {
-          // Buscar dados do próprio usuário
-          const userCookie = Cookie.get("user")
-          if (!userCookie) {
-            router.push("/login")
-            return
-          }
-
-          const user = JSON.parse(userCookie)
-          const response = await apiClient.get(`/usuarios/${user.id}`)
           userData = response.data
           setTipoUsuarioLabel(userData.tipoUsuario?.descricao || "Tipo desconhecido")
         }
@@ -147,6 +259,8 @@ const PerfilPage = () => {
             confirmarSenha: "",
           })
         }
+
+        fetchAvailableFarms()
       } catch (error) {
         console.error("Erro ao buscar perfil do usuário:", error)
         setNotification({
@@ -268,6 +382,7 @@ const PerfilPage = () => {
   }
 
   const handleSaveProfile = async (e: React.FormEvent) => {
+    debugger;
     e.preventDefault()
     if (!validateForm()) return
 
@@ -296,7 +411,6 @@ const PerfilPage = () => {
         await apiClient.put(`/usuarios/${userId}`, {
           nome: editedProfile.nome,
           email: editedProfile.email,
-          tipoUsuarioId: editedProfile.tipoUsuarioId,
         })
 
         setNotification({
@@ -308,13 +422,9 @@ const PerfilPage = () => {
         setTimeout(() => {
           router.push("/usuarios")
         }, 2000)
-      } else if (isOwnProfile && profile) {
-        // Atualizar o próprio perfil
-        await apiClient.put(`/usuarios/${profile.id}`, {
-          nome: editedProfile.nome,
-          email: editedProfile.email,
-        })
-
+      } 
+      
+      if (isOwnProfile ) {
         // Atualizar o cookie do usuário
         const userCookie = Cookie.get("user")
         if (userCookie) {
@@ -335,12 +445,6 @@ const PerfilPage = () => {
             email: editedProfile.email,
           }
         })
-
-        setNotification({
-          type: "success",
-          message: "Perfil atualizado com sucesso!",
-        })
-        setEditMode(false)
       }
     } catch (error: any) {
       console.error("Erro ao salvar perfil:", error)
@@ -376,7 +480,7 @@ const PerfilPage = () => {
 
     setChangingPassword(true)
     try {
-      await apiClient.post(`/usuarios/${profile.id}/change-password`, {
+      await apiClient.post(`/usuarios/${userId}/change-password`, {
         senhaAtual: passwordForm.senhaAtual,
         novaSenha: passwordForm.novaSenha,
       })
@@ -431,7 +535,7 @@ const PerfilPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4">
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-7xl mx-auto">
         {/* Cabeçalho */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
           <div>
@@ -747,12 +851,22 @@ const PerfilPage = () => {
             </div>
           </div>
 
-          {/* Coluna da direita - Fazendas */}          
+          {/* Coluna da direita - Fazendas */}
           <div className="space-y-6">
             {/* Fazendas Associadas */}
             <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-              <div className="bg-gradient-to-r from-green-500 to-green-600 px-6 py-4">
+              <div className="bg-gradient-to-r from-green-500 to-green-600 px-6 py-4 flex justify-between items-center">
                 <h2 className="text-xl font-semibold text-white">Fazendas Associadas</h2>
+                <button
+                  onClick={() => {
+                    fetchAvailableFarms()
+                    setShowAddFarmModal(true)
+                  }}
+                  className="bg-white text-green-600 p-1.5 rounded-full hover:bg-green-50 transition-colors"
+                  title="Adicionar Fazenda"
+                >
+                  <Plus size={18} />
+                </button>
               </div>
 
               <div className="p-6">
@@ -761,17 +875,47 @@ const PerfilPage = () => {
                     {profile.usuarioFazendas.map((uf) => (
                       <li
                         key={uf.id}
-                        className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200"
+                        className="flex items-start justify-between gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200"
                       >
-                        <Building2 className="text-green-500 flex-shrink-0 mt-0.5" size={20} />
-                        <div>
-                          <h3 className="font-medium text-gray-800">{uf.fazenda.nome}</h3>
-                          {uf.fazenda.cidade && (
-                            <p className="text-sm text-gray-600">
-                              {uf.fazenda.cidade.nome} - {uf.fazenda.cidade.uf?.sigla}
-                            </p>
-                          )}
+                        <div className="flex items-start gap-3">
+                          <Building2 className="text-green-500 flex-shrink-0 mt-0.5" size={20} />
+                          <div>
+                            <h3 className="font-medium text-gray-800">{uf.fazenda.nome}</h3>
+                            {uf.fazenda.cidade && (
+                              <p className="text-sm text-gray-600">
+                                {uf.fazenda.cidade.nome} - {uf.fazenda.cidade.uf?.sigla}
+                              </p>
+                            )}
+                          </div>
                         </div>
+                        <button
+                          onClick={() => handleRemoveFarm(uf.fazenda.id)}
+                          disabled={removingFarmId === uf.fazenda.id}
+                          className={`text-red-500 hover:text-red-700 p-1 rounded-full hover:bg-red-50 ${
+                            removingFarmId === uf.fazenda.id ? "opacity-50 cursor-not-allowed" : ""
+                          }`}
+                          title="Desvincular Fazenda"
+                        >
+                          {removingFarmId === uf.fazenda.id ? (
+                            <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                              <circle
+                                className="opacity-25"
+                                cx="12"
+                                cy="12"
+                                r="10"
+                                stroke="currentColor"
+                                strokeWidth="4"
+                              ></circle>
+                              <path
+                                className="opacity-75"
+                                fill="currentColor"
+                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                              ></path>
+                            </svg>
+                          ) : (
+                            <Trash2 size={18} />
+                          )}
+                        </button>
                       </li>
                     ))}
                   </ul>
@@ -779,10 +923,126 @@ const PerfilPage = () => {
                   <div className="text-center py-4">
                     <Building2 size={32} className="mx-auto text-gray-400 mb-2" />
                     <p className="text-gray-500">Nenhuma fazenda associada</p>
+                    <button
+                      onClick={() => {
+                        fetchAvailableFarms()
+                        setShowAddFarmModal(true)
+                      }}
+                      className="mt-3 text-sm text-green-600 hover:text-green-700 font-medium flex items-center justify-center gap-1 mx-auto"
+                    >
+                      <Plus size={16} /> Adicionar Fazenda
+                    </button>
                   </div>
                 )}
               </div>
             </div>
+
+            {/* Add Farm Modal */}
+            {showAddFarmModal && (
+              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+                  <div className="flex justify-between items-center mb-4">
+                    <h3 className="text-lg font-medium text-gray-900">Adicionar Fazenda</h3>
+                    <button
+                      onClick={() => setShowAddFarmModal(false)}
+                      className="text-gray-400 hover:text-gray-500 rounded-full p-1 hover:bg-gray-100"
+                    >
+                      <X size={20} />
+                    </button>
+                  </div>
+
+                  {/* Search */}
+                  <div className="mb-4 relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <Search size={18} className="text-gray-400" />
+                    </div>
+                    <input
+                      type="text"
+                      placeholder="Buscar fazenda..."
+                      value={searchFarmTerm}
+                      onChange={(e) => setSearchFarmTerm(e.target.value)}
+                      className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                    />
+                  </div>
+
+                  {/* Farm List */}
+                  <div className="max-h-60 overflow-y-auto mb-4">
+                    {availableFarms.length === 0 ? (
+                      <div className="text-center py-8">
+                        <Building2 size={32} className="mx-auto text-gray-400 mb-2" />
+                        <p className="text-gray-500">Nenhuma fazenda disponível</p>
+                      </div>
+                    ) : (
+                      <ul className="space-y-2">
+                        {availableFarms
+                          .filter(
+                            (farm) =>
+                              farm.nome.toLowerCase().includes(searchFarmTerm.toLowerCase()) ||
+                              farm.cidade?.nome.toLowerCase().includes(searchFarmTerm.toLowerCase()) ||
+                              farm.cidade?.uf?.sigla.toLowerCase().includes(searchFarmTerm.toLowerCase()),
+                          )
+                          .map((farm) => (
+                            <li key={farm.id} className="border border-gray-200 rounded-lg p-3 hover:bg-gray-50">
+                              <button
+                                onClick={() => handleAddFarm(farm.id)}
+                                disabled={addingFarm}
+                                className="w-full text-left flex justify-between items-center"
+                              >
+                                <div>
+                                  <h4 className="font-medium text-gray-800">{farm.nome}</h4>
+                                  {farm.cidade && (
+                                    <p className="text-sm text-gray-600">
+                                      {farm.cidade.nome} - {farm.cidade.uf?.sigla}
+                                    </p>
+                                  )}
+                                </div>
+                                <Plus size={18} className="text-green-500" />
+                              </button>
+                            </li>
+                          ))}
+                      </ul>
+                    )}
+                  </div>
+
+                  <div className="flex justify-end gap-3 pt-2 border-t border-gray-200">
+                    <button
+                      onClick={() => setShowAddFarmModal(false)}
+                      className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors"
+                    >
+                      Cancelar
+                    </button>
+                    <button
+                      onClick={() => setShowAddFarmModal(false)}
+                      disabled={addingFarm}
+                      className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
+                    >
+                      {addingFarm ? (
+                        <div className="flex items-center gap-2">
+                          <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                            <circle
+                              className="opacity-25"
+                              cx="12"
+                              cy="12"
+                              r="10"
+                              stroke="currentColor"
+                              strokeWidth="4"
+                            ></circle>
+                            <path
+                              className="opacity-75"
+                              fill="currentColor"
+                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                            ></path>
+                          </svg>
+                          Adicionando...
+                        </div>
+                      ) : (
+                        "Concluir"
+                      )}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
 
             <div className="space-y-6">
               {/* Alterar Senha */}
@@ -808,7 +1068,7 @@ const PerfilPage = () => {
                           name="senhaAtual"
                           value={passwordForm.senhaAtual}
                           onChange={handlePasswordChange}
-                          className="w-full pl-10 pr-10 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                          className="w-full pl-10 pr-10 py-2 bg-white border text-gray-700 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                         />
                         <button
                           type="button"
@@ -823,7 +1083,7 @@ const PerfilPage = () => {
                         </button>
                       </div>
                     </div>
-            
+
                     {/* Nova Senha */}
                     <div>
                       <label htmlFor="novaSenha" className="block text-sm font-medium text-gray-700 mb-1">
@@ -839,7 +1099,7 @@ const PerfilPage = () => {
                           name="novaSenha"
                           value={passwordForm.novaSenha}
                           onChange={handlePasswordChange}
-                          className="w-full pl-10 pr-10 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                          className="w-full pl-10 pr-10 py-2 bg-white border text-gray-700 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                         />
                         <button
                           type="button"
@@ -854,7 +1114,7 @@ const PerfilPage = () => {
                         </button>
                       </div>
                     </div>
-            
+
                     {/* Confirmar Senha */}
                     <div>
                       <label htmlFor="confirmarSenha" className="block text-sm font-medium text-gray-700 mb-1">
@@ -870,7 +1130,7 @@ const PerfilPage = () => {
                           name="confirmarSenha"
                           value={passwordForm.confirmarSenha}
                           onChange={handlePasswordChange}
-                          className="w-full pl-10 text-gray-700 pr-10 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                          className="w-full pl-10 text-gray-700 pr-10 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                         />
                         <button
                           type="button"
@@ -885,7 +1145,7 @@ const PerfilPage = () => {
                         </button>
                       </div>
                     </div>
-            
+
                     <div className="pt-2">
                       <button
                         type="submit"

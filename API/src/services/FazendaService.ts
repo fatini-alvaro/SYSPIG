@@ -4,6 +4,7 @@ import { ValidationError } from "../utils/validationError";
 import { Usuario } from "../entities/Usuario";
 import { Fazenda } from "../entities/Fazenda";
 import { UsuarioFazendaService } from "./UsuarioFazendaService";
+import { fazendaRepository } from "../repositories/fazendaRepository";
 
 interface FazendaCreateOrUpdateData {
   nome: string;
@@ -75,5 +76,18 @@ export class FazendaService {
       createdBy,
       updatedBy,
     };
+  }
+
+  async listFazendasDisponiveis(usuario_id: number) {
+    const fazendas = await fazendaRepository.find({ 
+      where: { 
+        usuario: { 
+          id: Number(usuario_id) 
+        } 
+      }, 
+      relations: ['cidade', 'cidade.uf']
+    });
+
+    return fazendas;
   }
 }

@@ -43,4 +43,15 @@ export class FazendaController {
       return handleError(error, res, "Erro ao criar fazenda");
     }
   }
+
+  listFazendasDisponiveis = async (req: Request, res: Response) => {
+    try {
+      const { usuario_id } = req.params;
+      const fazendas = await this.fazendaService.listFazendasDisponiveis(Number(usuario_id));
+      return res.status(200).json(fazendas);
+    } catch (error) {
+      console.error("Erro ao listar fazendas:", error);
+      return handleError(error, res, "Erro ao listar fazendas");
+    }
+  };
 }

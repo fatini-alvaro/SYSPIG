@@ -43,16 +43,21 @@ routes.post('/auth/logout', authController.logout);
 // Middleware global para todas as rotas, exceto a de login
 routes.use(verifyToken);
 
+routes.put('/usuarios/:id', usuarioController.update);
 routes.get('/usuarios/:fazenda_id', usuarioController.listByFazenda);
 routes.get('/usuarios/perfil/:id', usuarioController.getPerfilUsuario);
+routes.post('/usuarios/:id/change-password', usuarioController.changeUsuarioPassword);
 
 //fazenda rotas
 const fazendaController = new FazendaController();
 routes.post('/fazendas', fazendaController.createOrUpdate);
+routes.get('/fazendas/:usuario_id', fazendaController.listFazendasDisponiveis);
 
 //usuarioFazenda rotas
 const usuarioFazendaController = new UsuarioFazendaController();
 routes.get('/usuariofazendas/:usuario_id', usuarioFazendaController.listFazendas);
+routes.delete("/usuariofazendas/:id", usuarioFazendaController.deleteUsuarioFazenda);
+routes.post('/usuariofazendas', usuarioFazendaController.create);
 
 //TipoGranja
 const tipoGranjaController = new TipoGranjaController();

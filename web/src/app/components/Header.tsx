@@ -93,7 +93,15 @@ const Header = ({ toggleSidebar }: { toggleSidebar?: () => void }) => {
                 {tipoUsuarioLabel === "Dono" && (
                   <>
                     <button
-                      onClick={() => router.push("/perfil")}
+                      onClick={() => {
+                        const userCookie = Cookie.get("user");
+                        const userId = userCookie ? JSON.parse(userCookie).id : null;
+                        if (userId) {
+                          router.push(`/perfil?mode=edit&userId=${userId}`);
+                        } else {
+                          console.error("User ID not found");
+                        }
+                      }}
                       className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
                     >
                       <User size={16} />
