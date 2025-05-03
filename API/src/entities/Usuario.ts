@@ -36,4 +36,8 @@ export class Usuario {
 
   @UpdateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   updated_at: Date;
+
+  @ManyToOne(() => Usuario, { nullable: true })
+  @JoinColumn({ name: 'created_by', referencedColumnName: 'id' }) 
+  createdBy: Usuario;
 }

@@ -12,8 +12,8 @@ export class UsuarioController {
 
   create = async (req: Request, res: Response) => {
     try {
-      const { nome, email, senha } = req.body;
-      const newUsuario = await this.usuarioService.create(nome, email, senha);
+      const { nome, email, senha, tipoUsuarioId, criadoPor } = req.body;
+      const newUsuario = await this.usuarioService.create(nome, email, senha, tipoUsuarioId, criadoPor);
       return res.status(201).json(newUsuario);
     } catch (error) {
       console.error("Erro ao cadastrar usuario:", error);
@@ -36,7 +36,8 @@ export class UsuarioController {
   listByFazenda = async (req: Request, res: Response) => {
     try {
       const {fazenda_id} = req.params;
-      const usuarios = await this.usuarioService.listByFazenda(Number(fazenda_id));
+      const usuarioId = req.query.usuarioId
+      const usuarios = await this.usuarioService.listByFazenda(Number(fazenda_id), Number(usuarioId));
       return res.status(200).json(usuarios);
     } catch (error) {
       console.error("Erro ao listar usuarios:", error);

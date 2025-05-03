@@ -3,10 +3,11 @@ import bcrypt from 'bcrypt';
 import { tipoUsuarioRepository } from "../repositories/tipoUsuarioRepository";
 import { TipoUsuarioId } from "../constants/tipoUsuarioConstants";
 import { ValidationError } from "../utils/validationError";
+import { ValidationService } from "./ValidationService";
 
 export class UsuarioService {
 
-  async create(nome: string, email: string, senha: string) {
+  async create(nome: string, email: string, senha: string, tipoUsuarioId?: number, criadoPor?: number) {
     if (!nome || !email || !senha) {
       throw new ValidationError('Todos os campos são obrigatórios.');
     }
@@ -16,9 +17,18 @@ export class UsuarioService {
       throw new ValidationError('O e-mail já está em uso.');
     }
 
-    const tipoUsuarioInstancia = await tipoUsuarioRepository.findOneBy({ id: Number(TipoUsuarioId.DONO) });
-    if (!tipoUsuarioInstancia) {
-      throw new ValidationError('Tipo de usuário não encontrado.');
+    let tipoUsuarioInstancia;
+
+    if (tipoUsuarioId) {
+      tipoUsuarioInstancia = await tipoUsuarioRepository.findOneBy({ id: tipoUsuarioId });
+      if (!tipoUsuarioInstancia) {
+        throw new ValidationError('Tipo de usuário não encontrado.');
+      }
+    } else {
+      tipoUsuarioInstancia = await tipoUsuarioRepository.findOneBy({ id: Number(TipoUsuarioId.DONO) });
+      if (!tipoUsuarioInstancia) {
+        throw new ValidationError('Tipo de usuário não encontrado.');
+      }
     }
 
     const hashedPassword = await bcrypt.hash(senha, 10);
@@ -27,8 +37,13 @@ export class UsuarioService {
       nome,
       email,
       senha: hashedPassword,
-      tipoUsuario: tipoUsuarioInstancia
+      tipoUsuario: tipoUsuarioInstancia,
     });
+
+    if (criadoPor) {
+      const createdBy = await ValidationService.validateAndReturnUsuario(criadoPor);
+      newUsuario.createdBy = createdBy!;
+    }
 
     await usuarioRepository.save(newUsuario);
 
@@ -98,8 +113,8 @@ export class UsuarioService {
     return { message: 'Senha alterada com sucesso.' };
   }
 
-  async listByFazenda(fazenda_id: number) {
-    const usuarios = await usuarioRepository
+  async listByFazenda(fazenda_id: number, usuarioId?: number) {
+    const usuariosDaMesmaFazenda = await usuarioRepository
       .createQueryBuilder('usuario')
       .innerJoin('usuario.usuarioFazendas', 'usuarioFazenda')
       .leftJoin('usuario.tipoUsuario', 'tipoUsuario')
@@ -114,8 +129,38 @@ export class UsuarioService {
       ])
       .orderBy('usuario.created_at', 'DESC')
       .getRawMany();
+
+    let usuariosCriadosPorEsseUsuario: any[] = [];
+    if (usuarioId) {
+      usuariosCriadosPorEsseUsuario = await usuarioRepository
+        .createQueryBuilder('usuario')
+        .leftJoin('usuario.tipoUsuario', 'tipoUsuario')
+        .where('usuario.created_by = :usuarioId', { usuarioId })
+        .select([
+          'usuario.id',
+          'usuario.nome',
+          'usuario.email',
+          'usuario.created_at',
+          'tipoUsuario.id',
+          'tipoUsuario.descricao',
+        ])
+        .orderBy('usuario.created_at', 'DESC')
+        .getRawMany();
+    }
+
+    const todosUsuariosRaw = [
+      ...usuariosDaMesmaFazenda,
+      ...usuariosCriadosPorEsseUsuario
+    ];
   
-    return usuarios.map(u => ({
+    const usuariosUnicosMap = new Map<number, any>();
+    for (const usuario of todosUsuariosRaw) {
+      usuariosUnicosMap.set(usuario.usuario_id, usuario); // evita duplicatas
+    }
+  
+    const usuariosUnicos = Array.from(usuariosUnicosMap.values());
+  
+    return usuariosUnicos.map(u => ({
       id: u.usuario_id,
       nome: u.usuario_nome,
       email: u.usuario_email,

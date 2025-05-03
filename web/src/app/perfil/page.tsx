@@ -217,7 +217,6 @@ const PerfilPage = () => {
     }
   }
 
-
   useEffect(() => {
     const fetchTiposUsuario = async () => {
       const tipos = [
@@ -390,22 +389,27 @@ const PerfilPage = () => {
     try {
       if (isCreating) {
         // Criar novo usuário
-        await apiClient.post("/usuarios", {
+        const response = await apiClient.post("/usuarios", {
           nome: editedProfile.nome,
           email: editedProfile.email,
           tipoUsuarioId: editedProfile.tipoUsuarioId,
           senha: editedProfile.senha,
+          criadoPor: userLogado.id,
         })
-
+      
+        const newUser = response.data
+      
         setNotification({
           type: "success",
           message: "Usuário criado com sucesso!",
         })
-
-        // Redirecionar após um breve delay
-        setTimeout(() => {
-          router.push("/usuarios")
-        }, 2000)
+      
+        // Atualiza o estado local com o novo usuário
+        setProfile(newUser)
+      
+        // Altera o modo de criação para edição
+        setEditMode(true)
+        router.replace(`/perfil?mode=edit&userId=${newUser.id}`)
       } else if (isEditing && userId) {
         // Atualizar usuário existente
         await apiClient.put(`/usuarios/${userId}`, {
@@ -859,8 +863,15 @@ const PerfilPage = () => {
                 <h2 className="text-xl font-semibold text-white">Fazendas Associadas</h2>
                 <button
                   onClick={() => {
-                    fetchAvailableFarms()
-                    setShowAddFarmModal(true)
+                    if (!profile?.id) {
+                      setNotification({
+                        type: "error",
+                        message: "Você precisa salvar o usuário antes de adicionar fazendas.",
+                      })
+                    } else {
+                      fetchAvailableFarms()
+                      setShowAddFarmModal(true)
+                    }
                   }}
                   className="bg-white text-green-600 p-1.5 rounded-full hover:bg-green-50 transition-colors"
                   title="Adicionar Fazenda"
@@ -925,8 +936,15 @@ const PerfilPage = () => {
                     <p className="text-gray-500">Nenhuma fazenda associada</p>
                     <button
                       onClick={() => {
-                        fetchAvailableFarms()
-                        setShowAddFarmModal(true)
+                        if (!profile?.id) {
+                          setNotification({
+                            type: "error",
+                            message: "Você precisa salvar o usuário antes de adicionar fazendas.",
+                          })
+                        } else {
+                          fetchAvailableFarms()
+                          setShowAddFarmModal(true)
+                        }
                       }}
                       className="mt-3 text-sm text-green-600 hover:text-green-700 font-medium flex items-center justify-center gap-1 mx-auto"
                     >
@@ -1043,146 +1061,148 @@ const PerfilPage = () => {
                 </div>
               </div>
             )}
+            
+          {(isEditing) && (
+              <div className="space-y-6">
+                {/* Alterar Senha */}
+                <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+                  <div className="bg-gradient-to-r from-blue-500 to-blue-600 px-6 py-4">
+                    <h2 className="text-xl font-semibold text-white">Alterar Senha</h2>
+                  </div>
 
-            <div className="space-y-6">
-              {/* Alterar Senha */}
-              <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-                <div className="bg-gradient-to-r from-blue-500 to-blue-600 px-6 py-4">
-                  <h2 className="text-xl font-semibold text-white">Alterar Senha</h2>
-                </div>
-
-                <div className="p-6">
-                  <form onSubmit={handleChangePassword} className="space-y-4">
-                    {/* Senha Atual */}
-                    <div>
-                      <label htmlFor="senhaAtual" className="block text-sm font-medium text-gray-700 mb-1">
-                        Senha Atual
-                      </label>
-                      <div className="relative">
-                        <div className="absolute inset-y-0 left-0 text-gray-700 pl-3 flex items-center pointer-events-none">
-                          <Lock size={18} className="text-gray-400" />
+                  <div className="p-6">
+                    <form onSubmit={handleChangePassword} className="space-y-4">
+                      {/* Senha Atual */}
+                      <div>
+                        <label htmlFor="senhaAtual" className="block text-sm font-medium text-gray-700 mb-1">
+                          Senha Atual
+                        </label>
+                        <div className="relative">
+                          <div className="absolute inset-y-0 left-0 text-gray-700 pl-3 flex items-center pointer-events-none">
+                            <Lock size={18} className="text-gray-400" />
+                          </div>
+                          <input
+                            type={showCurrentPassword ? "text" : "password"}
+                            id="senhaAtual"
+                            name="senhaAtual"
+                            value={passwordForm.senhaAtual}
+                            onChange={handlePasswordChange}
+                            className="w-full pl-10 pr-10 py-2 bg-white border text-gray-700 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                          />
+                          <button
+                            type="button"
+                            className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                            onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                          >
+                            {showCurrentPassword ? (
+                              <EyeOff size={18} className="text-gray-400 hover:text-gray-600" />
+                            ) : (
+                              <Eye size={18} className="text-gray-400 hover:text-gray-600" />
+                            )}
+                          </button>
                         </div>
-                        <input
-                          type={showCurrentPassword ? "text" : "password"}
-                          id="senhaAtual"
-                          name="senhaAtual"
-                          value={passwordForm.senhaAtual}
-                          onChange={handlePasswordChange}
-                          className="w-full pl-10 pr-10 py-2 bg-white border text-gray-700 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                        />
+                      </div>
+
+                      {/* Nova Senha */}
+                      <div>
+                        <label htmlFor="novaSenha" className="block text-sm font-medium text-gray-700 mb-1">
+                          Nova Senha
+                        </label>
+                        <div className="relative">
+                          <div className="absolute inset-y-0 text-gray-700 left-0 pl-3 flex items-center pointer-events-none">
+                            <Lock size={18} className="text-gray-400" />
+                          </div>
+                          <input
+                            type={showNewPassword ? "text" : "password"}
+                            id="novaSenha"
+                            name="novaSenha"
+                            value={passwordForm.novaSenha}
+                            onChange={handlePasswordChange}
+                            className="w-full pl-10 pr-10 py-2 bg-white border text-gray-700 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                          />
+                          <button
+                            type="button"
+                            className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                            onClick={() => setShowNewPassword(!showNewPassword)}
+                          >
+                            {showNewPassword ? (
+                              <EyeOff size={18} className="text-gray-400 hover:text-gray-600" />
+                            ) : (
+                              <Eye size={18} className="text-gray-400 hover:text-gray-600" />
+                            )}
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Confirmar Senha */}
+                      <div>
+                        <label htmlFor="confirmarSenha" className="block text-sm font-medium text-gray-700 mb-1">
+                          Confirmar Nova Senha
+                        </label>
+                        <div className="relative">
+                          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <Lock size={18} className="text-gray-400" />
+                          </div>
+                          <input
+                            type={showConfirmPassword ? "text" : "password"}
+                            id="confirmarSenha"
+                            name="confirmarSenha"
+                            value={passwordForm.confirmarSenha}
+                            onChange={handlePasswordChange}
+                            className="w-full pl-10 text-gray-700 pr-10 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                          />
+                          <button
+                            type="button"
+                            className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                          >
+                            {showConfirmPassword ? (
+                              <EyeOff size={18} className="text-gray-400 hover:text-gray-600" />
+                            ) : (
+                              <Eye size={18} className="text-gray-400 hover:text-gray-600" />
+                            )}
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="pt-2">
                         <button
-                          type="button"
-                          className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                          onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                          type="submit"
+                          disabled={changingPassword}
+                          className="w-full px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center justify-center gap-2"
                         >
-                          {showCurrentPassword ? (
-                            <EyeOff size={18} className="text-gray-400 hover:text-gray-600" />
+                          {changingPassword ? (
+                            <>
+                              <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                                <circle
+                                  className="opacity-25"
+                                  cx="12"
+                                  cy="12"
+                                  r="10"
+                                  stroke="currentColor"
+                                  strokeWidth="4"
+                                ></circle>
+                                <path
+                                  className="opacity-75"
+                                  fill="currentColor"
+                                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                                ></path>
+                              </svg>
+                              Alterando...
+                            </>
                           ) : (
-                            <Eye size={18} className="text-gray-400 hover:text-gray-600" />
+                            <>
+                              <Lock size={18} />
+                              Alterar Senha
+                            </>
                           )}
                         </button>
                       </div>
-                    </div>
-
-                    {/* Nova Senha */}
-                    <div>
-                      <label htmlFor="novaSenha" className="block text-sm font-medium text-gray-700 mb-1">
-                        Nova Senha
-                      </label>
-                      <div className="relative">
-                        <div className="absolute inset-y-0 text-gray-700 left-0 pl-3 flex items-center pointer-events-none">
-                          <Lock size={18} className="text-gray-400" />
-                        </div>
-                        <input
-                          type={showNewPassword ? "text" : "password"}
-                          id="novaSenha"
-                          name="novaSenha"
-                          value={passwordForm.novaSenha}
-                          onChange={handlePasswordChange}
-                          className="w-full pl-10 pr-10 py-2 bg-white border text-gray-700 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                        />
-                        <button
-                          type="button"
-                          className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                          onClick={() => setShowNewPassword(!showNewPassword)}
-                        >
-                          {showNewPassword ? (
-                            <EyeOff size={18} className="text-gray-400 hover:text-gray-600" />
-                          ) : (
-                            <Eye size={18} className="text-gray-400 hover:text-gray-600" />
-                          )}
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* Confirmar Senha */}
-                    <div>
-                      <label htmlFor="confirmarSenha" className="block text-sm font-medium text-gray-700 mb-1">
-                        Confirmar Nova Senha
-                      </label>
-                      <div className="relative">
-                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                          <Lock size={18} className="text-gray-400" />
-                        </div>
-                        <input
-                          type={showConfirmPassword ? "text" : "password"}
-                          id="confirmarSenha"
-                          name="confirmarSenha"
-                          value={passwordForm.confirmarSenha}
-                          onChange={handlePasswordChange}
-                          className="w-full pl-10 text-gray-700 pr-10 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                        />
-                        <button
-                          type="button"
-                          className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                          onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                        >
-                          {showConfirmPassword ? (
-                            <EyeOff size={18} className="text-gray-400 hover:text-gray-600" />
-                          ) : (
-                            <Eye size={18} className="text-gray-400 hover:text-gray-600" />
-                          )}
-                        </button>
-                      </div>
-                    </div>
-
-                    <div className="pt-2">
-                      <button
-                        type="submit"
-                        disabled={changingPassword}
-                        className="w-full px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center justify-center gap-2"
-                      >
-                        {changingPassword ? (
-                          <>
-                            <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
-                              <circle
-                                className="opacity-25"
-                                cx="12"
-                                cy="12"
-                                r="10"
-                                stroke="currentColor"
-                                strokeWidth="4"
-                              ></circle>
-                              <path
-                                className="opacity-75"
-                                fill="currentColor"
-                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-                              ></path>
-                            </svg>
-                            Alterando...
-                          </>
-                        ) : (
-                          <>
-                            <Lock size={18} />
-                            Alterar Senha
-                          </>
-                        )}
-                      </button>
-                    </div>
-                  </form>
+                    </form>
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
       </div>

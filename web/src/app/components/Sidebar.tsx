@@ -188,12 +188,12 @@ const Sidebar = () => {
               {tipoUsuarioLabel === "Dono" && (                 
                   <NavItem icon={<Users size={18} />} label="Usuários" href="/usuarios" active={pathname === "/usuarios"} />
                 )}
-              <NavItem
+              {/* <NavItem
                 icon={<ClipboardList size={18} />}
                 label="Relatórios"
                 href="/relatorios"
                 active={pathname === "/relatorios"}
-              />
+              /> */}
             </div>
           </nav>
 

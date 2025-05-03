@@ -56,15 +56,20 @@ const UsuariosPage = () => {
   const [usuarioParaExcluir, setUsuarioParaExcluir] = useState<Usuario | null>(null)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [deleting, setDeleting] = useState(false)
+  const userLogadoCookie = Cookie.get("user")
+  const userLogado = userLogadoCookie ? JSON.parse(userLogadoCookie) : null
 
   const fetchUsuarios = async () => {
     setLoading(true)
     try {
-      debugger;
-      const response = await apiClient.get(`/usuarios/${fazenda_id}`)
+      const response = await apiClient.get(`/usuarios/${fazenda_id}`, {
+        params: {
+          usuarioId: userLogado?.id,
+        },
+      })
+  
       setUsuarios(response.data)
-
-      // Simulando paginação no cliente
+  
       const totalItems = response.data.length
       setTotalPages(Math.ceil(totalItems / itemsPerPage))
     } catch (error) {
@@ -76,7 +81,7 @@ const UsuariosPage = () => {
     } finally {
       setLoading(false)
     }
-  }
+  }  
 
   const fetchTiposUsuario = async () => {   
     const tipos = [
