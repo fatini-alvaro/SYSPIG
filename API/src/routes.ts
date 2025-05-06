@@ -19,12 +19,23 @@ import { DashboardController } from "./controllers/dashboardController";
 import { VendaController } from "./controllers/vendaController";
 const routes = Router();
 
+const devOrigins = [
+    'http://localhost:3000',
+    'http://localhost:3001',
+    'http://localhost:3002',
+];
+
+const prodOrigins = [
+    'https://syspig-web.onrender.com',
+];
+
 const corsOptions = {
-    origin: ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002'], // Agora aceita ambos
+    origin: process.env.NODE_ENV === 'production' ? prodOrigins : devOrigins,
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials: true, // Permite cookies/credenciais
+    credentials: true,
 };
+
 
 routes.use(cors(corsOptions));
 
