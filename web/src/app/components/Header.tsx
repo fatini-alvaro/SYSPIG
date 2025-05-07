@@ -1,9 +1,8 @@
 "use client"
 
 import { useEffect, useState, useRef } from "react"
-import { colors } from "@/styles/colors"
 import Cookie from "js-cookie"
-import { Bell, ChevronDown, Menu, Search, Settings, User } from 'lucide-react'
+import { ChevronDown, Menu, User } from 'lucide-react'
 import FazendaInfo from "./FazendaInfo"
 import { useRouter } from "next/navigation"
 
@@ -41,11 +40,6 @@ const Header = ({ toggleSidebar }: { toggleSidebar?: () => void }) => {
   const handleUserMenuToggle = (e: React.MouseEvent) => {
     e.stopPropagation()
     setShowUserMenu(!showUserMenu)
-  }
-
-  const handleNotificationsToggle = (e: React.MouseEvent) => {
-    e.stopPropagation()
-    setShowUserMenu(false)
   }
 
   return (

@@ -9,9 +9,8 @@ import { useRouter } from 'next/navigation';
 import Cookie from 'js-cookie';
 import apiClient from '../../apiClient';
 import { LoginResponse } from '../../models/LoginResponse';
-import { User } from '../../models/User';
-import { logo, logoBlack } from '../../assets/logos';
-import Input from '../components/Input';
+import { logo } from '../../assets/logos';
+import { AxiosError } from "axios";
 
 const LoginPage = () => {
   const router = useRouter();
@@ -26,7 +25,7 @@ const LoginPage = () => {
     if (token) {
       router.replace('/');
     }
-  }, []);
+  }, [router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -41,10 +40,14 @@ const LoginPage = () => {
       Cookie.set("user", JSON.stringify(data.usuario), { expires: 1 })
 
       router.push("/selecionar-fazenda")
-    } catch (error: any) {
-      setErro(error.response?.data?.message || "Erro ao fazer login")
+    } catch (error: AxiosError | unknown) {
+      if (error instanceof AxiosError) {
+        setErro(error.response?.data?.message || "Erro ao fazer login");
+      } else {
+        setErro("Erro ao fazer login");
+      }
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 

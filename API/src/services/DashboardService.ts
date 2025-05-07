@@ -52,7 +52,6 @@ export class DashboardService {
         startDate: dataInicio,
         endDate: dataFim,
       })
-      .andWhere("animal.status = :status", { status: StatusAnimal.VIVO })
       .getCount();
 
     const nascimentosMortos = await this.nascimentoRepository

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import Cookie from "js-cookie"
 import apiClient from "@/apiClient"
 import { Chart, CategoryScale, LinearScale, BarElement, Title, PointElement, LineElement, Tooltip, Legend, ArcElement } from "chart.js"
@@ -8,7 +8,6 @@ import { Bar, Doughnut, Line } from "react-chartjs-2"
 import {
   Calendar,
   TrendingUp,
-  Users,
   Activity,
   BarChart2,
   RefreshCw,
@@ -20,7 +19,6 @@ import {
   PiggyBank,
   ArrowRightLeft,
   FileText,
-  Plus,
   Award,
   Star,
 } from "lucide-react"
@@ -82,9 +80,60 @@ export interface MatrizEstatistica {
   mediaPorParto?: number;
 }
 
+type Nascimento = {
+  matrizId: number | string;
+  numeroBrinco: string;
+  totalNascimentos: number | string;
+  totalPartos: number | string;
+};
+
+type Media = {
+  matrizId: number;
+  numeroBrinco: string;
+  mediaPorParto: number;
+  totalPartos: number;
+};
+
+interface VendasPorMes {
+  jan: number;
+  fev: number;
+  mar: number;
+  abr: number;
+  mai: number;
+  jun: number;
+  jul: number;
+  ago: number;
+  set: number;
+  out: number;
+  nov: number;
+  dez: number;
+}
+
+interface Sale {
+  venda_id: string;
+  venda_quantidade_vendida: number;
+  venda_peso_venda: number;
+  venda_data_venda: string;
+  venda_valor_venda: number;
+}
+
+interface DashboardData {
+  totalInseminacoes: number;
+  nascimentosVivos: number;
+  nascimentosMortos: number;
+  matrizesGestando: number;
+  vendasPorMes: VendasPorMes;
+  totalSales: number;
+  totalQuantity: number;
+  totalWeight: number;
+  averagePrice: number;
+  mediaLeitoesPorParto: number | string;
+  recentSales: Sale[];
+}
+
 const formatMatrizesEstatisticas = (
-  topNascimentos: any[],
-  topMedia: { matrizId: number; numeroBrinco: string; mediaPorParto: number, totalPartos: number }[]
+  topNascimentos: Nascimento[],
+  topMedia: Media[]
 ): MatrizEstatistica[] => {
   const mapa = new Map<number, MatrizEstatistica>();
 
@@ -117,7 +166,22 @@ const DashboardPage = () => {
   const [userName, setUserName] = useState("")
   const [startDate, setStartDate] = useState(new Date(new Date().setDate(new Date().getDate() - 30))) // Último mês
   const [endDate, setEndDate] = useState(new Date())
-  const [dashboardData, setDashboardData] = useState<any>({})
+  const [dashboardData, setDashboardData] = useState<DashboardData>({
+    totalInseminacoes: 0,
+    nascimentosVivos: 0,
+    nascimentosMortos: 0,
+    matrizesGestando: 0,
+    vendasPorMes: {
+      jan: 0, fev: 0, mar: 0, abr: 0, mai: 0, jun: 0, jul: 0,
+      ago: 0, set: 0, out: 0, nov: 0, dez: 0,
+    },
+    totalSales: 0,
+    totalQuantity: 0,
+    totalWeight: 0,
+    averagePrice: 0,
+    mediaLeitoesPorParto: "N/A",
+    recentSales: [],
+  });  
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
 
@@ -130,7 +194,8 @@ const DashboardPage = () => {
   const [matrizesProximasParto, setMatrizesProximasParto] = useState<MatrizProximaParto[]>([])
   const [anotacoes, setAnotacoes] = useState<Anotacao[]>([])
   const [matrizesEstatisticas, setMatrizesEstatisticas] = useState<MatrizEstatistica[]>([])
-  const fetchDashboardData = async (startDate: Date, endDate: Date) => {
+
+  const fetchDashboardData = useCallback(async (startDate: Date, endDate: Date) => {
     const formattedStartDate = startDate.toISOString().split("T")[0]
     const formattedEndDate = endDate.toISOString().split("T")[0]
     setRefreshing(true)
@@ -139,10 +204,7 @@ const DashboardPage = () => {
       const response = await apiClient.get(
         `/dashboard/${fazenda_id}?startDate=${formattedStartDate}&endDate=${formattedEndDate}`,
       )
-      setDashboardData(response.data)
-
       const data = response.data
-
       setDashboardData(data)
       setTotalAnimais(data.totalAnimais)
       setTotalMovimentacoes(data.totalMovimentacoes)
@@ -172,7 +234,7 @@ const DashboardPage = () => {
       setLoading(false)
       setRefreshing(false)
     }
-  }
+  }, [fazenda_id])
 
   useEffect(() => {
     const userCookie = Cookie.get("user")
@@ -181,7 +243,7 @@ const DashboardPage = () => {
       setUserName(parsedUser?.nome || "Usuário")
     }
     fetchDashboardData(startDate, endDate)
-  }, [fazenda_id])
+  }, [fazenda_id, startDate, endDate, fetchDashboardData])
 
   // Dados para o gráfico de barras
   const barChartData = {
@@ -666,7 +728,7 @@ const DashboardPage = () => {
               <div className="overflow-y-auto max-h-72">
                 {dashboardData.recentSales.length > 0 ? (
                   <ul className="space-y-3">
-                    {dashboardData.recentSales.map((sale: any) => (
+                    {dashboardData.recentSales.map((sale: Sale) => (
                       <li key={sale.venda_id} className="border-b border-gray-100 pb-3 last:border-0">
                         <div className="flex justify-between items-start">
                           <div>
@@ -1042,7 +1104,7 @@ const DashboardPage = () => {
                       {dashboardData?.mediaLeitoesPorParto || "N/A"}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {dashboardData?.mediaLeitoesPorParto >= 10 ? (
+                      {typeof dashboardData?.mediaLeitoesPorParto === "number" && dashboardData.mediaLeitoesPorParto >= 10 ? (
                         <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                           Bom
                         </span>

@@ -8,15 +8,10 @@ import { logoWhite } from "@/assets/logos"
 import { logout } from "@/services/logout"
 import Image from "next/image"
 import {
-  BarChart3,
-  Calendar,
   ChevronDown,
-  ClipboardList,
   LayoutDashboard,
   LogOut,
   Menu,
-  PiggyBank,
-  Settings,
   Users,
   X,
 } from "lucide-react"
@@ -96,11 +91,6 @@ const Sidebar = () => {
         setUserName("Usuário")
         setTipoUsuarioLabel("Tipo desconhecido")
       }
-    }
-
-    // Fechar sidebar no mobile quando mudar de rota
-    const handleRouteChange = () => {
-      setIsMobileOpen(false)
     }
 
     // Adicionar listener para redimensionamento da janela

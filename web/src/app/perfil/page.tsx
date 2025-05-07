@@ -2,11 +2,12 @@
 
 import type React from "react"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import Cookie from "js-cookie"
 import apiClient from "@/apiClient"
 import { User, Mail, Plus, Lock, Building2, Calendar, Save, X, CheckCircle2, AlertCircle, Eye, EyeOff, UserCog, Clock, ArrowLeft, ChevronDown, Search, Trash2 } from 'lucide-react'
+import { AxiosError } from "axios"
 
 interface UserProfile {
   id: number
@@ -111,26 +112,24 @@ const PerfilPage = () => {
   const [searchFarmTerm, setSearchFarmTerm] = useState("")
   const [addingFarm, setAddingFarm] = useState(false)
 
-  const fetchAvailableFarms = async () => {
+  const fetchAvailableFarms = useCallback(async () => {
     try {
-      // Get farms that the user doesn't already have
-      const response = await apiClient.get(`/fazendas/${userLogado.id}`)
-      const allFarms = response.data
-
-      // Filter out farms that the user already has
-      const userFarmIds = profile?.usuarioFazendas?.map((uf) => uf.fazenda.id) || []
-      const availableFarmsFiltered = allFarms.filter((farm: Fazenda) => !userFarmIds.includes(farm.id))
-
-      setAvailableFarms(availableFarmsFiltered)
+      const response = await apiClient.get(`/fazendas/${userLogado.id}`);
+      const allFarms = response.data;
+      const userFarmIds = profile?.usuarioFazendas?.map(uf => uf.fazenda.id) || [];
+      const availableFarmsFiltered = allFarms.filter((farm: Fazenda) => 
+        !userFarmIds.includes(farm.id)
+      );
+      setAvailableFarms(availableFarmsFiltered);
     } catch (error) {
-      console.error("Erro ao buscar fazendas disponíveis:", error)
+      console.error("Erro ao buscar fazendas disponíveis:", error);
       setNotification({
         type: "error",
         message: "Não foi possível carregar as fazendas disponíveis",
-      })
+      });
     }
-  }
-
+  }, [userLogado.id, profile?.usuarioFazendas]);
+  
   const handleRemoveFarm = async (farmId: number) => {
     if (!profile) return
 
@@ -217,63 +216,82 @@ const PerfilPage = () => {
     }
   }
 
+  // Load tiposUsuario once on mount
   useEffect(() => {
-    const fetchTiposUsuario = async () => {
-      const tipos = [
-        { id: 1, descricao: "Dono" },
-        { id: 2, descricao: "Funcionário" },
-      ]
-  
-      setTiposUsuario(tipos)
-    }
+    const tipos = [
+      { id: 1, descricao: "Dono" },
+      { id: 2, descricao: "Funcionário" },
+    ];
+    setTiposUsuario(tipos);
+  }, []);
 
+  // Load profile when URL params change
+  useEffect(() => {
     const fetchUserProfile = async () => {
-      setLoading(true)
+      setLoading(true);
       try {
         let userData;
-
-        debugger;
         
         if (isEditing && userId) {
-          // Buscar dados do usuário específico para edição
-          const response = await apiClient.get(`/usuarios/perfil/${userId}`)
-          userData = response.data
-          setTipoUsuarioLabel(userData.tipoUsuario?.descricao || "Tipo desconhecido")
+          const response = await apiClient.get(`/usuarios/perfil/${userId}`);
+          userData = response.data;
+          setTipoUsuarioLabel(userData.tipoUsuario?.descricao || "Tipo desconhecido");
         }
         
         if (userData) {
-          setProfile(userData)
+          setProfile(userData);
           setEditedProfile({
             nome: userData.nome,
             email: userData.email,
             tipoUsuarioId: userData.tipoUsuario?.id,
-          })
+          });
         } else if (isCreating) {
-          // Inicializar com valores vazios para criação
           setEditedProfile({
             nome: "",
             email: "",
             tipoUsuarioId: tiposUsuario.length > 0 ? tiposUsuario[0].id : undefined,
             senha: "",
             confirmarSenha: "",
-          })
+          });
         }
-
-        fetchAvailableFarms()
       } catch (error) {
-        console.error("Erro ao buscar perfil do usuário:", error)
+        console.error("Erro ao buscar perfil do usuário:", error);
         setNotification({
           type: "error",
           message: "Não foi possível carregar os dados do perfil",
-        })
+        });
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
 
-    fetchTiposUsuario()
-    fetchUserProfile()
-  }, [isEditing, isCreating, isOwnProfile, userId, router])
+    fetchUserProfile();
+  }, [isEditing, isCreating, userId, tiposUsuario]);
+
+  // Load farms when profile changes
+  useEffect(() => {
+    if (!profile) return;
+
+    const fetchAvailableFarms = async () => {
+      try {
+        const response = await apiClient.get(`/fazendas/${userLogado.id}`);
+        const allFarms = response.data;
+        const userFarmIds = profile.usuarioFazendas?.map(uf => uf.fazenda.id) || [];
+        const availableFarmsFiltered = allFarms.filter((farm: Fazenda) => 
+          !userFarmIds.includes(farm.id)
+        );
+        setAvailableFarms(availableFarmsFiltered);
+      } catch (error) {
+        console.error("Erro ao buscar fazendas disponíveis:", error);
+        setNotification({
+          type: "error",
+          message: "Não foi possível carregar as fazendas disponíveis",
+        });
+      }
+    };
+
+    fetchAvailableFarms();
+  }, [profile, userLogado.id]);
 
   // Limpar notificação após 5 segundos
   useEffect(() => {
@@ -381,7 +399,6 @@ const PerfilPage = () => {
   }
 
   const handleSaveProfile = async (e: React.FormEvent) => {
-    debugger;
     e.preventDefault()
     if (!validateForm()) return
 
@@ -450,12 +467,13 @@ const PerfilPage = () => {
           }
         })
       }
-    } catch (error: any) {
-      console.error("Erro ao salvar perfil:", error)
+    } catch (error: unknown) {
+      const axiosError = error as AxiosError<{ message: string }>;
+      console.error("Erro ao salvar perfil:", axiosError);
       setNotification({
         type: "error",
-        message: error.response?.data?.message || "Erro ao salvar. Tente novamente.",
-      })
+        message: axiosError.response?.data?.message || "Erro ao salvar. Tente novamente.",
+      });
     } finally {
       setSavingProfile(false)
     }
@@ -500,12 +518,13 @@ const PerfilPage = () => {
         novaSenha: "",
         confirmarSenha: "",
       })
-    } catch (error: any) {
-      console.error("Erro ao alterar senha:", error)
+    } catch (error: unknown) {
+      const axiosError = error as AxiosError<{ message: string }>;
+      console.error("Erro ao alterar senha:", axiosError);
       setNotification({
         type: "error",
-        message: error.response?.data?.message || "Erro ao alterar senha. Tente novamente.",
-      })
+        message: axiosError.response?.data?.message || "Erro ao alterar senha. Tente novamente.",
+      });
     } finally {
       setChangingPassword(false)
     }

@@ -3,7 +3,6 @@
 import { logo } from '@/assets/logos';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import Cookie from 'js-cookie';
 import { logout } from '@/services/logout';
 
 export default function Layout({ children }: { children: React.ReactNode }) {

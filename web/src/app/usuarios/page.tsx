@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { useRouter } from "next/navigation"
 import apiClient from "@/apiClient"
 import {
@@ -10,7 +10,6 @@ import {
   UserPlus,
   Search,
   Edit,
-  Trash2,
   ChevronLeft,
   ChevronRight,
   Filter,
@@ -55,11 +54,10 @@ const UsuariosPage = () => {
   } | null>(null)
   const [usuarioParaExcluir, setUsuarioParaExcluir] = useState<Usuario | null>(null)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
-  const [deleting, setDeleting] = useState(false)
   const userLogadoCookie = Cookie.get("user")
   const userLogado = userLogadoCookie ? JSON.parse(userLogadoCookie) : null
 
-  const fetchUsuarios = async () => {
+  const fetchUsuarios = useCallback(async () => {
     setLoading(true)
     try {
       const response = await apiClient.get(`/usuarios/${fazenda_id}`, {
@@ -81,7 +79,7 @@ const UsuariosPage = () => {
     } finally {
       setLoading(false)
     }
-  }  
+  }, [fazenda_id, userLogado?.id, itemsPerPage]);
 
   const fetchTiposUsuario = async () => {   
     const tipos = [
@@ -95,7 +93,7 @@ const UsuariosPage = () => {
   useEffect(() => {
     fetchUsuarios()
     fetchTiposUsuario()
-  }, [])
+  }, [fetchUsuarios])
 
   // Limpar notificação após 5 segundos
   useEffect(() => {
@@ -127,30 +125,6 @@ const UsuariosPage = () => {
 
   const handleEditUser = (id: number) => {
     router.push(`/perfil?mode=edit&userId=${id}`)
-  }
-
-  const handleDeleteUser = async () => {
-    if (!usuarioParaExcluir) return
-
-    setDeleting(true)
-    try {
-      await apiClient.delete(`/usuarios/${usuarioParaExcluir.id}`)
-      setNotification({
-        type: "success",
-        message: `Usuário ${usuarioParaExcluir.nome} excluído com sucesso!`,
-      })
-      fetchUsuarios() // Recarregar a lista
-    } catch (error) {
-      console.error("Erro ao excluir usuário:", error)
-      setNotification({
-        type: "error",
-        message: "Não foi possível excluir o usuário",
-      })
-    } finally {
-      setDeleting(false)
-      setShowDeleteModal(false)
-      setUsuarioParaExcluir(null)
-    }
   }
 
   const cancelDelete = () => {
