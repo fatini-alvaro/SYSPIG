@@ -6,9 +6,10 @@ AppDataSource.initialize().then(() => {
   const app = express();
 
   app.use(express.json());
-
   app.use(routes);
 
-  return app.listen(process.env.PORT);
-  
-})
+  const PORT = process.env.PORT || 3000;
+  app.listen(PORT, () => {
+    console.log(`Servidor rodando na porta ${PORT}`);
+  });
+});
