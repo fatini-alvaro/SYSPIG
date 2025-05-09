@@ -14,8 +14,9 @@
 		"strict": true,
 		"noImplicitAny": true,
 		"strictPropertyInitialization": false,
-		"typeRoots": ["./node_modules/@types", "./src/types"],
-    	"types": ["node"]
+		"typeRoots": ["./node_modules/@types", "./src/@types"],
+    	"types": ["node", "express"],
+		"skipLibCheck": true
 	},
 	"include": ["src/**/*"],
 	"exclude": ["node_modules", "dist"],
