@@ -79,7 +79,7 @@ routes.post('/auth/refresh', asyncHandler(authController.refreshToken.bind(authC
 routes.post('/auth/logout', asyncHandler(authController.logout.bind(authController)));
 
 // Middleware de autenticação global
-routes.use(verifyToken);
+routes.use((verifyToken as unknown) as RequestHandler);
 
 // Rotas protegidas (com autenticação)
 
