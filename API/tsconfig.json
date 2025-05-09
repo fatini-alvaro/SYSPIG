@@ -16,6 +16,9 @@
 		"strictPropertyInitialization": false,
 		"typeRoots": ["./node_modules/@types", "./src/@types"],
     	"types": ["node", "express"],
+		"paths": {
+      "@types/*": ["./src/@types/*"]
+    },
 		"skipLibCheck": true
 	},
 	"include": ["src/**/*"],
