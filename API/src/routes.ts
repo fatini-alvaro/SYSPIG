@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { Router, RequestHandler } from "express";
 import cors from 'cors';
 import { AsyncHandler } from "./@types/express";
 import { verifyToken } from "./middleware/verifyToken";
@@ -44,7 +44,7 @@ const corsOptions = {
 routes.use(cors(corsOptions));
 
 // Função wrapper para tratamento de erros
-const asyncHandler = (handler: AsyncHandler): AsyncHandler => {
+const asyncHandler = (handler: AsyncHandler): RequestHandler => {
     return async (req, res, next) => {
         try {
             await handler(req, res, next);
