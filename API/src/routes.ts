@@ -1,24 +1,28 @@
 import { Router } from "express";
 import cors from 'cors';
-import { FazendaController } from "./controllers/fazendaController";
+import { verifyToken } from "./middleware/verifyToken";
+
+// Importação dos controllers
+import { AuthController } from "./controllers/authController";
 import { UsuarioController } from "./controllers/usuarioController";
+import { FazendaController } from "./controllers/fazendaController";
 import { UsuarioFazendaController } from "./controllers/usuarioFazendaController";
-import { GranjaController } from "./controllers/granjaController";
 import { TipoGranjaController } from "./controllers/tipoGranjaController";
+import { GranjaController } from "./controllers/granjaController";
 import { BaiaController } from "./controllers/baiaController";
+import { CidadeController } from "./controllers/cidadeController";
 import { AnimalController } from "./controllers/animalController";
-import { OcupacaoController } from "./controllers/ocupacaoController";
 import { AnotacaoController } from "./controllers/anotacaoController";
 import { LoteController } from "./controllers/loteController";
-import { verifyToken } from "./middleware/verifyToken";
-import { AuthController } from "./controllers/authController";
-import { CidadeController } from "./controllers/cidadeController";
+import { OcupacaoController } from "./controllers/ocupacaoController";
 import { MovimentacaoController } from "./controllers/movimentacaoController";
 import { InseminacaoController } from "./controllers/inseminacaoController";
 import { DashboardController } from "./controllers/dashboardController";
 import { VendaController } from "./controllers/vendaController";
+
 const routes = Router();
 
+// Configuração do CORS
 const devOrigins = [
     'http://localhost:3000',
     'http://localhost:3001',
@@ -36,124 +40,124 @@ const corsOptions = {
     credentials: true,
 };
 
-
 routes.use(cors(corsOptions));
 
-// Usuario Routes - Sem necessidade de autenticação
-//usuario rotas
-const usuarioController = new UsuarioController();
-routes.post('/usuarios', usuarioController.create);
-
-// Auth Routes - Sem necessidade de autenticação
-//auth rotas
+// Inicialização dos controllers
 const authController = new AuthController();
-routes.post('/auth', authController.auth);
-routes.post('/auth/refresh', authController.refreshToken);
-routes.post('/auth/logout', authController.logout);
+const usuarioController = new UsuarioController();
+const fazendaController = new FazendaController();
+const usuarioFazendaController = new UsuarioFazendaController();
+const tipoGranjaController = new TipoGranjaController();
+const granjaController = new GranjaController();
+const baiaController = new BaiaController();
+const cidadeController = new CidadeController();
+const animalController = new AnimalController();
+const anotacaoController = new AnotacaoController();
+const loteController = new LoteController();
+const ocupacaoController = new OcupacaoController();
+const movimentacaoController = new MovimentacaoController();
+const inseminacaoController = new InseminacaoController();
+const dashboardController = new DashboardController();
+const vendaController = new VendaController();
 
-// Middleware global para todas as rotas, exceto a de login
+// Rotas públicas (sem autenticação)
+routes.post('/usuarios', (req, res) => usuarioController.create(req, res));
+routes.post('/auth', (req, res) => authController.auth(req, res));
+routes.post('/auth/refresh', (req, res) => authController.refreshToken(req, res));
+routes.post('/auth/logout', (req, res) => authController.logout(req, res));
+
+// Middleware de autenticação global
 routes.use(verifyToken);
 
-routes.put('/usuarios/:id', usuarioController.update);
-routes.get('/usuarios/:fazenda_id', usuarioController.listByFazenda);
-routes.get('/usuarios/perfil/:id', usuarioController.getPerfilUsuario);
-routes.post('/usuarios/:id/change-password', usuarioController.changeUsuarioPassword);
+// Rotas protegidas (com autenticação)
 
-//fazenda rotas
-const fazendaController = new FazendaController();
-routes.post('/fazendas', fazendaController.createOrUpdate);
-routes.get('/fazendas/:usuario_id', fazendaController.listFazendasDisponiveis);
+// Rotas de Usuário
+routes.put('/usuarios/:id', (req, res) => usuarioController.update(req, res));
+routes.get('/usuarios/:fazenda_id', (req, res) => usuarioController.listByFazenda(req, res));
+routes.get('/usuarios/perfil/:id', (req, res) => usuarioController.getPerfilUsuario(req, res));
+routes.post('/usuarios/:id/change-password', (req, res) => usuarioController.changeUsuarioPassword(req, res));
 
-//usuarioFazenda rotas
-const usuarioFazendaController = new UsuarioFazendaController();
-routes.get('/usuariofazendas/:usuario_id', usuarioFazendaController.listFazendas);
-routes.delete("/usuariofazendas/:id", usuarioFazendaController.deleteUsuarioFazenda);
-routes.post('/usuariofazendas', usuarioFazendaController.create);
+// Rotas de Fazenda
+routes.post('/fazendas', (req, res) => fazendaController.createOrUpdate(req, res));
+routes.get('/fazendas/:usuario_id', (req, res) => fazendaController.listFazendasDisponiveis(req, res));
 
-//TipoGranja
-const tipoGranjaController = new TipoGranjaController();
-routes.get('/tipogranjas', tipoGranjaController.listAll);
+// Rotas de Usuário-Fazenda
+routes.get('/usuariofazendas/:usuario_id', (req, res) => usuarioFazendaController.listFazendas(req, res));
+routes.delete("/usuariofazendas/:id", (req, res) => usuarioFazendaController.deleteUsuarioFazenda(req, res));
+routes.post('/usuariofazendas', (req, res) => usuarioFazendaController.create(req, res));
 
-//Granja
-const granjaController = new GranjaController();
-routes.post('/granjas', granjaController.createOrUpdate);
-routes.put('/granjas/:granja_id', granjaController.createOrUpdate); 
-routes.delete('/granjas/:granja_id', granjaController.delete); 
-routes.get('/granjas/:fazenda_id', granjaController.list);
-routes.get('/granjas/granja/:granja_id', granjaController.getById);
+// Rotas de Tipo de Granja
+routes.get('/tipogranjas', (req, res) => tipoGranjaController.listAll(req, res));
 
-//Baia
-const baiaController = new BaiaController();
-routes.post('/baias', baiaController.createOrUpdate);
-routes.put('/baias/:baia_id', baiaController.createOrUpdate); 
-routes.delete('/baias/:baia_id',baiaController.delete); 
-routes.get('/baias/:granja_id', baiaController.listByGranja);
-routes.get('/baias/byFazenda/:fazenda_id', baiaController.listByFazenda);
-routes.get('/baias/baia/:baia_id', baiaController.getById);
-routes.get('/baias/byFazendaAndTipo/:fazenda_id/:tipoGranja_id', baiaController.listByFazendaAndTipo);
-routes.get('/baias/crechescomleitoes/:fazenda_id', baiaController.listBaiasComLeitoesParaVenda);
+// Rotas de Granja
+routes.post('/granjas', (req, res) => granjaController.createOrUpdate(req, res));
+routes.put('/granjas/:granja_id', (req, res) => granjaController.createOrUpdate(req, res)); 
+routes.delete('/granjas/:granja_id', (req, res) => granjaController.delete(req, res)); 
+routes.get('/granjas/:fazenda_id', (req, res) => granjaController.list(req, res));
+routes.get('/granjas/granja/:granja_id', (req, res) => granjaController.getById(req, res));
 
-//Cidade
-const cidadeController = new CidadeController();
-routes.get('/cidades', cidadeController.list);
+// Rotas de Baia
+routes.post('/baias', (req, res) => baiaController.createOrUpdate(req, res));
+routes.put('/baias/:baia_id', (req, res) => baiaController.createOrUpdate(req, res)); 
+routes.delete('/baias/:baia_id', (req, res) => baiaController.delete(req, res)); 
+routes.get('/baias/:granja_id', (req, res) => baiaController.listByGranja(req, res));
+routes.get('/baias/byFazenda/:fazenda_id', (req, res) => baiaController.listByFazenda(req, res));
+routes.get('/baias/baia/:baia_id', (req, res) => baiaController.getById(req, res));
+routes.get('/baias/byFazendaAndTipo/:fazenda_id/:tipoGranja_id', (req, res) => baiaController.listByFazendaAndTipo(req, res));
+routes.get('/baias/crechescomleitoes/:fazenda_id', (req, res) => baiaController.listBaiasComLeitoesParaVenda(req, res));
 
-//Animal
-const animalController = new AnimalController();
-routes.post('/animais', animalController.createOrUpdate);
-routes.put('/animais/:animal_id', animalController.createOrUpdate);
-routes.delete('/animais/:animal_id', animalController.delete); 
-routes.get('/animais/:fazenda_id', animalController.list);
-routes.get('/animais/disponiveislote/:fazenda_id', animalController.listDisponivelParaLote);
-routes.get('/animais/porcos/:fazenda_id', animalController.listPorcos);
-routes.get('/animais/liveanddie/:fazenda_id', animalController.listLiveAndDie);
-routes.get('/animais/animal/:animal_id', animalController.getById);
-routes.get('/animais/nascimentos/:ocupacao_id', animalController.listNascimentos);
-routes.post('/animais/adicionar-nascimento', animalController.createNascimento);
-routes.delete('/animais/nascimentos/:animal_id', animalController.deleteNascimento);
-routes.put('/animais/nascimentos/:animal_id', animalController.editarStatusNascimento); 
+// Rotas de Cidade
+routes.get('/cidades', (req, res) => cidadeController.list(req, res));
 
-//Anotacao
-const anotacaoController = new AnotacaoController();
-routes.post('/anotacoes', anotacaoController.createOrUpdate);
-routes.put('/anotacoes/:anotacao_id', anotacaoController.createOrUpdate); 
-routes.delete('/anotacoes/:anotacao_id', anotacaoController.delete); 
-routes.get('/anotacoes/:fazenda_id', anotacaoController.list);
-routes.get('/anotacoes/getbybaia/:baia_id', anotacaoController.listByBaia);
-routes.get('/anotacoes/anotacao/:anotacao_id', anotacaoController.getById);
+// Rotas de Animal
+routes.post('/animais', (req, res) => animalController.createOrUpdate(req, res));
+routes.put('/animais/:animal_id', (req, res) => animalController.createOrUpdate(req, res));
+routes.delete('/animais/:animal_id', (req, res) => animalController.delete(req, res)); 
+routes.get('/animais/:fazenda_id', (req, res) => animalController.list(req, res));
+routes.get('/animais/disponiveislote/:fazenda_id', (req, res) => animalController.listDisponivelParaLote(req, res));
+routes.get('/animais/porcos/:fazenda_id', (req, res) => animalController.listPorcos(req, res));
+routes.get('/animais/liveanddie/:fazenda_id', (req, res) => animalController.listLiveAndDie(req, res));
+routes.get('/animais/animal/:animal_id', (req, res) => animalController.getById(req, res));
+routes.get('/animais/nascimentos/:ocupacao_id', (req, res) => animalController.listNascimentos(req, res));
+routes.post('/animais/adicionar-nascimento', (req, res) => animalController.createNascimento(req, res));
+routes.delete('/animais/nascimentos/:animal_id', (req, res) => animalController.deleteNascimento(req, res));
+routes.put('/animais/nascimentos/:animal_id', (req, res) => animalController.editarStatusNascimento(req, res)); 
 
-//Lote
-const loteController = new LoteController();
-routes.post('/lotes', loteController.createOrUpdate);
-routes.get('/lotes/:fazenda_id', loteController.list);
-routes.get('/lotes/ativos/:fazenda_id', loteController.listAtivo);
-routes.delete('/lotes/:lote_id', loteController.delete);
-routes.put('/lotes/:lote_id', loteController.createOrUpdate);
-routes.get('/lotes/lote/:lote_id', loteController.getById); 
+// Rotas de Anotação
+routes.post('/anotacoes', (req, res) => anotacaoController.createOrUpdate(req, res));
+routes.put('/anotacoes/:anotacao_id', (req, res) => anotacaoController.createOrUpdate(req, res)); 
+routes.delete('/anotacoes/:anotacao_id', (req, res) => anotacaoController.delete(req, res)); 
+routes.get('/anotacoes/:fazenda_id', (req, res) => anotacaoController.list(req, res));
+routes.get('/anotacoes/getbybaia/:baia_id', (req, res) => anotacaoController.listByBaia(req, res));
+routes.get('/anotacoes/anotacao/:anotacao_id', (req, res) => anotacaoController.getById(req, res));
 
-//Ocupacao
-const ocupacaoController = new OcupacaoController();
-routes.post('/ocupacoes', ocupacaoController.createOrUpdate);
-routes.get('/ocupacoes/ocupacao/:ocupacao_id', ocupacaoController.getById);
-routes.get('/ocupacoes/getbybaia/:baia_id', ocupacaoController.getByBaiaId);
-routes.get('/ocupacoes/:fazenda_id', ocupacaoController.list);
-routes.post('/ocupacoes/movimentar-animais', ocupacaoController.movimentarAnimais);
+// Rotas de Lote
+routes.post('/lotes', (req, res) => loteController.createOrUpdate(req, res));
+routes.get('/lotes/:fazenda_id', (req, res) => loteController.list(req, res));
+routes.get('/lotes/ativos/:fazenda_id', (req, res) => loteController.listAtivo(req, res));
+routes.delete('/lotes/:lote_id', (req, res) => loteController.delete(req, res));
+routes.put('/lotes/:lote_id', (req, res) => loteController.createOrUpdate(req, res));
+routes.get('/lotes/lote/:lote_id', (req, res) => loteController.getById(req, res)); 
 
-//Movimentacao
-const movimentacaoController = new MovimentacaoController();
-routes.get('/movimentacoes/:fazenda_id', movimentacaoController.listByFazenda);
+// Rotas de Ocupação
+routes.post('/ocupacoes', (req, res) => ocupacaoController.createOrUpdate(req, res));
+routes.get('/ocupacoes/ocupacao/:ocupacao_id', (req, res) => ocupacaoController.getById(req, res));
+routes.get('/ocupacoes/getbybaia/:baia_id', (req, res) => ocupacaoController.getByBaiaId(req, res));
+routes.get('/ocupacoes/:fazenda_id', (req, res) => ocupacaoController.list(req, res));
+routes.post('/ocupacoes/movimentar-animais', (req, res) => ocupacaoController.movimentarAnimais(req, res));
 
-//Inseminacao
-const inseminacaoController = new InseminacaoController();
-routes.post('/inseminacao', inseminacaoController.inseminarAnimais);
-routes.get('/inseminacao/:fazenda_id', inseminacaoController.listByFazenda);
+// Rotas de Movimentação
+routes.get('/movimentacoes/:fazenda_id', (req, res) => movimentacaoController.listByFazenda(req, res));
 
-//Dashboard
-const dashboardController = new DashboardController();
-routes.get('/dashboard/:fazenda_id', dashboardController.list);
+// Rotas de Inseminação
+routes.post('/inseminacao', (req, res) => inseminacaoController.inseminarAnimais(req, res));
+routes.get('/inseminacao/:fazenda_id', (req, res) => inseminacaoController.listByFazenda(req, res));
 
-//Venda
-const vendaController = new VendaController();
-routes.get('/vendas/:fazenda_id', vendaController.list);
-routes.post('/vendas', vendaController.createVenda);
+// Rotas de Dashboard
+routes.get('/dashboard/:fazenda_id', (req, res) => dashboardController.list(req, res));
 
-export default routes
+// Rotas de Venda
+routes.get('/vendas/:fazenda_id', (req, res) => vendaController.list(req, res));
+routes.post('/vendas', (req, res) => vendaController.createVenda(req, res));
+
+export default routes;
