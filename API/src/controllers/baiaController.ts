@@ -72,6 +72,21 @@ export class BaiaController {
     }
   };
 
+  listToTransferByFazenda = async (req: Request, res: Response) => {
+    try {
+      const { fazenda_id } = req.params;
+
+      if (!fazenda_id)
+        return res.status(400).json({ message: 'Parametros não informado'});
+
+      const baias = await this.baiaService.listToTransferByFazenda(Number(fazenda_id));
+      return res.status(200).json(baias);
+    } catch (error) {
+      console.error("Erro ao listar baias:", error);
+      return handleError(error, res, "Erro ao listar baias");
+    }
+  };
+
   listByFazendaAndTipo = async (req: Request, res: Response) => {
     try {
       const { fazenda_id, tipoGranja_id } = req.params;

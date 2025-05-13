@@ -10,6 +10,8 @@ abstract class BaiaRepository {
 
   Future<List<BaiaComLeitoesModel>> getListBaiasComLeitoesParaVenda(int fazendaId);
 
+  Future<List<BaiaModel>> getListToTransfer(int fazendaId);
+
   Future<List<BaiaModel>> getListByFazendaAndTipo(int fazendaId, TipoGranjaId tipoGranja);
 
   Future<BaiaModel> getById(int baiaId);

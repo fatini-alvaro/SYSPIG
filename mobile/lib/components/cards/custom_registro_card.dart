@@ -25,19 +25,19 @@ class CustomRegistroCard extends StatelessWidget {
           elevation: 5,
           child: Padding(
             padding: EdgeInsets.all(16),
-            child: Row(
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
                   decoration: BoxDecoration(
                     border: Border(
                       left: BorderSide(
-                        width: 10,  // Ajuste a largura da borda conforme necessário
-                        color: Colors.orange,  // Cor da borda
+                        width: 10,
+                        color: Colors.orange,
                       ),
                     ),
                   ),
-                  padding: EdgeInsets.only(left: 16),  // Ajuste o recuo conforme necessário
+                  padding: EdgeInsets.only(left: 16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -48,28 +48,18 @@ class CustomRegistroCard extends StatelessWidget {
                           ElevatedButton.icon(
                             onPressed: onEditarPressed,
                             icon: Icon(Icons.edit, color: Colors.white),
-                            label: Text(
-                              'Editar',
-                              style: TextStyle(color: Colors.white),
-                            ),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.blue,
-                            ),
+                            label: Text('Editar', style: TextStyle(color: Colors.white)),
+                            style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
                           ),
-                          SizedBox(width: 8), // Espaço entre os botões
+                          SizedBox(width: 8),
                           ElevatedButton.icon(
                             onPressed: onExcluirPressed,
                             icon: Icon(Icons.delete, color: Colors.white),
-                            label: Text(
-                              'Excluir',
-                              style: TextStyle(color: Colors.white),
-                            ),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.red,
-                            ),
+                            label: Text('Excluir', style: TextStyle(color: Colors.white)),
+                            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
                           ),
                         ],
-                      )
+                      ),
                     ],
                   ),
                 ),

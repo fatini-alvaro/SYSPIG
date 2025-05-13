@@ -114,6 +114,7 @@ routes.put('/baias/:baia_id', asyncHandler(baiaController.createOrUpdate.bind(ba
 routes.delete('/baias/:baia_id', asyncHandler(baiaController.delete.bind(baiaController))); 
 routes.get('/baias/:granja_id', asyncHandler(baiaController.listByGranja.bind(baiaController)));
 routes.get('/baias/byFazenda/:fazenda_id', asyncHandler(baiaController.listByFazenda.bind(baiaController)));
+routes.get('/baias/totransferbyfazenda/:fazenda_id', asyncHandler(baiaController.listToTransferByFazenda.bind(baiaController)));
 routes.get('/baias/baia/:baia_id', asyncHandler(baiaController.getById.bind(baiaController)));
 routes.get('/baias/byFazendaAndTipo/:fazenda_id/:tipoGranja_id', asyncHandler(baiaController.listByFazendaAndTipo.bind(baiaController)));
 routes.get('/baias/crechescomleitoes/:fazenda_id', asyncHandler(baiaController.listBaiasComLeitoesParaVenda.bind(baiaController)));

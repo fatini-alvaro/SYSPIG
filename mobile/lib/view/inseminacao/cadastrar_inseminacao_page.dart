@@ -332,7 +332,7 @@ class CadastrarInseminacaoPageState extends State<CadastrarInseminacaoPage> {
                           ),
                         const SizedBox(height: 20),
                         CustomDataTable(
-                          title: 'Animais selecionados Para inseminar',
+                          title: 'Animais selecionados para inseminar',
                           columns: const [
                             DataColumn(
                               label: Text(
@@ -388,6 +388,7 @@ class CadastrarInseminacaoPageState extends State<CadastrarInseminacaoPage> {
                             }).toList();
                           },
                         ),
+                        const SizedBox(height: 20),
                         const Spacer(),
                         CustomSalvarCadastroButtonComponent(
                           buttonText: 'Salvar',

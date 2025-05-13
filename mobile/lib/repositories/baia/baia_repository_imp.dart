@@ -39,6 +39,18 @@ class BaiaRepositoryImp implements BaiaRepository {
   }
 
   @override
+  Future<List<BaiaModel>> getListToTransfer(int fazendaId) async {
+    try {
+      var response = await _apiClient.dio.get('/baias/totransferbyfazenda/$fazendaId');
+      return (response.data as List).map((e) => BaiaModel.fromJson(e)).toList();
+    } catch (e) {
+      String errorMessage = ErrorHandlerUtil.handleDioError(e, 'Erro ao obter lista de baias de movimentação');
+      Logger().e('Erro ao obter lista de baias de movimentação (getListToTransfer - baias): $e');
+      throw Exception(errorMessage);
+    }
+  }
+
+  @override
   Future<List<BaiaComLeitoesModel>> getListBaiasComLeitoesParaVenda(int fazendaId) async {
     try {
       var response = await _apiClient.dio.get('/baias/crechescomleitoes/$fazendaId');

@@ -103,6 +103,38 @@ export class BaiaService {
       .getMany();
   }  
 
+  async listToTransferByFazenda(fazenda_id: number) {
+    return await baiaRepository.createQueryBuilder("baia")
+      .leftJoinAndSelect("baia.ocupacao", "ocupacao")
+      .leftJoinAndSelect("baia.granja", "granja")
+      .leftJoinAndSelect("granja.tipoGranja", "tipoGranja")
+      .leftJoinAndSelect("ocupacao.ocupacaoAnimais", "ocupacaoAnimais", "ocupacaoAnimais.status = :statusAtivo", { statusAtivo: StatusOcupacaoAnimal.ATIVO })
+      .leftJoinAndSelect("ocupacaoAnimais.animal", "animal")
+      .select([
+        "baia.id", 
+        "baia.numero", 
+        "baia.vazia", 
+        "ocupacao.id",
+        "ocupacao.codigo",
+        "ocupacaoAnimais.id",
+        "animal.id",
+        "animal.data_ultima_inseminacao",
+        "animal.nascimento",
+        "granja.id",
+        "granja.descricao",
+        "granja.codigo",
+        "tipoGranja.id",
+        "tipoGranja.descricao",
+      ])
+      .where("baia.fazenda_id = :fazenda_id", { fazenda_id })
+      .andWhere("tipoGranja.id != :inseminacaoId", { inseminacaoId: TipoGranjaId.INSEMINACAO })
+      .orderBy({ 
+        "baia.vazia": "ASC", 
+        "baia.numero": "DESC" 
+      })
+      .getMany();
+  }  
+
   async listByFazendaAndTipo(fazenda_id: number, tipoGranja_id: number) {
     return await baiaRepository.createQueryBuilder("baia")
       .leftJoinAndSelect("baia.ocupacao", "ocupacao")

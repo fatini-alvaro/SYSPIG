@@ -57,7 +57,7 @@ class CadastrarMovimentacaoController with ChangeNotifier {
     return await AsyncFetcher.fetch(
       action: () async {
         var idFazenda = await PrefsService.getFazendaId();
-        return await _baiaRepository.getListAll(idFazenda!);
+        return await _baiaRepository.getListToTransfer(idFazenda!);
       },
       errorMessage: 'Erro ao buscar as baias do repositório',
     ) ?? [];
