@@ -264,10 +264,10 @@ class CadastrarInseminacaoPageState extends State<CadastrarInseminacaoPage> {
                               Text("Selecionar Animais do Lote", style: TextStyle(fontWeight: FontWeight.bold)),
                               const SizedBox(height: 10),
                               ...loteAnimaisDisponiveis
-                              .where((lote) => lote.inseminado == false)
-                              .map((lote) {
+                              .where((loteAnimal) => loteAnimal.inseminado == false)
+                              .map((loteAnimal) {
                                 return ListTile(
-                                  title: Text('${lote.animal?.numeroBrinco ?? 'Sem nome'}'),
+                                  title: Text('${loteAnimal.animal?.numeroBrinco ?? 'Sem nome'}'),
                                   trailing: IconButton(
                                     icon: Icon(Icons.add),
                                     onPressed: () {
@@ -286,7 +286,7 @@ class CadastrarInseminacaoPageState extends State<CadastrarInseminacaoPage> {
                                       }
                   
                                       final jaExiste = _cadastrarInseminacaoController.inseminacoes.any(
-                                        (i) => i.porcaInseminada?.id == lote.animal?.id,
+                                        (i) => i.porcaInseminada?.id == loteAnimal.animal?.id,
                                       );
                   
                                       final baiaJaUsada = _cadastrarInseminacaoController.inseminacoes.any(
@@ -309,8 +309,8 @@ class CadastrarInseminacaoPageState extends State<CadastrarInseminacaoPage> {
                                         _cadastrarInseminacaoController.inseminacoes.add(InseminacaoModel(
                                           id: null,
                                           porcoDoador: porcoSelecionado,
-                                          porcaInseminada: lote.animal,
-                                          loteAnimal: lote,
+                                          porcaInseminada: loteAnimal.animal,
+                                          loteAnimal: loteAnimal,
                                           lote: loteSelecionado,
                                           baia: baiaInseminacaoSelecionado,
                                           data: _data,
