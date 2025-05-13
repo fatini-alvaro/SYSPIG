@@ -146,200 +146,200 @@ class CadastrarLotePageState extends State<CadastrarLotePage> {
                   constraints: BoxConstraints(minHeight: constraints.maxHeight),
                   child: IntrinsicHeight(
                     child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(height: 20),
-                      CustomTextFormFieldWidget(
-                        controller: _descricaoController,
-                        label: 'Descrição',
-                        hintText: 'Descrição do Lote',
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Campo Obrigatório';
-                          }
-                          return null;
-                        },   
-                        onChanged: _cadastrarLoteController.setDescricao,
-                      ),
-                      SizedBox(height: 20),
-                      CustomTextFormFieldWidget(
-                        controller: _numeroLoteController,
-                        label: 'Número Lote',
-                        hintText: 'Número do Lote',
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Campo Obrigatório';
-                          }
-                          return null;
-                        },   
-                        onChanged: _cadastrarLoteController.setNumero,
-                      ),
-                      SizedBox(height: 20),
-                      CustomDateTimeFieldWidget(
-                        labelText: 'Data de inicio',
-                        initialValue: _dataInicio,
-                        enabled: widget.loteId == null,
-                        validator: (value) {
-                          if (value == null) {
-                            return "A data é obrigatória";
-                          }
-                          return null;
-                        },  
-                        onChanged: (selectedDate) {
-                          setState(() {
-                            _dataInicio = selectedDate;
-                          });
-                          _cadastrarLoteController.setDataInicio(selectedDate);
-                        },
-                      ),
-                      SizedBox(height: 20),
-                      CustomDateTimeFieldWidget(
-                        labelText: 'Data de Fim',
-                        initialValue: _dataFim,
-                        enabled: widget.loteId != null,
-                        onChanged: (selectedDate) {
-                          setState(() {
-                            _dataFim = selectedDate;
-                          });
-                          _cadastrarLoteController.setDataFim(selectedDate);
-                        },
-                      ),
-                      if (widget.loteId != null)
-                      SizedBox(height: 20),
-                      if (widget.loteId != null)
-                      CustomBooleanFieldWidget(
-                        label: 'Encerrado?',
-                        value: _encerrado,
-                        onChanged: (val) {
-                          setState(() {
-                            _encerrado = val;
-                          });
-                          _cadastrarLoteController.setEncerrado(val);
-                        },
-                        validator: (val) {
-                          if (val == null) return 'Selecione uma opção';
-                          return null;
-                        },
-                      ),
-                      SizedBox(height: 20),
-                      CustomTextFormFieldWidget(
-                        controller: _searchControllerAnimal,
-                        label: 'Animal',
-                        hintText: 'Buscar Animal',
-                        suffixIcon: _searchControllerAnimal.text.isNotEmpty
-                            ? IconButton(
-                                icon: Icon(Icons.clear),
-                                onPressed: () {
-                                  setState(() {
-                                    _searchControllerAnimal.clear();
-                                  });
-                                },
-                              )
-                            : Icon(Icons.search),
-                        onChanged: (value) {
-                          setState(() {});
-                        },
-                        onTap: () {
-                          setState(() {
-                            _isAnimalSearchFocused = !_isAnimalSearchFocused;
-                          });
-                        },
-                      ),
-                      if (_isAnimalSearchFocused) 
-                        SizedBox(
-                          height: 200,
-                          child: ListView(
-                            children: animais
-                                .where((animal) =>
-                                    animal.numeroBrinco!.toLowerCase().contains(_searchControllerAnimal.text.toLowerCase()))
-                                .map((animal) {
-                              return ListTile(
-                                title: Text('${animal.numeroBrinco}'),
-                                onTap: () {
-                                  setState(() {                            
-                                  _toggleSelecaoAnimal(animal);
-                                  _isAnimalSearchFocused = !_isAnimalSearchFocused;
-                                  });
-                                },
-                              );
-                            }).toList(),
-                          ),
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(height: 20),
+                        CustomTextFormFieldWidget(
+                          controller: _descricaoController,
+                          label: 'Descrição',
+                          hintText: 'Descrição do Lote',
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Campo Obrigatório';
+                            }
+                            return null;
+                          },   
+                          onChanged: _cadastrarLoteController.setDescricao,
                         ),
-                      SizedBox(height: 20),
-                      CustomDataTable(
-                        title: 'Animais adicionados ao lote',
-                        columns: const [
-                          DataColumn(
-                            label: Text(
-                              'Nº Brinco',
-                              style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                        SizedBox(height: 20),
+                        CustomTextFormFieldWidget(
+                          controller: _numeroLoteController,
+                          label: 'Número Lote',
+                          hintText: 'Número do Lote',
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Campo Obrigatório';
+                            }
+                            return null;
+                          },   
+                          onChanged: _cadastrarLoteController.setNumero,
+                        ),
+                        SizedBox(height: 20),
+                        CustomDateTimeFieldWidget(
+                          labelText: 'Data de inicio',
+                          initialValue: _dataInicio,
+                          enabled: widget.loteId == null,
+                          validator: (value) {
+                            if (value == null) {
+                              return "A data é obrigatória";
+                            }
+                            return null;
+                          },  
+                          onChanged: (selectedDate) {
+                            setState(() {
+                              _dataInicio = selectedDate;
+                            });
+                            _cadastrarLoteController.setDataInicio(selectedDate);
+                          },
+                        ),
+                        SizedBox(height: 20),
+                        CustomDateTimeFieldWidget(
+                          labelText: 'Data de Fim',
+                          initialValue: _dataFim,
+                          enabled: widget.loteId != null,
+                          onChanged: (selectedDate) {
+                            setState(() {
+                              _dataFim = selectedDate;
+                            });
+                            _cadastrarLoteController.setDataFim(selectedDate);
+                          },
+                        ),
+                        if (widget.loteId != null)
+                        SizedBox(height: 20),
+                        if (widget.loteId != null)
+                        CustomBooleanFieldWidget(
+                          label: 'Encerrado?',
+                          value: _encerrado,
+                          onChanged: (val) {
+                            setState(() {
+                              _encerrado = val;
+                            });
+                            _cadastrarLoteController.setEncerrado(val);
+                          },
+                          validator: (val) {
+                            if (val == null) return 'Selecione uma opção';
+                            return null;
+                          },
+                        ),
+                        SizedBox(height: 20),
+                        CustomTextFormFieldWidget(
+                          controller: _searchControllerAnimal,
+                          label: 'Animal',
+                          hintText: 'Buscar Animal',
+                          suffixIcon: _searchControllerAnimal.text.isNotEmpty
+                              ? IconButton(
+                                  icon: Icon(Icons.clear),
+                                  onPressed: () {
+                                    setState(() {
+                                      _searchControllerAnimal.clear();
+                                    });
+                                  },
+                                )
+                              : Icon(Icons.search),
+                          onChanged: (value) {
+                            setState(() {});
+                          },
+                          onTap: () {
+                            setState(() {
+                              _isAnimalSearchFocused = !_isAnimalSearchFocused;
+                            });
+                          },
+                        ),
+                        if (_isAnimalSearchFocused) 
+                          SizedBox(
+                            height: 200,
+                            child: ListView(
+                              children: animais
+                                  .where((animal) =>
+                                      animal.numeroBrinco!.toLowerCase().contains(_searchControllerAnimal.text.toLowerCase()))
+                                  .map((animal) {
+                                return ListTile(
+                                  title: Text('${animal.numeroBrinco}'),
+                                  onTap: () {
+                                    setState(() {                            
+                                    _toggleSelecaoAnimal(animal);
+                                    _isAnimalSearchFocused = !_isAnimalSearchFocused;
+                                    });
+                                  },
+                                );
+                              }).toList(),
                             ),
                           ),
-                          DataColumn(label: Text(
-                              'Ações',
-                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                        SizedBox(height: 20),
+                        CustomDataTable(
+                          title: 'Animais adicionados ao lote',
+                          columns: const [
+                            DataColumn(
+                              label: Text(
+                                'Nº Brinco',
+                                style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                              ),
                             ),
-                          ),
-                        ],
-                        data: _cadastrarLoteController.animaisSelecionados,
-                        generateRows: (animais) {
-                          return animais.map((animal) {
-                            return DataRow(
-                              cells: [
-                                DataCell(Text(animal.numeroBrinco!)),
-                                DataCell(
-                                  ElevatedButton.icon(
-                                    onPressed: () {
-                                      setState(() {                                      
-                                      _removerAnimal(animal);
-                                      });
-                                    },
-                                    icon: Icon(Icons.delete, color: Colors.white),
-                                    label: Text(
-                                      'Excluir',
-                                      style: TextStyle(color: Colors.white),
-                                    ),
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.red,
+                            DataColumn(label: Text(
+                                'Ações',
+                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                          ],
+                          data: _cadastrarLoteController.animaisSelecionados,
+                          generateRows: (animais) {
+                            return animais.map((animal) {
+                              return DataRow(
+                                cells: [
+                                  DataCell(Text(animal.numeroBrinco!)),
+                                  DataCell(
+                                    ElevatedButton.icon(
+                                      onPressed: () {
+                                        setState(() {                                      
+                                        _removerAnimal(animal);
+                                        });
+                                      },
+                                      icon: Icon(Icons.delete, color: Colors.white),
+                                      label: Text(
+                                        'Excluir',
+                                        style: TextStyle(color: Colors.white),
+                                      ),
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.red,
+                                      ),
                                     ),
                                   ),
-                                ),
-                              ],
-                            );
-                          }).toList();
-                        },
-                      ),
-                      SizedBox(height: 20),
-                      const Spacer(),
-                      CustomSalvarCadastroButtonComponent(
-                        buttonText: widget.loteId == null
-                            ? 'Salvar Lote'
-                            : 'Salvar Alterações', 
-                        rotaTelaAposSalvar:'selecionarLote',
-                        onPressed: () {    
-                          if (_formKey.currentState!.validate()) {
-                            if (widget.loteId == null) {
-                              _cadastrarLoteController
-                                  .create(context)
-                                  .then((resultado) {
-                                if (resultado) {
-                                  Navigator.pop(context);
-                                  Navigator.pushReplacementNamed(context, '/selecionarLote');
-                                }
-                              });
-                            } else {
-                              _cadastrarLoteController
-                                  .update(context, widget.loteId!)
-                                  .then((resultado) {
-                                if (resultado) {
-                                  Navigator.pop(context);
-                                  Navigator.pushReplacementNamed(context, '/selecionarLote');
-                                }
-                              });
-                            }
-                          }                           
-                        },
-                      ),
+                                ],
+                              );
+                            }).toList();
+                          },
+                        ),
+                        SizedBox(height: 20),
+                        const Spacer(),
+                        CustomSalvarCadastroButtonComponent(
+                          buttonText: widget.loteId == null
+                              ? 'Salvar Lote'
+                              : 'Salvar Alterações', 
+                          rotaTelaAposSalvar:'selecionarLote',
+                          onPressed: () {    
+                            if (_formKey.currentState!.validate()) {
+                              if (widget.loteId == null) {
+                                _cadastrarLoteController
+                                    .create(context)
+                                    .then((resultado) {
+                                  if (resultado) {
+                                    Navigator.pop(context);
+                                    Navigator.pushReplacementNamed(context, '/selecionarLote');
+                                  }
+                                });
+                              } else {
+                                _cadastrarLoteController
+                                    .update(context, widget.loteId!)
+                                    .then((resultado) {
+                                  if (resultado) {
+                                    Navigator.pop(context);
+                                    Navigator.pushReplacementNamed(context, '/selecionarLote');
+                                  }
+                                });
+                              }
+                            }                           
+                          },
+                        ),
                       ],
                     ),
                   ),
