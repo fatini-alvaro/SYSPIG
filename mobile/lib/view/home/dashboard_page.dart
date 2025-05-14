@@ -143,7 +143,7 @@ class _DashboardPageState extends State<DashboardPage> {
           children: [
             Center(
               child: Text(
-                "Informações do dia",
+                "Anotações do dia",
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: Colors.orange.shade800,
@@ -207,7 +207,7 @@ class _DashboardPageState extends State<DashboardPage> {
               children: [
                 Center(
                   child: Text(
-                    "Anotações do dia",
+                    "Dados do dia",
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                       color: Colors.orange.shade800,
