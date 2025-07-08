@@ -18,7 +18,7 @@ class CustomBaiaCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double cardWidth = MediaQuery.of(context).size.width * 0.4; // 40% da tela
-    double cardHeight = 130; // Altura fixa
+    double cardHeight = 160; // Altura fixa
 
     final animaisSemNascimento = baia.ocupacao?.ocupacaoAnimaisSemNascimento;
 
@@ -48,12 +48,11 @@ class CustomBaiaCard extends StatelessWidget {
       },
       child: SizedBox(
         width: cardWidth,
-        height: cardHeight,
         child: Card(
           color: _getBaiaColor(infoGestacao),
           elevation: 5,
           child: Padding(
-            padding: const EdgeInsets.all(10.0),
+            padding: const EdgeInsets.all(8.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -64,26 +63,26 @@ class CustomBaiaCard extends StatelessWidget {
                   overflow: TextOverflow.ellipsis, // Adiciona "..." se o texto for longo
                   style: const TextStyle(
                     color: Colors.white,
-                    fontSize: 15,
+                    fontSize: 14,
                     fontWeight: FontWeight.bold,
                   ),
                 ),  
                 if (!baia.vazia! && infoGestacao != null && (baia.granja!.tipoGranja!.id == tipoGranjaIdToInt[TipoGranjaId.inseminacao] || baia.granja!.tipoGranja!.id == tipoGranjaIdToInt[TipoGranjaId.gestacao]))...[
                   Text(
-                    'Inseminado há ${infoGestacao!.diasDesdeInseminacao} dias',
+                    'Inseminado há: ${infoGestacao!.diasDesdeInseminacao} dias',
                     style: const TextStyle(
                       color: Colors.white,
-                      fontSize: 15,
+                      fontSize: 13,
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 2),
                   Text(
-                    'Parto estimado: ${infoGestacao.dataPrevistaParto.day.toString().padLeft(2, '0')}/'
+                    'Parto em: ${infoGestacao.dataPrevistaParto.day.toString().padLeft(2, '0')}/'
                     '${infoGestacao.dataPrevistaParto.month.toString().padLeft(2, '0')}/'
                     '${infoGestacao.dataPrevistaParto.year}',
                     style: const TextStyle(
                       color: Colors.white,
-                      fontSize: 14,
+                      fontSize: 13,
                     ),
                   ),
                 ],
@@ -94,7 +93,7 @@ class CustomBaiaCard extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
                       color: Colors.white,
-                      fontSize: 15,
+                      fontSize: 14,
                     ),
                   ),
                 if (baia.vazia!)

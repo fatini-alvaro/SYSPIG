@@ -179,7 +179,7 @@ class SelecionarBaiaPageState extends State<SelecionarBaiaPage> {
                         childAspectRatio: 1.2,
                         crossAxisSpacing: 1,
                         mainAxisSpacing: 2,
-                        mainAxisExtent: 140,
+                        mainAxisExtent: 150,
                       ),
                       itemCount: baiasDoGrupo.length,
                       itemBuilder: (_, idx) => CustomBaiaCard(
